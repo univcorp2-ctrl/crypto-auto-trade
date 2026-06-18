@@ -4,9 +4,11 @@
 
 ## まず見る場所
 
+- **100+戦略バリエーションの図解:** [`STRATEGY_VARIANTS.md`](STRATEGY_VARIANTS.md)
+- **詳しい説明:** [`docs/strategy-variants-explained.md`](docs/strategy-variants-explained.md)
 - **戦略一覧:** [`STRATEGIES.md`](STRATEGIES.md)
 - **戦略コード本体:** `crypto_auto_trade/strategies.py`
-- **100種類以上の戦略バリエーション:** `crypto_auto_trade/strategy_variants.py`
+- **100種類以上の戦略バリエーション定義:** `crypto_auto_trade/strategy_variants.py`
 - **必須トレーリングストップ:** `crypto_auto_trade/backtest.py`
 - **日本向け取引所APIレジストリ:** `crypto_auto_trade/exchange_registry.py`
 
@@ -21,6 +23,17 @@
 - simple dashboard UI.
 
 > This is trading software, not a profit guarantee. The default workflow is **Backtest → Forward Test → Realtime Validate → Paper → Guarded Live**.
+
+## 100+ strategy variants: 図解
+
+![100+ Strategy Variants Map](docs/assets/strategy-variants-map.svg)
+
+100+戦略バリエーションとは、**5つの基本戦略をパラメータ違いで100種類以上に展開し、同じ条件で比較できるようにしたもの**です。
+
+詳しい説明:
+
+- [`STRATEGY_VARIANTS.md`](STRATEGY_VARIANTS.md)
+- [`docs/strategy-variants-explained.md`](docs/strategy-variants-explained.md)
 
 ## Japan exchange coverage
 
