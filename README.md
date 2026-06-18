@@ -2,6 +2,14 @@
 
 ![Crypto Auto Trade overview](docs/assets/hero-overview.svg)
 
+## まず見る場所
+
+- **戦略一覧:** [`STRATEGIES.md`](STRATEGIES.md)
+- **戦略コード本体:** `crypto_auto_trade/strategies.py`
+- **100種類以上の戦略バリエーション:** `crypto_auto_trade/strategy_variants.py`
+- **必須トレーリングストップ:** `crypto_auto_trade/backtest.py`
+- **日本向け取引所APIレジストリ:** `crypto_auto_trade/exchange_registry.py`
+
 **Crypto Auto Trade** is a Japanese-user-oriented crypto auto-trading bot with:
 
 - Japan exchange registry based on JVCEA/FSA style membership research,
@@ -48,6 +56,8 @@ Manual-review venues remain in the registry, but the bot does not pretend to tra
 ## 100+ strategy variants
 
 ![100+ strategy library](docs/assets/strategy-library-100.svg)
+
+Full strategy index: [`STRATEGIES.md`](STRATEGIES.md)
 
 The bot includes 5 core families and 100+ generated variations:
 
