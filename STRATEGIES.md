@@ -2,6 +2,11 @@
 
 このリポジトリの戦略はここにあります。
 
+## まずここを見る
+
+- **100+戦略バリエーションの図解:** [`STRATEGY_VARIANTS.md`](STRATEGY_VARIANTS.md)
+- **詳しい説明:** [`docs/strategy-variants-explained.md`](docs/strategy-variants-explained.md)
+
 ## 実装ファイル
 
 | 目的 | ファイル |
@@ -70,6 +75,10 @@
 - BUY後は必ずトレーリングストップ
 
 ## 100種類以上のバリエーション
+
+![100+ Strategy Variants Map](docs/assets/strategy-variants-map.svg)
+
+詳しくは [`STRATEGY_VARIANTS.md`](STRATEGY_VARIANTS.md) を見てください。
 
 `crypto_auto_trade/strategy_variants.py` で、以下のようにパラメータ違いを大量生成しています。
 
