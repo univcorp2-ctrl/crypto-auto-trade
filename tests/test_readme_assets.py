@@ -9,5 +9,7 @@ def test_readme_assets_exist() -> None:
         "docs/assets/trailing-stop.svg",
         "docs/assets/architecture-overview.svg",
         "docs/assets/dashboard-screen.svg",
+        "docs/assets/japan-exchange-api-map.svg",
+        "docs/assets/strategy-library-100.svg",
     ]:
         assert Path(path).exists(), path
