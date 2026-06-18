@@ -5,15 +5,29 @@ import json
 
 from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles, load_candles_csv
+from crypto_auto_trade.exchange_adapters import build_private_client, build_public_client
+from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
 from crypto_auto_trade.strategies import build_strategy, strategy_descriptions, strategy_names
 from crypto_auto_trade.trader import live_once, paper_once
-from crypto_auto_trade.validation import compare_all_strategies, forward_all_strategies, run_validation_matrix
+from crypto_auto_trade.validation import (
+    compare_all_strategies,
+    forward_all_strategies,
+    run_validation_matrix,
+    select_best_strategy,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Crypto Auto Trade")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("list-strategies")
+    sub.add_parser("list-exchanges")
+    sub.add_parser("list-api-ready-exchanges")
+    ticker = sub.add_parser("exchange-ticker")
+    ticker.add_argument("--exchange", default="bitflyer")
+    ticker.add_argument("--symbol")
+    secrets = sub.add_parser("exchange-secrets")
+    secrets.add_argument("--exchange", default="bitflyer")
     backtest = sub.add_parser("backtest")
     backtest.add_argument("--strategy", choices=strategy_names(), default="regime_guard")
     backtest.add_argument("--data")
@@ -26,6 +40,10 @@ def build_parser() -> argparse.ArgumentParser:
     validate.add_argument("--iterations", type=int, default=200)
     validate.add_argument("--data")
     validate.add_argument("--trailing-stop-pct", type=float, default=0.05)
+    best = sub.add_parser("best-strategy")
+    best.add_argument("--iterations", type=int, default=300)
+    best.add_argument("--data")
+    best.add_argument("--trailing-stop-pct", type=float, default=0.05)
     realtime = sub.add_parser("realtime")
     realtime.add_argument("--strategy", choices=strategy_names(), default="regime_guard")
     realtime.add_argument("--exchange", default="binance")
@@ -56,6 +74,19 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "list-strategies":
         print(json.dumps(strategy_descriptions(), indent=2, ensure_ascii=False))
         return 0
+    if args.command == "list-exchanges":
+        print(json.dumps([venue.__dict__ for venue in list_exchange_venues()], indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "list-api-ready-exchanges":
+        print(json.dumps([venue.__dict__ for venue in api_ready_venues()], indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "exchange-ticker":
+        ticker = build_public_client(args.exchange).fetch_ticker(args.symbol)
+        print(json.dumps(ticker.__dict__, indent=2, ensure_ascii=False, default=str))
+        return 0
+    if args.command == "exchange-secrets":
+        print(json.dumps(build_private_client(args.exchange).explain_required_secrets(), indent=2, ensure_ascii=False))
+        return 0
     if args.command == "backtest":
         result = Backtester(build_strategy(args.strategy), BacktestConfig(trailing_stop_pct=args.trailing_stop_pct)).run(load_candles_csv(args.data))
         print(json.dumps(result.as_dict(), indent=2, ensure_ascii=False))
@@ -66,6 +97,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "validate":
         print(json.dumps(run_validation_matrix(load_candles_csv(args.data), args.iterations, args.trailing_stop_pct), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "best-strategy":
+        print(json.dumps(select_best_strategy(load_candles_csv(args.data), args.iterations, args.trailing_stop_pct), indent=2, ensure_ascii=False))
         return 0
     if args.command == "realtime":
         candles = choose_candles(None, args.live_data, args.exchange, args.symbol, args.timeframe, args.limit)
