@@ -1,0 +1,18 @@
+# Backup copy of .github/workflows/realtime-validation.yml
+name: Realtime Validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+jobs:
+  validate-live-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e '.[dev,web,live]'
+      - run: python -m crypto_auto_trade.cli realtime --live-data --exchange binance --symbol BTC/USDT --timeframe 1h --strategy regime_guard --trailing-stop-pct 0.05
