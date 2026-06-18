@@ -5,9 +5,15 @@ from typing import Any
 
 from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles
+from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
 from crypto_auto_trade.strategies import build_strategy, strategy_descriptions, strategy_names
 from crypto_auto_trade.trader import paper_once
-from crypto_auto_trade.validation import compare_all_strategies, forward_all_strategies, run_validation_matrix
+from crypto_auto_trade.validation import (
+    compare_all_strategies,
+    forward_all_strategies,
+    run_validation_matrix,
+    select_best_strategy,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC_DIR = ROOT / "static"
@@ -28,12 +34,17 @@ def create_app() -> Any:
         return FileResponse(STATIC_DIR / "index.html")
 
     @app.get("/api/health")
-    def health() -> dict[str, str]:
-        return {"ok": "true", "service": "crypto-auto-trade"}
+    def health() -> dict[str, object]:
+        return {"ok": True, "service": "crypto-auto-trade", "strategy_count": len(strategy_names()), "exchange_count": len(list_exchange_venues())}
 
     @app.get("/api/strategies")
-    def strategies() -> dict[str, object]:
-        return {"strategies": strategy_descriptions()}
+    def strategies(include_variants: bool = True) -> dict[str, object]:
+        return {"strategies": strategy_descriptions(include_variants=include_variants), "count": len(strategy_names())}
+
+    @app.get("/api/exchanges")
+    def exchanges(api_ready_only: bool = False) -> dict[str, object]:
+        venues = api_ready_venues() if api_ready_only else list_exchange_venues()
+        return {"exchanges": [venue.__dict__ for venue in venues], "count": len(venues)}
 
     @app.get("/api/backtest")
     def api_backtest(strategy: str = Query("regime_guard", enum=strategy_names()), data_source: str = "sample", exchange: str = "binance", symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 350, trailing_stop_pct: float = 0.05) -> dict[str, object]:
@@ -60,9 +71,14 @@ def create_app() -> Any:
         return {"backtest": compare_all_strategies(candles, trailing_stop_pct), "forward": forward_all_strategies(candles, trailing_stop_pct)}
 
     @app.get("/api/validate")
-    def api_validate(iterations: int = 200, data_source: str = "sample", exchange: str = "binance", symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 350, trailing_stop_pct: float = 0.05) -> dict[str, object]:
+    def api_validate(iterations: int = 300, data_source: str = "sample", exchange: str = "binance", symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 350, trailing_stop_pct: float = 0.05) -> dict[str, object]:
         candles = choose_candles(None, data_source == "live", exchange, symbol, timeframe, limit)
         return run_validation_matrix(candles, iterations, trailing_stop_pct)
+
+    @app.get("/api/best-strategy")
+    def api_best(iterations: int = 300, data_source: str = "sample", exchange: str = "binance", symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 350, trailing_stop_pct: float = 0.05) -> dict[str, object]:
+        candles = choose_candles(None, data_source == "live", exchange, symbol, timeframe, limit)
+        return select_best_strategy(candles, iterations, trailing_stop_pct)
 
     @app.post("/api/paper-once")
     def api_paper(strategy: str = Query("regime_guard", enum=strategy_names()), quote_order_size: float = 25.0, trailing_stop_pct: float = 0.05) -> dict[str, object]:
