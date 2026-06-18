@@ -32,7 +32,8 @@ def run_validation_matrix(candles: list[Candle], iterations: int = 200, trailing
                 "verdict": verdict,
             }
         )
-    return {"iterations": iterations, "trailing_stop_pct": trailing_stop_pct, "summary": summarize(rows), "rows": rows}
+    summary = summarize(rows)
+    return {"iterations": iterations, "trailing_stop_pct": trailing_stop_pct, "summary": summary, "best": summary[0] if summary else None, "rows": rows}
 
 
 def summarize(rows: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -41,18 +42,24 @@ def summarize(rows: list[dict[str, object]]) -> list[dict[str, object]]:
         selected = [r for r in rows if r["strategy"] == name]
         positives = sum(1 for r in selected if float(r["total_return"]) > 0)
         healthy = sum(1 for r in selected if r["verdict"] == "healthy")
+        avg_return = sum(float(r["total_return"]) for r in selected) / len(selected)
+        avg_drawdown = sum(float(r["max_drawdown"]) for r in selected) / len(selected)
+        avg_sharpe = sum(float(r["sharpe_like"]) for r in selected) / len(selected)
+        score = avg_return * 100 + avg_sharpe - avg_drawdown * 50 + healthy / len(selected) * 10
         out.append(
             {
                 "strategy": name,
                 "runs": len(selected),
                 "positive_rate": round(positives / len(selected), 4),
                 "healthy_rate": round(healthy / len(selected), 4),
-                "avg_return": round(sum(float(r["total_return"]) for r in selected) / len(selected), 6),
-                "avg_drawdown": round(sum(float(r["max_drawdown"]) for r in selected) / len(selected), 6),
+                "avg_return": round(avg_return, 6),
+                "avg_drawdown": round(avg_drawdown, 6),
+                "avg_sharpe_like": round(avg_sharpe, 6),
                 "total_trailing_stops": sum(int(r["trailing_stop_count"]) for r in selected),
+                "selection_score": round(score, 6),
             }
         )
-    return sorted(out, key=lambda r: (float(r["healthy_rate"]), float(r["avg_return"])), reverse=True)
+    return sorted(out, key=lambda r: float(r["selection_score"]), reverse=True)
 
 
 def compare_all_strategies(candles: list[Candle], trailing_stop_pct: float = 0.05) -> list[dict[str, object]]:
@@ -64,3 +71,16 @@ def compare_all_strategies(candles: list[Candle], trailing_stop_pct: float = 0.0
 def forward_all_strategies(candles: list[Candle], trailing_stop_pct: float = 0.05) -> list[dict[str, object]]:
     config = BacktestConfig(trailing_stop_pct=trailing_stop_pct)
     return [forward_test(build_strategy(name), candles, config) for name in strategy_names()]
+
+
+def select_best_strategy(candles: list[Candle], iterations: int = 300, trailing_stop_pct: float = 0.05) -> dict[str, object]:
+    matrix = run_validation_matrix(candles, iterations=iterations, trailing_stop_pct=trailing_stop_pct)
+    best = matrix.get("best")
+    return {
+        "method": "rolling-window validation across all registered strategy variants",
+        "note": "This is not a profit guarantee. It selects the strongest historical candidate under the current sample/data and trailing stop setting.",
+        "best": best,
+        "strategy_count": len(strategy_names()),
+        "iterations": iterations,
+        "trailing_stop_pct": trailing_stop_pct,
+    }
