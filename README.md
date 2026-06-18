@@ -2,117 +2,109 @@
 
 ![Crypto Auto Trade overview](docs/assets/hero-overview.svg)
 
-**Crypto Auto Trade** is a simple, visual crypto trading bot with selectable strategies, mandatory trailing stops after entry, backtesting, forward testing, real-time validation, paper trading, and guarded live trading.
+**Crypto Auto Trade** is a Japanese-user-oriented crypto auto-trading bot with:
+
+- Japan exchange registry based on JVCEA/FSA style membership research,
+- public/private API connection preparation,
+- 100+ selectable strategy variants,
+- mandatory trailing stop after every entry,
+- backtest, forward test, real-time validation,
+- paper trading and guarded live trading,
+- simple dashboard UI.
 
 > This is trading software, not a profit guarantee. The default workflow is **Backtest → Forward Test → Realtime Validate → Paper → Guarded Live**.
 
-## What this bot does
+## Japan exchange coverage
+
+![Japan exchange API map](docs/assets/japan-exchange-api-map.svg)
+
+JVCEA lists 32 first-class members and identifies categories such as crypto asset exchange business, derivatives business, electronic payment instruments, and funds transfer business. This repository keeps those venues in `crypto_auto_trade/exchange_registry.py` and separates them by API readiness.
+
+Commands:
+
+```bash
+python -m crypto_auto_trade.cli list-exchanges
+python -m crypto_auto_trade.cli list-api-ready-exchanges
+python -m crypto_auto_trade.cli exchange-secrets --exchange bitflyer
+python -m crypto_auto_trade.cli exchange-ticker --exchange bitflyer --symbol BTC_JPY
+python -m crypto_auto_trade.cli exchange-ticker --exchange gmo_coin --symbol BTC_JPY
+```
+
+API-ready or candidate venues include:
+
+- bitFlyer
+- bitbank
+- GMOコイン
+- Coincheck
+- Zaif
+- BTCBOX
+- Binance Japan / Binance API compatible path
+- Gate Japan / Gate API compatible path
+- OKCoin Japan adapter skeleton
+- BitTrade adapter skeleton
+
+Manual-review venues remain in the registry, but the bot does not pretend to trade them until an API is confirmed.
+
+## 100+ strategy variants
+
+![100+ strategy library](docs/assets/strategy-library-100.svg)
+
+The bot includes 5 core families and 100+ generated variations:
+
+| Family | Variants | Purpose |
+|---|---:|---|
+| `regime_guard` | 18 | Market regime filter + defensive breakout/reversion |
+| `ema_cross` | 24 | Trend following speed combinations |
+| `donchian_trend` | 24 | Breakout lookback and position sizing variations |
+| `rsi_reversion` | 24 | Mean-reversion threshold variations |
+| `bollinger_breakout` | 24 | Volatility breakout window/multiple variations |
+
+List every strategy:
+
+```bash
+python -m crypto_auto_trade.cli list-strategies
+```
+
+Pick the current best candidate from rolling validation:
+
+```bash
+python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05
+```
+
+The selection score uses average return, Sharpe-like score, drawdown penalty, and healthy-rate. It is not a profit guarantee; it is a repeatable way to choose the strongest historical candidate under the current data and trailing stop setting.
+
+## Strategy workflow
 
 ![Strategy overview](docs/assets/strategy-overview.svg)
 
-1. You choose a strategy.
-2. The bot generates BUY / SELL / HOLD signals.
-3. If a BUY creates a position, the bot immediately starts tracking a trailing stop.
-4. While a position exists, the stop follows the highest price after entry.
-5. If price drops through the trailing stop, the bot exits.
-6. Backtest, forward test, realtime validation, paper trading, and live trading all use the same strategy engine.
+1. Choose a core strategy or one of 100+ variants.
+2. Run backtest.
+3. Run forward test.
+4. Run 300+ rolling-window validations.
+5. Use the Best candidate button or CLI.
+6. Paper trade.
+7. Only then consider guarded live trading.
 
 ## Dashboard image
 
 ![Dashboard screen](docs/assets/dashboard-screen.svg)
 
-The dashboard is intentionally simple:
+The dashboard shows:
 
-- strategy selector,
-- symbol / timeframe / exchange inputs,
-- trailing stop percentage input,
-- Backtest / Forward Test / Realtime Validate buttons,
-- metric cards,
+- strategy selector with 100+ options,
+- API-ready exchange selector,
+- symbol / timeframe / data source,
+- trailing stop percentage,
+- Backtest / Forward Test / Realtime Validate / Compare All / Pick Best,
+- strategy count and exchange count,
 - equity curve,
-- latest signal and reason,
-- strategy comparison table.
+- latest signal and stop information.
 
 ## Architecture
 
 ![Architecture overview](docs/assets/architecture-overview.svg)
 
 FastAPI serves the API and static dashboard. FastAPI supports mounting static files from a directory, which keeps the UI simple and reviewable.
-
-## Setup
-
-```bash
-git clone https://github.com/univcorp2-ctrl/crypto-auto-trade.git
-cd crypto-auto-trade
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev,web,live]'
-pytest
-python -m crypto_auto_trade.cli validate --iterations 200
-python -m crypto_auto_trade.web
-```
-
-Open:
-
-```text
-http://127.0.0.1:8000
-```
-
-## Strategy selection
-
-![Regime Guard strategy](docs/assets/regime-guard-detail.svg)
-
-| Strategy | What it does | Best market | Main weakness | Exit protection |
-|---|---|---|---|---|
-| `regime_guard` | Detects trend/range/shock and trades only when conditions fit | Mixed markets | Conservative, may skip moves | Mandatory trailing stop + risk-off exits |
-| `ema_cross` | Buys when fast EMA is above slow EMA | Clean trends | Whipsaw in ranges | Mandatory trailing stop |
-| `donchian_trend` | Buys breakout above recent channel high | Strong breakouts | Fake breakouts | Mandatory trailing stop |
-| `rsi_reversion` | Buys oversold RSI and exits on recovery | Range markets | Bad in persistent downtrend | Mandatory trailing stop + volatility exit |
-| `bollinger_breakout` | Buys volatility expansion above upper band with trend filter | Expansion phases | Wick reversals | Mandatory trailing stop |
-
-### `regime_guard` explained
-
-`regime_guard` is the default strategy. It first asks: **what kind of market are we in?**
-
-- **Trend up:** EMA confirms direction and price breaks a Donchian high.
-- **Trend down:** bot stays flat.
-- **Sideways:** bot allows only a small mean-reversion position.
-- **Shock volatility:** bot exits or avoids entry.
-
-A BUY is not enough by itself. Once a BUY creates a position, the trailing stop starts immediately.
-
-### `ema_cross` explained
-
-`ema_cross` is the simplest trend-following model.
-
-- BUY when fast EMA is above slow EMA.
-- EXIT when fast EMA falls below slow EMA or trailing stop is hit.
-
-It is easy to understand, but it can lose during sideways chop.
-
-### `donchian_trend` explained
-
-`donchian_trend` waits for a breakout.
-
-- BUY when price closes above the previous channel high.
-- EXIT when price breaks down or trailing stop is hit.
-
-It tries to catch momentum, but fake breakouts are the main risk.
-
-### `rsi_reversion` explained
-
-`rsi_reversion` is a mean-reversion strategy.
-
-- BUY when RSI is oversold.
-- EXIT when RSI recovers, volatility becomes dangerous, or trailing stop is hit.
-
-It is not meant for strong downtrends.
-
-### `bollinger_breakout` explained
-
-`bollinger_breakout` waits for volatility expansion.
-
-- BUY when price breaks above the upper Bollinger band and trend filter agrees.
-- EXIT below the middle band or by trailing stop.
 
 ## Mandatory trailing stop
 
@@ -130,13 +122,33 @@ Example with `trailing_stop_pct = 5%`:
 6. Price falls to 114 or below.
 7. Bot exits.
 
+## Setup
+
+```bash
+git clone https://github.com/univcorp2-ctrl/crypto-auto-trade.git
+cd crypto-auto-trade
+python -m venv .venv
+source .venv/bin/activate
+pip install -e '.[dev,web,live]'
+pytest
+python -m crypto_auto_trade.cli validate --iterations 300 --trailing-stop-pct 0.05
+python -m crypto_auto_trade.web
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000
+```
+
 ## Commands
 
 ```bash
 python -m crypto_auto_trade.cli list-strategies
+python -m crypto_auto_trade.cli list-api-ready-exchanges
+python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05
 python -m crypto_auto_trade.cli backtest --strategy regime_guard --trailing-stop-pct 0.05
 python -m crypto_auto_trade.cli forward-test --strategy regime_guard --trailing-stop-pct 0.05
-python -m crypto_auto_trade.cli validate --iterations 200 --trailing-stop-pct 0.05
 python -m crypto_auto_trade.cli realtime --live-data --exchange binance --symbol BTC/USDT --timeframe 1h --strategy regime_guard --trailing-stop-pct 0.05
 python -m crypto_auto_trade.cli paper-once --strategy regime_guard --trailing-stop-pct 0.05
 ```
@@ -153,6 +165,10 @@ python -m crypto_auto_trade.cli live-once --strategy regime_guard --exchange bin
 ```
 
 Use API keys with withdrawals disabled and start with very small size.
+
+## Research sources
+
+The implementation notes are summarized in `docs/japan-exchanges.md`. The registry should be refreshed periodically because exchange registration and API availability can change.
 
 ## Security
 
