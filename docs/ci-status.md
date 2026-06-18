@@ -1,14 +1,14 @@
 # CI Status
 
-The repository code, README images, dashboard UI, tests, docs, devcontainer, and backup workflow definitions are committed.
+The repository code, README images, dashboard UI, 100+ strategy variants, Japan exchange registry, tests, docs, devcontainer, and backup workflow definitions are committed.
 
-Creating files under `.github/workflows/` failed with:
+Creating files under `.github/workflows/` has previously failed with:
 
 ```text
 GitHub API 404: Not Found
 ```
 
-Only workflow paths failed. Normal repository files committed successfully. This indicates the GitHub automation token used by the Worker does not currently have workflow-file creation/update permission.
+If it fails again, only workflow paths are affected. Normal repository files are committed successfully. This indicates the GitHub automation token used by the Worker does not currently have workflow-file creation/update permission.
 
 Backup workflow definitions are committed here:
 
@@ -26,6 +26,7 @@ Until then, run locally or in Codespaces:
 pip install -e '.[dev,web,live]'
 ruff check .
 pytest -q
-python -m crypto_auto_trade.cli validate --iterations 200 --trailing-stop-pct 0.05
+python -m crypto_auto_trade.cli validate --iterations 300 --trailing-stop-pct 0.05
+python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05
 python -m crypto_auto_trade.web
 ```
