@@ -22,7 +22,10 @@ def test_web_app_health() -> None:
     client = TestClient(create_app())
     response = client.get("/api/health")
     assert response.status_code == 200
-    assert response.json()["service"] == "crypto-auto-trade"
+    payload = response.json()
+    assert payload["service"] == "crypto-auto-trade"
+    assert payload["strategy_count"] >= 100
+    assert payload["exchange_count"] == 32
 
 
 def test_web_backtest_accepts_trailing_stop() -> None:
@@ -32,3 +35,21 @@ def test_web_backtest_accepts_trailing_stop() -> None:
     response = client.get("/api/backtest?strategy=ema_cross&trailing_stop_pct=0.03")
     assert response.status_code == 200
     assert response.json()["trailing_stop_pct"] == 0.03
+
+
+def test_web_exchanges_endpoint() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    response = client.get("/api/exchanges")
+    assert response.status_code == 200
+    assert response.json()["count"] == 32
+
+
+def test_web_best_strategy_endpoint() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    response = client.get("/api/best-strategy?iterations=30&trailing_stop_pct=0.05")
+    assert response.status_code == 200
+    assert response.json()["strategy_count"] >= 100
