@@ -4,25 +4,68 @@
 
 ## まず見る場所
 
+- **価格取得と5年シミュレーション:** [`PRICE_DATA_AND_SIMULATION.md`](PRICE_DATA_AND_SIMULATION.md)
 - **100+戦略バリエーションの図解:** [`STRATEGY_VARIANTS.md`](STRATEGY_VARIANTS.md)
 - **詳しい説明:** [`docs/strategy-variants-explained.md`](docs/strategy-variants-explained.md)
 - **戦略一覧:** [`STRATEGIES.md`](STRATEGIES.md)
 - **戦略コード本体:** `crypto_auto_trade/strategies.py`
-- **100種類以上の戦略バリエーション定義:** `crypto_auto_trade/strategy_variants.py`
+- **大量現在価格取得:** `crypto_auto_trade/market_data.py`
+- **5年シミュレーション:** `crypto_auto_trade/simulation.py`
 - **必須トレーリングストップ:** `crypto_auto_trade/backtest.py`
 - **日本向け取引所APIレジストリ:** `crypto_auto_trade/exchange_registry.py`
 
 **Crypto Auto Trade** is a Japanese-user-oriented crypto auto-trading bot with:
 
-- Japan exchange registry based on JVCEA/FSA style membership research,
+- mass current crypto price snapshots,
+- Japan exchange registry,
 - public/private API connection preparation,
 - 100+ selectable strategy variants,
 - mandatory trailing stop after every entry,
+- past 5Y backtest and future 5Y scenario simulation,
 - backtest, forward test, real-time validation,
 - paper trading and guarded live trading,
 - simple dashboard UI.
 
-> This is trading software, not a profit guarantee. The default workflow is **Backtest → Forward Test → Realtime Validate → Paper → Guarded Live**.
+> This is trading software, not a profit guarantee. The default workflow is **Price Snapshot → Backtest → Forward Test → 5Y Simulation → Paper → Guarded Live**.
+
+## Price data and 5-year simulation
+
+![Market Data Flow](docs/assets/market-data-flow.svg)
+
+詳しい説明: [`PRICE_DATA_AND_SIMULATION.md`](PRICE_DATA_AND_SIMULATION.md)
+
+大量銘柄の現在価格:
+
+```bash
+python -m crypto_auto_trade.cli market-snapshot --vs-currency usd --pages 1 --per-page 250
+```
+
+5年シミュレーション:
+
+```bash
+python -m crypto_auto_trade.cli simulate-five-years \
+  --coin-ids bitcoin,ethereum,solana,ripple,binancecoin \
+  --trailing-stop-pct 0.05 \
+  --strategy-limit 20
+```
+
+実履歴を使う場合:
+
+```bash
+python -m crypto_auto_trade.cli simulate-five-years \
+  --coin-ids bitcoin,ethereum \
+  --live-history \
+  --trailing-stop-pct 0.05
+```
+
+保存先:
+
+```text
+data/market_snapshots/
+data/simulation_results/
+```
+
+未来5年は実価格が存在しないため、`bear` / `base` / `bull` / `shock` のシナリオ型フォワード・シミュレーションとして扱います。
 
 ## 100+ strategy variants: 図解
 
@@ -39,7 +82,7 @@
 
 ![Japan exchange API map](docs/assets/japan-exchange-api-map.svg)
 
-JVCEA lists 32 first-class members and identifies categories such as crypto asset exchange business, derivatives business, electronic payment instruments, and funds transfer business. This repository keeps those venues in `crypto_auto_trade/exchange_registry.py` and separates them by API readiness.
+This repository keeps Japan-related venues in `crypto_auto_trade/exchange_registry.py` and separates them by API readiness.
 
 Commands:
 
@@ -51,28 +94,11 @@ python -m crypto_auto_trade.cli exchange-ticker --exchange bitflyer --symbol BTC
 python -m crypto_auto_trade.cli exchange-ticker --exchange gmo_coin --symbol BTC_JPY
 ```
 
-API-ready or candidate venues include:
-
-- bitFlyer
-- bitbank
-- GMOコイン
-- Coincheck
-- Zaif
-- BTCBOX
-- Binance Japan / Binance API compatible path
-- Gate Japan / Gate API compatible path
-- OKCoin Japan adapter skeleton
-- BitTrade adapter skeleton
-
-Manual-review venues remain in the registry, but the bot does not pretend to trade them until an API is confirmed.
-
 ## 100+ strategy variants
 
 ![100+ strategy library](docs/assets/strategy-library-100.svg)
 
 Full strategy index: [`STRATEGIES.md`](STRATEGIES.md)
-
-The bot includes 5 core families and 100+ generated variations:
 
 | Family | Variants | Purpose |
 |---|---:|---|
@@ -94,56 +120,34 @@ Pick the current best candidate from rolling validation:
 python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05
 ```
 
-The selection score uses average return, Sharpe-like score, drawdown penalty, and healthy-rate. It is not a profit guarantee; it is a repeatable way to choose the strongest historical candidate under the current data and trailing stop setting.
-
-## Strategy workflow
-
-![Strategy overview](docs/assets/strategy-overview.svg)
-
-1. Choose a core strategy or one of 100+ variants.
-2. Run backtest.
-3. Run forward test.
-4. Run 300+ rolling-window validations.
-5. Use the Best candidate button or CLI.
-6. Paper trade.
-7. Only then consider guarded live trading.
-
 ## Dashboard image
 
-![Dashboard screen](docs/assets/dashboard-screen.svg)
+![Current Price Dashboard](docs/assets/current-price-dashboard.svg)
 
 The dashboard shows:
 
 - strategy selector with 100+ options,
 - API-ready exchange selector,
-- symbol / timeframe / data source,
+- market snapshot page count,
+- simulation coin ids,
 - trailing stop percentage,
+- Fetch Prices,
+- 5Y Simulation,
 - Backtest / Forward Test / Realtime Validate / Compare All / Pick Best,
-- strategy count and exchange count,
 - equity curve,
-- latest signal and stop information.
+- latest signal and stored JSON result path.
 
 ## Architecture
 
 ![Architecture overview](docs/assets/architecture-overview.svg)
 
-FastAPI serves the API and static dashboard. FastAPI supports mounting static files from a directory, which keeps the UI simple and reviewable.
+FastAPI serves the API and static dashboard.
 
 ## Mandatory trailing stop
 
 ![Trailing stop explanation](docs/assets/trailing-stop.svg)
 
 The bot always creates a trailing stop state after entry.
-
-Example with `trailing_stop_pct = 5%`:
-
-1. Bot buys at 100.
-2. Price rises to 110.
-3. Stop follows to 104.5.
-4. Price rises to 120.
-5. Stop follows to 114.
-6. Price falls to 114 or below.
-7. Bot exits.
 
 ## Setup
 
@@ -154,7 +158,7 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -e '.[dev,web,live]'
 pytest
-python -m crypto_auto_trade.cli validate --iterations 300 --trailing-stop-pct 0.05
+python -m crypto_auto_trade.cli simulate-five-years --strategy-limit 20 --trailing-stop-pct 0.05
 python -m crypto_auto_trade.web
 ```
 
@@ -163,35 +167,6 @@ Open:
 ```text
 http://127.0.0.1:8000
 ```
-
-## Commands
-
-```bash
-python -m crypto_auto_trade.cli list-strategies
-python -m crypto_auto_trade.cli list-api-ready-exchanges
-python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05
-python -m crypto_auto_trade.cli backtest --strategy regime_guard --trailing-stop-pct 0.05
-python -m crypto_auto_trade.cli forward-test --strategy regime_guard --trailing-stop-pct 0.05
-python -m crypto_auto_trade.cli realtime --live-data --exchange binance --symbol BTC/USDT --timeframe 1h --strategy regime_guard --trailing-stop-pct 0.05
-python -m crypto_auto_trade.cli paper-once --strategy regime_guard --trailing-stop-pct 0.05
-```
-
-## Guarded live trading
-
-Live trading is locked unless all required environment variables exist:
-
-```bash
-export EXCHANGE_API_KEY='your_key'
-export EXCHANGE_API_SECRET='your_secret'
-export CRYPTO_AUTO_TRADE_LIVE_ACK='I_UNDERSTAND_THIS_CAN_LOSE_MONEY'
-python -m crypto_auto_trade.cli live-once --strategy regime_guard --exchange binance --symbol BTC/USDT --timeframe 1h --quote-order-size 15 --trailing-stop-pct 0.05
-```
-
-Use API keys with withdrawals disabled and start with very small size.
-
-## Research sources
-
-The implementation notes are summarized in `docs/japan-exchanges.md`. The registry should be refreshed periodically because exchange registration and API availability can change.
 
 ## Security
 
