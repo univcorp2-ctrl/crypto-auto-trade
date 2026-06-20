@@ -6,6 +6,8 @@ from typing import Any
 from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles
 from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
+from crypto_auto_trade.market_data import fetch_and_save_market_snapshot
+from crypto_auto_trade.simulation import SimulationConfig, list_simulation_results, run_five_year_simulation
 from crypto_auto_trade.strategies import build_strategy, strategy_descriptions, strategy_names
 from crypto_auto_trade.trader import paper_once
 from crypto_auto_trade.validation import (
@@ -45,6 +47,25 @@ def create_app() -> Any:
     def exchanges(api_ready_only: bool = False) -> dict[str, object]:
         venues = api_ready_venues() if api_ready_only else list_exchange_venues()
         return {"exchanges": [venue.__dict__ for venue in venues], "count": len(venues)}
+
+    @app.get("/api/market/prices")
+    def market_prices(vs_currency: str = "usd", pages: int = 1, per_page: int = 100) -> dict[str, object]:
+        return fetch_and_save_market_snapshot(vs_currency=vs_currency, pages=max(1, pages), per_page=min(max(1, per_page), 250))
+
+    @app.post("/api/simulations/five-year")
+    def api_five_year_simulation(coin_ids: str = "bitcoin,ethereum,solana,ripple,binancecoin", vs_currency: str = "usd", trailing_stop_pct: float = 0.05, strategy_limit: int = 20, live_history: bool = False) -> dict[str, object]:
+        config = SimulationConfig(
+            coin_ids=[coin.strip() for coin in coin_ids.split(",") if coin.strip()],
+            vs_currency=vs_currency,
+            trailing_stop_pct=trailing_stop_pct,
+            strategy_limit=min(max(1, strategy_limit), 120),
+            use_live_history=live_history,
+        )
+        return run_five_year_simulation(config)
+
+    @app.get("/api/simulations")
+    def simulations() -> dict[str, object]:
+        return {"results": list_simulation_results()}
 
     @app.get("/api/backtest")
     def api_backtest(strategy: str = Query("regime_guard", enum=strategy_names()), data_source: str = "sample", exchange: str = "binance", symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 350, trailing_stop_pct: float = 0.05) -> dict[str, object]:
