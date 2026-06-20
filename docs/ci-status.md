@@ -1,32 +1,38 @@
 # CI Status
 
-The repository code, README images, dashboard UI, 100+ strategy variants, Japan exchange registry, tests, docs, devcontainer, and backup workflow definitions are committed.
+Attempted to create real GitHub Actions workflow files under `.github/workflows/`.
 
-Creating files under `.github/workflows/` has previously failed with:
-
-```text
-GitHub API 404: Not Found
-```
-
-If it fails again, only workflow paths are affected. Normal repository files are committed successfully. This indicates the GitHub automation token used by the Worker does not currently have workflow-file creation/update permission.
-
-Backup workflow definitions are committed here:
-
-- `docs/workflows/ci.yml`
-- `docs/workflows/realtime-validation.yml`
-
-When workflow-file permission is available, these should be copied to:
+Workflows requested:
 
 - `.github/workflows/ci.yml`
+- `.github/workflows/market-simulation.yml`
 - `.github/workflows/realtime-validation.yml`
 
-Until then, run locally or in Codespaces:
+If GitHub API rejects those paths with `GitHub API 404: Not Found`, the repository automation token does not currently have workflow-file creation/update permission. Normal repository files can still be committed.
 
-```bash
-pip install -e '.[dev,web,live]'
-ruff check .
-pytest -q
-python -m crypto_auto_trade.cli validate --iterations 300 --trailing-stop-pct 0.05
-python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05
-python -m crypto_auto_trade.web
-```
+Backup workflow definitions are committed under:
+
+- `docs/workflows/ci.yml`
+- `docs/workflows/market-simulation.yml`
+- `docs/workflows/realtime-validation.yml`
+
+Expected Actions jobs once workflow-path permission works:
+
+1. CI
+   - install dependencies
+   - ruff
+   - pytest
+   - validation artifact
+   - best-strategy artifact
+   - sample 5Y simulation artifact
+
+2. Market Snapshot and 5Y Simulation
+   - workflow_dispatch
+   - scheduled every 12 hours
+   - market snapshot artifact
+   - five-year simulation artifact
+
+3. Realtime Validation
+   - workflow_dispatch
+   - scheduled every 6 hours
+   - live OHLCV validation artifacts
