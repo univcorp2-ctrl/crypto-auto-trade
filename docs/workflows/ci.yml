@@ -35,10 +35,10 @@ jobs:
           python -m crypto_auto_trade.cli validate --iterations 300 --trailing-stop-pct 0.05 > artifacts/validation.json
       - name: Best strategy artifact
         run: python -m crypto_auto_trade.cli best-strategy --iterations 300 --trailing-stop-pct 0.05 > artifacts/best-strategy.json
-      - name: Exchange registry artifact
-        run: python -m crypto_auto_trade.cli list-api-ready-exchanges > artifacts/api-ready-exchanges.json
+      - name: Sample 5Y simulation artifact
+        run: python -m crypto_auto_trade.cli simulate-five-years --coin-ids bitcoin,ethereum --strategy-limit 10 --trailing-stop-pct 0.05 --output-dir artifacts/simulation
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: validation-results-${{ matrix.python-version }}
-          path: artifacts/*.json
+          name: crypto-auto-trade-ci-${{ matrix.python-version }}
+          path: artifacts/**/*.json
