@@ -7,6 +7,8 @@ from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles, load_candles_csv
 from crypto_auto_trade.exchange_adapters import build_private_client, build_public_client
 from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
+from crypto_auto_trade.market_data import fetch_and_save_market_snapshot
+from crypto_auto_trade.simulation import SimulationConfig, list_simulation_results, run_five_year_simulation
 from crypto_auto_trade.strategies import build_strategy, strategy_descriptions, strategy_names
 from crypto_auto_trade.trader import live_once, paper_once
 from crypto_auto_trade.validation import (
@@ -23,6 +25,21 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("list-strategies")
     sub.add_parser("list-exchanges")
     sub.add_parser("list-api-ready-exchanges")
+
+    market = sub.add_parser("market-snapshot")
+    market.add_argument("--vs-currency", default="usd")
+    market.add_argument("--pages", type=int, default=1)
+    market.add_argument("--per-page", type=int, default=250)
+
+    sim = sub.add_parser("simulate-five-years")
+    sim.add_argument("--coin-ids", default="bitcoin,ethereum,solana,ripple,binancecoin")
+    sim.add_argument("--vs-currency", default="usd")
+    sim.add_argument("--trailing-stop-pct", type=float, default=0.05)
+    sim.add_argument("--strategy-limit", type=int, default=20)
+    sim.add_argument("--live-history", action="store_true")
+    sim.add_argument("--output-dir", default="data/simulation_results")
+    sub.add_parser("list-simulation-results")
+
     ticker = sub.add_parser("exchange-ticker")
     ticker.add_argument("--exchange", default="bitflyer")
     ticker.add_argument("--symbol")
@@ -79,6 +96,23 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "list-api-ready-exchanges":
         print(json.dumps([venue.__dict__ for venue in api_ready_venues()], indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "market-snapshot":
+        print(json.dumps(fetch_and_save_market_snapshot(args.vs_currency, args.pages, args.per_page), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "simulate-five-years":
+        config = SimulationConfig(
+            coin_ids=[coin.strip() for coin in args.coin_ids.split(",") if coin.strip()],
+            vs_currency=args.vs_currency,
+            trailing_stop_pct=args.trailing_stop_pct,
+            strategy_limit=args.strategy_limit,
+            use_live_history=args.live_history,
+            output_dir=args.output_dir,
+        )
+        print(json.dumps(run_five_year_simulation(config), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "list-simulation-results":
+        print(json.dumps(list_simulation_results(), indent=2, ensure_ascii=False))
         return 0
     if args.command == "exchange-ticker":
         ticker = build_public_client(args.exchange).fetch_ticker(args.symbol)
