@@ -7,6 +7,7 @@ from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles
 from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
 from crypto_auto_trade.market_data import fetch_and_save_market_snapshot
+from crypto_auto_trade.profitability import verify_profitability
 from crypto_auto_trade.simulation import SimulationConfig, list_simulation_results, run_five_year_simulation
 from crypto_auto_trade.strategies import build_strategy, strategy_descriptions, strategy_names
 from crypto_auto_trade.trader import paper_once
@@ -101,6 +102,11 @@ def create_app() -> Any:
         candles = choose_candles(None, data_source == "live", exchange, symbol, timeframe, limit)
         return select_best_strategy(candles, iterations, trailing_stop_pct)
 
+    @app.get("/api/verify-profitability")
+    def api_verify_profitability(iterations: int = 300, data_source: str = "sample", exchange: str = "binance", symbol: str = "BTC/USDT", timeframe: str = "1h", limit: int = 350, trailing_stop_pct: float = 0.05) -> dict[str, object]:
+        candles = choose_candles(None, data_source == "live", exchange, symbol, timeframe, limit)
+        return verify_profitability(candles, trailing_stop_pct=trailing_stop_pct, iterations=iterations)
+
     @app.post("/api/paper-once")
     def api_paper(strategy: str = Query("regime_guard", enum=strategy_names()), quote_order_size: float = 25.0, trailing_stop_pct: float = 0.05) -> dict[str, object]:
         return paper_once(strategy, None, quote_order_size, trailing_stop_pct)
@@ -109,11 +115,15 @@ def create_app() -> Any:
 
 
 def main() -> None:
+    import os
+
     try:
         import uvicorn
     except ImportError as exc:
         raise ImportError("Install web dependencies first: pip install -e '.[web]'") from exc
-    uvicorn.run("crypto_auto_trade.web:create_app", factory=True, host="127.0.0.1", port=8000, reload=False)
+    host = os.environ.get("CRYPTO_AUTO_TRADE_HOST", "127.0.0.1")
+    port = int(os.environ.get("CRYPTO_AUTO_TRADE_PORT", "8000"))
+    uvicorn.run("crypto_auto_trade.web:create_app", factory=True, host=host, port=port, reload=False)
 
 
 if __name__ == "__main__":

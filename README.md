@@ -176,6 +176,36 @@ python -m crypto_auto_trade.cli realtime --live-data --exchange binance --symbol
 python -m crypto_auto_trade.cli paper-once --strategy regime_guard --trailing-stop-pct 0.05
 ```
 
+## 勝てるか検証 (Profitability verdict)
+
+ダッシュボードの **「勝てるか検証」** ボタン、または API で、登録済み全戦略
+バリエーションが「勝てるか（収益を出せるか）」を判定します。ローリング検証・
+全戦略バックテスト・最良候補のフォワードテストを組み合わせ、
+`win_likely` / `marginal` / `lose_likely` の verdict を返します。
+
+```bash
+curl 'http://127.0.0.1:8000/api/verify-profitability?iterations=300&trailing_stop_pct=0.05'
+```
+
+これは過去データ・サンプルに基づく判定であり、将来の利益を保証するものでは
+ありません。
+
+## Cloudflare Tunnel で公開
+
+FastAPI (Python) は Cloudflare Workers/Pages では直接動かないため、ローカルの
+ダッシュボードを **Cloudflare Tunnel (`cloudflared`)** で公開します。詳細は
+[`docs/cloudflare-tunnel.md`](docs/cloudflare-tunnel.md)。
+
+```bash
+pip install -e '.[web]'
+# cloudflared を導入後:
+scripts/cloudflare_tunnel.sh
+```
+
+クイックトンネルなら Cloudflare アカウント不要で
+`https://<...>.trycloudflare.com` の公開 URL が払い出されます。公開時は認証が
+ないため、常設する場合は Cloudflare Access 等で保護してください。
+
 ## Guarded live trading
 
 Live trading is locked unless all required environment variables exist:
