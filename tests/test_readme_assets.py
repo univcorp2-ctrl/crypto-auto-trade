@@ -15,6 +15,9 @@ def test_readme_assets_exist() -> None:
         "docs/assets/strategy-family-vs-variant.svg",
         "docs/assets/strategy-variant-naming-guide.svg",
         "docs/assets/strategy-selection-workflow.svg",
+        "docs/assets/market-data-flow.svg",
+        "docs/assets/five-year-simulation-flow.svg",
+        "docs/assets/current-price-dashboard.svg",
     ]:
         assert Path(path).exists(), path
 
@@ -22,3 +25,8 @@ def test_readme_assets_exist() -> None:
 def test_strategy_variant_docs_exist() -> None:
     assert Path("STRATEGY_VARIANTS.md").exists()
     assert Path("docs/strategy-variants-explained.md").exists()
+
+
+def test_price_data_docs_exist() -> None:
+    assert Path("PRICE_DATA_AND_SIMULATION.md").exists()
+    assert Path("docs/price-data-and-simulation.md").exists()
