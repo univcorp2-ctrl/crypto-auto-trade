@@ -1,0 +1,19 @@
+# Backup copy of .github/workflows/market-simulation.yml
+name: Market Snapshot and 5Y Simulation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */12 * * *'
+
+jobs:
+  market-and-simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e '.[dev,web,live]'
+      - run: python -m crypto_auto_trade.cli market-snapshot --vs-currency usd --pages 1 --per-page 250
+      - run: python -m crypto_auto_trade.cli simulate-five-years --coin-ids bitcoin,ethereum,solana,ripple,binancecoin --strategy-limit 20 --trailing-stop-pct 0.05
