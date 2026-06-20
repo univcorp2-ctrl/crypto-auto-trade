@@ -53,3 +53,12 @@ def test_web_best_strategy_endpoint() -> None:
     response = client.get("/api/best-strategy?iterations=30&trailing_stop_pct=0.05")
     assert response.status_code == 200
     assert response.json()["strategy_count"] >= 100
+
+
+def test_web_simulations_endpoint() -> None:
+    from fastapi.testclient import TestClient
+
+    client = TestClient(create_app())
+    response = client.get("/api/simulations")
+    assert response.status_code == 200
+    assert "results" in response.json()
