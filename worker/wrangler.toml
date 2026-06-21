@@ -1,0 +1,16 @@
+name = "crypto-auto-trade"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+# account_id is read from the CLOUDFLARE_ACCOUNT_ID environment variable at
+# deploy time so it is never committed. The API token is read from
+# CLOUDFLARE_API_TOKEN. See docs/cloudflare-pages-workers.md.
+
+[observability]
+enabled = true
+
+# Static dashboard (repo's existing static/ dir) is served via the ASSETS
+# binding. run_worker_first lets the Worker route /api/* and rewrite /static/*.
+[assets]
+directory = "../static"
+binding = "ASSETS"
+run_worker_first = true

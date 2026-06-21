@@ -206,6 +206,21 @@ scripts/cloudflare_tunnel.sh
 `https://<...>.trycloudflare.com` の公開 URL が払い出されます。公開時は認証が
 ないため、常設する場合は Cloudflare Access 等で保護してください。
 
+## Cloudflare 本番デプロイ（Workers + Static Assets）
+
+常設の本番運用には、エンジンを TypeScript に移植した **Cloudflare Worker**
+（[`worker/`](worker)）を使います。静的ダッシュボード＋API を Cloudflare 内で完結
+させる「Pages+Workers」構成で、`workers.dev` の公開 URL が得られます。バックテスト
+結果は Python 実装と6桁一致することをテストで検証しています。詳細は
+[`docs/cloudflare-pages-workers.md`](docs/cloudflare-pages-workers.md)。
+
+```bash
+cd worker && npm install
+export CLOUDFLARE_API_TOKEN=...      # コミット・直書き禁止。環境変数で渡す
+export CLOUDFLARE_ACCOUNT_ID=...
+./deploy.sh
+```
+
 ## Guarded live trading
 
 Live trading is locked unless all required environment variables exist:
