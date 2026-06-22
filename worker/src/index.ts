@@ -4,6 +4,7 @@ import { defaultConfig, runBacktest, forwardTest } from "./backtest";
 import { runValidationMatrix, compareAllStrategies, forwardAllStrategies, selectBestStrategy } from "./validation";
 import { verifyProfitability } from "./profitability";
 import { VENUES, apiReadyVenues } from "./exchanges";
+import { fetchLiveCandlesMulti, probeProviders } from "./marketdata";
 
 interface Env {
   ASSETS: { fetch: (request: Request) => Promise<Response> };
@@ -19,20 +20,17 @@ const num = (params: URLSearchParams, key: string, fallback: number): number => 
   return Number.isFinite(n) ? n : fallback;
 };
 
-// Workers have no ccxt; fetch live OHLCV from Binance public klines when possible.
-async function fetchLiveCandles(symbol: string, timeframe: string, limit: number): Promise<Candle[]> {
-  const pair = symbol.replace("/", "").toUpperCase();
-  const url = `https://api.binance.com/api/v3/klines?symbol=${encodeURIComponent(pair)}&interval=${encodeURIComponent(timeframe)}&limit=${Math.min(Math.max(limit, 90), 1000)}`;
-  const res = await fetch(url, { headers: { accept: "application/json" } });
-  if (!res.ok) throw new Error(`binance klines HTTP ${res.status}`);
-  const rows = (await res.json()) as unknown[][];
-  return rows.map((r) => ({ timestamp: String(r[0]), open: Number(r[1]), high: Number(r[2]), low: Number(r[3]), close: Number(r[4]), volume: Number(r[5]) }));
-}
-
+// Workers have no ccxt; fetch live OHLCV by trying several public exchange
+// REST endpoints in order (Binance -> Kraken -> Coinbase -> OKX -> CoinGecko)
+// and using the first that succeeds. The returned `source` names the provider
+// that actually served the data, or "sample_fallback" when every venue failed
+// and we fell back to synthetic candles. It NEVER claims "live" for synthetic
+// data.
 async function chooseCandles(dataSource: string, live: boolean, symbol: string, timeframe: string, limit: number): Promise<{ candles: Candle[]; source: string }> {
   if (live || dataSource === "live") {
     try {
-      return { candles: await fetchLiveCandles(symbol, timeframe, limit), source: "live" };
+      const { candles, provider } = await fetchLiveCandlesMulti(symbol, timeframe, limit);
+      return { candles, source: `live:${provider}` };
     } catch {
       return { candles: generateSampleCandles(360).slice(-limit), source: "sample_fallback" };
     }
@@ -81,7 +79,9 @@ async function handleApi(url: URL): Promise<Response> {
       const live = q.get("live") === "true";
       const { candles, source } = await chooseCandles(dataSource, live, symbol, timeframe, limit);
       const result = runBacktest(strategy, candles, defaultConfig(trailing)) as unknown as Record<string, unknown>;
-      result.source = source === "sample" ? "sample" : live ? "live" : "sample";
+      // Honest source: "live:<provider>" | "sample_fallback" | "sample".
+      result.source = source;
+      result.is_live = source.startsWith("live:");
       result.symbol = symbol;
       result.timeframe = timeframe;
       return json(result);
@@ -100,14 +100,36 @@ async function handleApi(url: URL): Promise<Response> {
 
     if (path === "/api/best-strategy") {
       const iterations = Math.min(Math.max(1, num(q, "iterations", 300)), 600);
-      const { candles } = await chooseCandles(dataSource, false, symbol, timeframe, limit);
-      return json(selectBestStrategy(candles, iterations, trailing));
+      const live = q.get("live") === "true" || dataSource === "live";
+      const { candles, source } = await chooseCandles(dataSource, live, symbol, timeframe, limit);
+      const result = selectBestStrategy(candles, iterations, trailing) as unknown as Record<string, unknown>;
+      result.source = source;
+      result.is_live = source.startsWith("live:");
+      return json(result);
     }
 
     if (path === "/api/verify-profitability") {
       const iterations = Math.min(Math.max(1, num(q, "iterations", 300)), 600);
-      const { candles } = await chooseCandles(dataSource, false, symbol, timeframe, limit);
-      return json(verifyProfitability(candles, trailing, iterations));
+      const live = q.get("live") === "true" || dataSource === "live";
+      const { candles, source } = await chooseCandles(dataSource, live, symbol, timeframe, limit);
+      const result = verifyProfitability(candles, trailing, iterations) as unknown as Record<string, unknown>;
+      // Surface what data the verdict was actually computed on. A verdict on
+      // "sample" / "sample_fallback" is a synthetic simulation, NOT real market.
+      result.source = source;
+      result.is_live = source.startsWith("live:");
+      return json(result);
+    }
+
+    if (path === "/api/live-check") {
+      const probes = await probeProviders(symbol, timeframe, limit);
+      const usable = probes.find((p) => p.ok);
+      return json({
+        symbol, timeframe,
+        live_available: Boolean(usable),
+        selected_provider: usable?.provider ?? null,
+        providers: probes,
+        note: "Tries each public exchange API from Cloudflare's edge. selected_provider is what live data would use; null means all venues are blocked/unreachable and the app uses synthetic sample data.",
+      });
     }
 
     if (path === "/api/market/prices") {
