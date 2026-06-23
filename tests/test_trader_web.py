@@ -1,6 +1,6 @@
 import pytest
 
-from crypto_auto_trade.trader import live_once, paper_once
+from crypto_auto_trade.trader import live_loop, live_once, paper_loop, paper_once
 from crypto_auto_trade.web import create_app
 
 
@@ -14,6 +14,27 @@ def test_live_requires_ack(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("CRYPTO_AUTO_TRADE_LIVE_ACK", raising=False)
     with pytest.raises(PermissionError):
         live_once("regime_guard", "binance", "BTC/USDT", "1h", 15, 0.05)
+
+
+def test_live_requires_keys_even_with_ack(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CRYPTO_AUTO_TRADE_LIVE_ACK", "I_UNDERSTAND_THIS_CAN_LOSE_MONEY")
+    monkeypatch.delenv("EXCHANGE_API_KEY", raising=False)
+    monkeypatch.delenv("EXCHANGE_API_SECRET", raising=False)
+    with pytest.raises(PermissionError):
+        live_once("regime_guard", "binance", "BTC/USDT", "1h", 15, 0.05, testnet=True)
+
+
+def test_live_loop_fails_fast_on_config_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A loop must not spin forever swallowing a misconfiguration.
+    monkeypatch.delenv("CRYPTO_AUTO_TRADE_LIVE_ACK", raising=False)
+    with pytest.raises(PermissionError):
+        live_loop("regime_guard", "binance", "BTC/USDT", "1h", 15, interval_seconds=0, max_iterations=3)
+
+
+def test_paper_loop_runs_fixed_iterations() -> None:
+    results = paper_loop("ema_cross", interval_seconds=0, max_iterations=3)
+    assert len(results) == 3
+    assert all(r["mode"] == "paper" for r in results)
 
 
 def test_web_app_health() -> None:

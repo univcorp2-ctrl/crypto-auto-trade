@@ -10,7 +10,7 @@ from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_
 from crypto_auto_trade.market_data import fetch_and_save_market_snapshot
 from crypto_auto_trade.simulation import SimulationConfig, list_simulation_results, run_five_year_simulation
 from crypto_auto_trade.strategies import build_strategy, strategy_descriptions, strategy_names
-from crypto_auto_trade.trader import live_once, paper_once
+from crypto_auto_trade.trader import live_loop, live_once, paper_loop, paper_once
 from crypto_auto_trade.validation import (
     compare_all_strategies,
     forward_all_strategies,
@@ -81,6 +81,29 @@ def build_parser() -> argparse.ArgumentParser:
     live.add_argument("--timeframe", default="1h")
     live.add_argument("--quote-order-size", type=float, default=15.0)
     live.add_argument("--trailing-stop-pct", type=float, default=0.05)
+    live.add_argument("--testnet", action="store_true", help="run against the exchange sandbox/testnet (no real funds)")
+    live.add_argument("--dry-run", action="store_true", help="compute the decision but send no orders")
+
+    paper_loop_p = sub.add_parser("paper-loop")
+    paper_loop_p.add_argument("--strategy", choices=strategy_names(), default="regime_guard")
+    paper_loop_p.add_argument("--data")
+    paper_loop_p.add_argument("--quote-order-size", type=float, default=25.0)
+    paper_loop_p.add_argument("--trailing-stop-pct", type=float, default=0.05)
+    paper_loop_p.add_argument("--interval", type=float, default=3600.0, help="seconds between runs")
+    paper_loop_p.add_argument("--max-iterations", type=int, default=None)
+
+    live_loop_p = sub.add_parser("live-loop")
+    live_loop_p.add_argument("--strategy", choices=strategy_names(), default="regime_guard")
+    live_loop_p.add_argument("--exchange", default="binance")
+    live_loop_p.add_argument("--symbol", default="BTC/USDT")
+    live_loop_p.add_argument("--timeframe", default="1h")
+    live_loop_p.add_argument("--quote-order-size", type=float, default=15.0)
+    live_loop_p.add_argument("--trailing-stop-pct", type=float, default=0.05)
+    live_loop_p.add_argument("--interval", type=float, default=3600.0, help="seconds between runs")
+    live_loop_p.add_argument("--max-iterations", type=int, default=None)
+    live_loop_p.add_argument("--testnet", action="store_true")
+    live_loop_p.add_argument("--dry-run", action="store_true")
+
     compare = sub.add_parser("compare")
     compare.add_argument("--trailing-stop-pct", type=float, default=0.05)
     return parser
@@ -144,7 +167,13 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(paper_once(args.strategy, args.data, args.quote_order_size, args.trailing_stop_pct), indent=2, ensure_ascii=False))
         return 0
     if args.command == "live-once":
-        print(json.dumps(live_once(args.strategy, args.exchange, args.symbol, args.timeframe, args.quote_order_size, args.trailing_stop_pct), indent=2, ensure_ascii=False, default=str))
+        print(json.dumps(live_once(args.strategy, args.exchange, args.symbol, args.timeframe, args.quote_order_size, args.trailing_stop_pct, args.testnet, args.dry_run), indent=2, ensure_ascii=False, default=str))
+        return 0
+    if args.command == "paper-loop":
+        print(json.dumps(paper_loop(args.strategy, args.interval, args.max_iterations, args.data, args.quote_order_size, args.trailing_stop_pct), indent=2, ensure_ascii=False))
+        return 0
+    if args.command == "live-loop":
+        print(json.dumps(live_loop(args.strategy, args.exchange, args.symbol, args.timeframe, args.quote_order_size, args.interval, args.max_iterations, args.trailing_stop_pct, args.testnet, args.dry_run), indent=2, ensure_ascii=False, default=str))
         return 0
     if args.command == "compare":
         candles = load_candles_csv(None)
