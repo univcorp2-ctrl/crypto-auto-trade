@@ -37,8 +37,8 @@ function cardHtml(target) {
             <span class="badge">Wave ${target.wave}</span>
             <span class="badge">${target.mode}</span>
             <span class="badge">Priority ${target.priority}</span>
-            <span class="badge ${programClass}">Program ${programOk === true ? "OK" : programOk === false ? "NG" : "-"}</span>
-            <span class="badge ${apiClass}">API ${target.api_url ? (apiOk === true ? "OK" : apiOk === false ? "NG" : "-") : "N/A"}</span>
+            <span class="badge ${programClass}">Program probe ${programOk === true ? "OK" : programOk === false ? "NG" : "-"}</span>
+            <span class="badge ${apiClass}">API probe ${target.api_url ? (apiOk === true ? "OK" : apiOk === false ? "NG" : "-") : "N/A"}</span>
             <span class="badge ${eligibilityClass}">Reward ${target.api_reward_eligibility || "REVERIFY"}</span>
           </div>
         </div>
