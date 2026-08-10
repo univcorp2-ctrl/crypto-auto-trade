@@ -45,7 +45,7 @@ TARGETS: tuple[AirdropTarget, ...] = (
     AirdropTarget("nado-trading", "Nado Trading Points Agent", "DRY_RUN", "S", "https://docs.nado.xyz/points", "https://docs.nado.xyz/developer-resources", "points", 2, "REST/WebSocket dry-run seed; no real orders."),
     AirdropTarget("nado-nlp", "Nado NLP Liquidity Agent", "READ_ONLY", "A", "https://docs.nado.xyz/points", "https://docs.nado.xyz/", "points", 3, "NLP liquidity monitor; deposit/redeem remains human-gated."),
     AirdropTarget("kyan", "Kyan MCP Krystals Agent", "DRY_RUN", "S", "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more", "https://docs.kyan.blue/docs/mcp", "Krystals", 1, "Wave 1. Kyan confirms Krystals and API/MCP separately; API-trading-to-Krystals equivalence still requires explicit official confirmation."),
-    AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. Re-verify current season and API reward eligibility before live use."),
+    AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. API points mechanics are documented, but current program activity must be re-verified because official Season 2 pages conflict."),
     AirdropTarget("ethereal-trading", "Ethereal API Points Trader", "DRY_RUN", "S", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 2, "Authentic-trading simulation only; no artificial volume."),
     AirdropTarget("ethereal-margin", "Ethereal USDe/Margin Points Agent", "READ_ONLY", "A", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 3, "Margin/deposit monitor; approvals and asset movement remain human-gated."),
     AirdropTarget("exchange01", "01 Exchange Participation Agent", "DRY_RUN", "C", "https://docs.01.xyz/support/faq/general", "https://docs.01.xyz/", "participation", 3, "Low-confidence reward economics; treat monetary value as UNKNOWN."),
@@ -72,10 +72,10 @@ WAVE1_REWARD_VERIFICATION: dict[str, dict[str, str]] = {
         "note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
     },
     "lighter": {
-        "status": "CONFIRMED",
+        "status": "UNVERIFIED",
         "source": "https://docs.lighter.xyz/points-program",
-        "verified_at": "2026-08-11T00:43:26+09:00",
-        "note": "Official Points Program states organic trading strategies via UI and API earn points; Sybil and self-trading do not.",
+        "verified_at": "2026-08-11T01:42:00+09:00",
+        "note": "Official Lighter docs still say organic UI/API trading earns Season 2 points, but the official Market Makers page says Points Season 2 ended on 2025-12-26 while Retail still describes weekly Season 2 distributions. Current program activity is therefore ambiguous and must not be treated as confirmed.",
     },
 }
 
