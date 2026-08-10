@@ -27,3 +27,11 @@ def test_airdrop_manual_dry_run_can_skip_network() -> None:
     assert payload["mode"] == "DRY_RUN"
     assert payload["live_approved"] is False
     assert all(item["live_approved"] is False for item in payload["targets"])
+
+
+def test_airdrop_ui_labels_reachability_as_probe() -> None:
+    client = TestClient(create_app())
+    response = client.get("/static/airdrop.js")
+    assert response.status_code == 200
+    assert "Program probe" in response.text
+    assert "API probe" in response.text
