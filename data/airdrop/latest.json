@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T20:50:29.565724+00:00",
+  "generated_at": "2026-08-10T21:00:09.967321+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
@@ -34,6 +34,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -41,7 +45,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:28.225814+00:00"
+      "checked_at": "2026-08-10T21:00:08.043435+00:00"
     },
     {
       "slug": "hyprearn",
@@ -70,6 +74,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -77,7 +85,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:27.492493+00:00"
+      "checked_at": "2026-08-10T21:00:08.351724+00:00"
     },
     {
       "slug": "pacifica",
@@ -104,8 +112,14 @@
       },
       "api_reward_eligibility": "CONFIRMED",
       "reward_evidence_source": "https://docs.pacifica.fi/points-program",
-      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_rule_verified_at": "2026-08-11T05:55:47+09:00",
       "reward_evidence_note": "Official Points Program states organic trading via GUI or API earns points; self-trading, Sybil and manipulative activity are excluded.",
+      "program_lifecycle_status": "ACTIVE",
+      "program_lifecycle_sources": [
+        "https://docs.pacifica.fi/points-program"
+      ],
+      "program_lifecycle_verified_at": "2026-08-11T05:55:47+09:00",
+      "program_lifecycle_note": "Official Points Program describes current weekly snapshots and distributions.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -113,7 +127,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "DRY RUN allowed from separately verified official reward evidence; automated program-page reachability is currently degraded. LIVE remains disabled.",
-      "checked_at": "2026-08-10T20:50:28.224977+00:00"
+      "checked_at": "2026-08-10T21:00:08.861588+00:00"
     },
     {
       "slug": "hibachi",
@@ -140,8 +154,15 @@
       },
       "api_reward_eligibility": "CONFIRMED",
       "reward_evidence_source": "https://docs.hibachi.xyz/faq",
-      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_rule_verified_at": "2026-08-11T05:55:47+09:00",
       "reward_evidence_note": "Official FAQ states the points system is the same for UI and API trading; abusive activity can be disqualified.",
+      "program_lifecycle_status": "ACTIVE",
+      "program_lifecycle_sources": [
+        "https://docs.hibachi.xyz/hibachi-rewards/hibachi-points",
+        "https://docs.hibachi.xyz/faq"
+      ],
+      "program_lifecycle_verified_at": "2026-08-11T05:55:47+09:00",
+      "program_lifecycle_note": "Official Hibachi docs describe recurring weekly points distributions and snapshots.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -149,7 +170,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:27.626239+00:00"
+      "checked_at": "2026-08-10T21:00:08.127500+00:00"
     },
     {
       "slug": "standx-maker",
@@ -178,6 +199,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -185,7 +210,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:27.458972+00:00"
+      "checked_at": "2026-08-10T21:00:07.750622+00:00"
     },
     {
       "slug": "standx-position",
@@ -214,6 +239,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -221,7 +250,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:27.410950+00:00"
+      "checked_at": "2026-08-10T21:00:07.861092+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -250,6 +279,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -257,7 +290,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:27.626850+00:00"
+      "checked_at": "2026-08-10T21:00:08.186618+00:00"
     },
     {
       "slug": "decibel-liquidity",
@@ -286,6 +319,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -293,7 +330,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:27.579534+00:00"
+      "checked_at": "2026-08-10T21:00:08.079223+00:00"
     },
     {
       "slug": "grvt",
@@ -322,6 +359,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -329,7 +370,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:27.824621+00:00"
+      "checked_at": "2026-08-10T21:00:08.140824+00:00"
     },
     {
       "slug": "reya-trading",
@@ -358,6 +399,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -365,7 +410,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:27.518816+00:00"
+      "checked_at": "2026-08-10T21:00:07.991701+00:00"
     },
     {
       "slug": "reya-staking",
@@ -394,6 +439,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -401,7 +450,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:27.687964+00:00"
+      "checked_at": "2026-08-10T21:00:08.175859+00:00"
     },
     {
       "slug": "extended-trading",
@@ -430,6 +479,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -437,7 +490,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:28.226754+00:00"
+      "checked_at": "2026-08-10T21:00:08.316961+00:00"
     },
     {
       "slug": "extended-liquidity",
@@ -466,6 +519,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -473,7 +530,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:28.029463+00:00"
+      "checked_at": "2026-08-10T21:00:08.353720+00:00"
     },
     {
       "slug": "nado-trading",
@@ -502,6 +559,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -509,7 +570,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:28.424571+00:00"
+      "checked_at": "2026-08-10T21:00:09.134804+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -538,6 +599,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -545,7 +610,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:28.451842+00:00"
+      "checked_at": "2026-08-10T21:00:08.941429+00:00"
     },
     {
       "slug": "kyan",
@@ -572,8 +637,14 @@
       },
       "api_reward_eligibility": "UNVERIFIED",
       "reward_evidence_source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
-      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_rule_verified_at": "2026-08-11T05:55:47+09:00",
       "reward_evidence_note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [
+        "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more"
+      ],
+      "program_lifecycle_verified_at": "2026-08-11T05:55:47+09:00",
+      "program_lifecycle_note": "Rewards Hub and Krystals are documented, but this monitor does not treat the current reward program lifecycle as independently confirmed for API farming.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -581,7 +652,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
-      "checked_at": "2026-08-10T20:50:29.564715+00:00"
+      "checked_at": "2026-08-10T21:00:09.966342+00:00"
     },
     {
       "slug": "lighter",
@@ -592,7 +663,7 @@
       "api_url": "https://apidocs.lighter.xyz/",
       "reward_unit": "points",
       "wave": 1,
-      "seed_note": "Wave 1. API points mechanics are documented, but current program activity must be re-verified because official Season 2 pages conflict.",
+      "seed_note": "Wave 1. API points mechanics are documented, but current program lifecycle is conflicted in official sources.",
       "status": "UNVERIFIED",
       "program_probe": {
         "url": "https://docs.lighter.xyz/points-program",
@@ -606,18 +677,26 @@
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "UNVERIFIED",
+      "api_reward_eligibility": "CONFIRMED",
       "reward_evidence_source": "https://docs.lighter.xyz/points-program",
-      "reward_rule_verified_at": "2026-08-11T01:42:00+09:00",
-      "reward_evidence_note": "Official Lighter docs still say organic UI/API trading earns Season 2 points, but the official Market Makers page says Points Season 2 ended on 2025-12-26 while Retail still describes weekly Season 2 distributions. Current program activity is therefore ambiguous and must not be treated as confirmed.",
+      "reward_rule_verified_at": "2026-08-11T05:55:47+09:00",
+      "reward_evidence_note": "Official Points Program states organic trading strategies via UI and API earn points; this confirms mechanics only, not that the points season is currently active.",
+      "program_lifecycle_status": "CONFLICT",
+      "program_lifecycle_sources": [
+        "https://docs.lighter.xyz/points-program",
+        "https://docs.lighter.xyz/points-program/retail",
+        "https://docs.lighter.xyz/points-program/market-makers"
+      ],
+      "program_lifecycle_verified_at": "2026-08-11T05:55:47+09:00",
+      "program_lifecycle_note": "Official Points/Retail pages still describe Season 2 weekly distributions, while the official Market Makers page says Points Season 2 ended on 2025-12-26. Independent reporting also described the final Season 2 distribution on 2025-12-27. Treat lifecycle as conflicted.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "Official Lighter docs still say organic UI/API trading earns Season 2 points, but the official Market Makers page says Points Season 2 ended on 2025-12-26 while Retail still describes weekly Season 2 distributions. Current program activity is therefore ambiguous and must not be treated as confirmed.",
-      "checked_at": "2026-08-10T20:50:28.539416+00:00"
+      "blocked_reason": "Official Points/Retail pages still describe Season 2 weekly distributions, while the official Market Makers page says Points Season 2 ended on 2025-12-26. Independent reporting also described the final Season 2 distribution on 2025-12-27. Treat lifecycle as conflicted.",
+      "checked_at": "2026-08-10T21:00:09.167119+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -646,6 +725,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -653,7 +736,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:28.572769+00:00"
+      "checked_at": "2026-08-10T21:00:08.850600+00:00"
     },
     {
       "slug": "ethereal-margin",
@@ -682,6 +765,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -689,7 +776,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T20:50:28.523781+00:00"
+      "checked_at": "2026-08-10T21:00:08.857662+00:00"
     },
     {
       "slug": "exchange01",
@@ -718,6 +805,10 @@
       "reward_evidence_source": null,
       "reward_rule_verified_at": null,
       "reward_evidence_note": null,
+      "program_lifecycle_status": "REVERIFY",
+      "program_lifecycle_sources": [],
+      "program_lifecycle_verified_at": null,
+      "program_lifecycle_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -725,7 +816,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T20:50:28.142017+00:00"
+      "checked_at": "2026-08-10T21:00:08.489533+00:00"
     }
   ]
 }
