@@ -3,7 +3,8 @@ name: Airdrop Agent Hourly Dry Run
 on:
   workflow_dispatch:
   schedule:
-    - cron: "7 * * * *"
+    # Keep hourly cadence but avoid the busiest start-of-hour window.
+    - cron: "23 * * * *"
   push:
     branches:
       - main
