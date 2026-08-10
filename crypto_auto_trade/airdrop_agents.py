@@ -5,6 +5,7 @@ import json
 import socket
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -98,7 +99,13 @@ def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict
 
 
 def run_all(*, probe_network: bool = True, targets: Iterable[AirdropTarget] = TARGETS) -> dict[str, object]:
-    results = [dry_run_target(target, probe_network=probe_network) for target in targets]
+    target_list = list(targets)
+    if probe_network and target_list:
+        worker_count = min(12, len(target_list))
+        with ThreadPoolExecutor(max_workers=worker_count) as executor:
+            results = list(executor.map(lambda target: dry_run_target(target, probe_network=True), target_list))
+    else:
+        results = [dry_run_target(target, probe_network=False) for target in target_list]
     return {
         "generated_at": utc_now(),
         "mode": "DRY_RUN",
