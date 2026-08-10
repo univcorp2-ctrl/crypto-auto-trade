@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from crypto_auto_trade.airdrop_agents import load_latest, run_all as run_airdrop_all, save_report
 from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles
 from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
@@ -28,16 +29,36 @@ def create_app() -> Any:
         from fastapi.staticfiles import StaticFiles
     except ImportError as exc:
         raise ImportError("Install web dependencies first: pip install -e '.[web]'") from exc
-    app = FastAPI(title="Crypto Auto Trade", version="0.1.0")
+    app = FastAPI(title="Crypto Auto Trade", version="0.2.0")
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
     @app.get("/")
     def index() -> FileResponse:
         return FileResponse(STATIC_DIR / "index.html")
 
+    @app.get("/airdrop")
+    def airdrop_index() -> FileResponse:
+        return FileResponse(STATIC_DIR / "airdrop.html")
+
     @app.get("/api/health")
     def health() -> dict[str, object]:
-        return {"ok": True, "service": "crypto-auto-trade", "strategy_count": len(strategy_names()), "exchange_count": len(list_exchange_venues())}
+        return {
+            "ok": True,
+            "service": "crypto-auto-trade",
+            "strategy_count": len(strategy_names()),
+            "exchange_count": len(list_exchange_venues()),
+            "airdrop_dashboard": "/airdrop",
+        }
+
+    @app.get("/api/airdrop/status")
+    def airdrop_status() -> dict[str, object]:
+        return load_latest()
+
+    @app.post("/api/airdrop/dry-run")
+    def airdrop_dry_run(probe_network: bool = True) -> dict[str, object]:
+        report = run_airdrop_all(probe_network=probe_network)
+        save_report(report)
+        return report
 
     @app.get("/api/strategies")
     def strategies(include_variants: bool = True) -> dict[str, object]:

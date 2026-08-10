@@ -4,6 +4,8 @@
 
 ## まず見る場所
 
+- **Airdrop Agent Dashboard:** `/airdrop` after starting the web server
+- **Airdrop Agent status generator:** `python -m crypto_auto_trade.airdrop_agents`
 - **価格取得と5年シミュレーション:** [`PRICE_DATA_AND_SIMULATION.md`](PRICE_DATA_AND_SIMULATION.md)
 - **100+戦略バリエーションの図解:** [`STRATEGY_VARIANTS.md`](STRATEGY_VARIANTS.md)
 - **詳しい説明:** [`docs/strategy-variants-explained.md`](docs/strategy-variants-explained.md)
@@ -24,9 +26,55 @@
 - past 5Y backtest and future 5Y scenario simulation,
 - backtest, forward test, real-time validation,
 - paper trading and guarded live trading,
+- a 20-target airdrop/points monitoring dashboard,
+- hourly scheduled airdrop DRY RUN monitoring,
 - simple dashboard UI.
 
-> This is trading software, not a profit guarantee. The default workflow is **Price Snapshot → Backtest → Forward Test → 5Y Simulation → Paper → Guarded Live**.
+> This is trading software, not a profit guarantee. The default workflow is **Price Snapshot → Backtest → Forward Test → 5Y Simulation → Paper → Guarded Live**. The Airdrop Agent is separately **SCOUT / READ_ONLY / DRY_RUN by default** and never enables LIVE automatically.
+
+## Airdrop Agent dashboard
+
+Start the existing FastAPI server:
+
+```bash
+pip install -e '.[dev,web]'
+python -m crypto_auto_trade.web
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/airdrop
+```
+
+The interface shows all 20 seed targets with:
+
+- wave / priority / execution mode,
+- program documentation reachability,
+- API documentation reachability,
+- Japan/legal status,
+- API reward eligibility state,
+- last run time,
+- LIVE disabled state,
+- blocked reason,
+- official source links.
+
+Manual DRY RUN:
+
+```bash
+python -m crypto_auto_trade.airdrop_agents --output data/airdrop/latest.json
+```
+
+The GitHub Actions workflow `.github/workflows/airdrop-dry-run.yml` is scheduled hourly. It runs the airdrop safety tests, refreshes official-document reachability, generates `data/airdrop/latest.json`, and keeps `live_approved=false`.
+
+Wave 1 is:
+
+1. Pacifica
+2. Hibachi
+3. Kyan
+4. Lighter
+
+The monitor deliberately keeps `api_reward_eligibility=REVERIFY` and `japan_legal_status=LEGAL_REVIEW_REQUIRED` until current program rules and Japan-resident availability are explicitly verified. It does not place real orders, transfer assets, approve contracts, bridge funds, or sign wallet transactions.
 
 ## Price data and 5-year simulation
 

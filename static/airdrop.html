@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Airdrop Agent Dashboard</title>
+  <link rel="stylesheet" href="/static/airdrop.css"/>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <a class="back-link" href="/">← Crypto Auto Trade</a>
+        <p class="eyebrow">20 ADAPTERS · SCHEDULED DRY RUN</p>
+        <h1>Airdrop Agent</h1>
+        <p class="lead">ポイント・XP・報酬候補を毎時監視。初期状態はDRY RUN / READ ONLYで、実資金注文・入出金・署名は行いません。</p>
+      </div>
+      <div class="hero-actions">
+        <button id="runDry">今すぐDRY RUN</button>
+        <button id="refresh" class="secondary">再読込</button>
+      </div>
+    </header>
+
+    <section class="notice">
+      <strong>LIVEは無効</strong>
+      <span>Legal / Terms / API reward eligibility / Risk / Human Gateが揃うまで本番実行しません。</span>
+    </section>
+
+    <section class="metrics" aria-label="Airdrop status summary">
+      <article><span>Targets</span><strong id="targetCount">-</strong></article>
+      <article><span>Ready DRY RUN</span><strong id="readyCount">-</strong></article>
+      <article><span>Read Only</span><strong id="readOnlyCount">-</strong></article>
+      <article><span>Unverified</span><strong id="unverifiedCount">-</strong></article>
+      <article><span>Last Run</span><strong id="lastRun">-</strong></article>
+    </section>
+
+    <section class="toolbar">
+      <label>Wave
+        <select id="waveFilter">
+          <option value="all">すべて</option>
+          <option value="1">Wave 1</option>
+          <option value="2">Wave 2</option>
+          <option value="3">Wave 3</option>
+        </select>
+      </label>
+      <label>Status
+        <select id="statusFilter">
+          <option value="all">すべて</option>
+          <option value="READY_DRY_RUN">READY_DRY_RUN</option>
+          <option value="READ_ONLY">READ_ONLY</option>
+          <option value="UNVERIFIED">UNVERIFIED</option>
+        </select>
+      </label>
+      <label>検索
+        <input id="search" placeholder="Pacifica / points / Kyan ..."/>
+      </label>
+      <span class="schedule">Scheduler: GitHub Actions / hourly</span>
+    </section>
+
+    <section id="loading" class="loading">Loading...</section>
+    <section id="agentGrid" class="agent-grid" aria-live="polite"></section>
+  </main>
+  <script src="/static/airdrop.js"></script>
+</body>
+</html>
