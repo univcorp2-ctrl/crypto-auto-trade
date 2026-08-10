@@ -45,37 +45,72 @@ TARGETS: tuple[AirdropTarget, ...] = (
     AirdropTarget("nado-trading", "Nado Trading Points Agent", "DRY_RUN", "S", "https://docs.nado.xyz/points", "https://docs.nado.xyz/developer-resources", "points", 2, "REST/WebSocket dry-run seed; no real orders."),
     AirdropTarget("nado-nlp", "Nado NLP Liquidity Agent", "READ_ONLY", "A", "https://docs.nado.xyz/points", "https://docs.nado.xyz/", "points", 3, "NLP liquidity monitor; deposit/redeem remains human-gated."),
     AirdropTarget("kyan", "Kyan MCP Krystals Agent", "DRY_RUN", "S", "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more", "https://docs.kyan.blue/docs/mcp", "Krystals", 1, "Wave 1. Kyan confirms Krystals and API/MCP separately; API-trading-to-Krystals equivalence still requires explicit official confirmation."),
-    AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. API points mechanics are documented, but current program activity must be re-verified because official Season 2 pages conflict."),
+    AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. API points mechanics are documented, but current program lifecycle is conflicted in official sources."),
     AirdropTarget("ethereal-trading", "Ethereal API Points Trader", "DRY_RUN", "S", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 2, "Authentic-trading simulation only; no artificial volume."),
     AirdropTarget("ethereal-margin", "Ethereal USDe/Margin Points Agent", "READ_ONLY", "A", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 3, "Margin/deposit monitor; approvals and asset movement remain human-gated."),
     AirdropTarget("exchange01", "01 Exchange Participation Agent", "DRY_RUN", "C", "https://docs.01.xyz/support/faq/general", "https://docs.01.xyz/", "participation", 3, "Low-confidence reward economics; treat monetary value as UNKNOWN."),
 )
 
 
-WAVE1_REWARD_VERIFICATION: dict[str, dict[str, str]] = {
+WAVE1_REWARD_VERIFICATION: dict[str, dict[str, object]] = {
     "pacifica": {
         "status": "CONFIRMED",
         "source": "https://docs.pacifica.fi/points-program",
-        "verified_at": "2026-08-11T00:43:26+09:00",
+        "verified_at": "2026-08-11T05:55:47+09:00",
         "note": "Official Points Program states organic trading via GUI or API earns points; self-trading, Sybil and manipulative activity are excluded.",
     },
     "hibachi": {
         "status": "CONFIRMED",
         "source": "https://docs.hibachi.xyz/faq",
-        "verified_at": "2026-08-11T00:43:26+09:00",
+        "verified_at": "2026-08-11T05:55:47+09:00",
         "note": "Official FAQ states the points system is the same for UI and API trading; abusive activity can be disqualified.",
     },
     "kyan": {
         "status": "UNVERIFIED",
         "source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
-        "verified_at": "2026-08-11T00:43:26+09:00",
+        "verified_at": "2026-08-11T05:55:47+09:00",
         "note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
     },
     "lighter": {
-        "status": "UNVERIFIED",
+        "status": "CONFIRMED",
         "source": "https://docs.lighter.xyz/points-program",
-        "verified_at": "2026-08-11T01:42:00+09:00",
-        "note": "Official Lighter docs still say organic UI/API trading earns Season 2 points, but the official Market Makers page says Points Season 2 ended on 2025-12-26 while Retail still describes weekly Season 2 distributions. Current program activity is therefore ambiguous and must not be treated as confirmed.",
+        "verified_at": "2026-08-11T05:55:47+09:00",
+        "note": "Official Points Program states organic trading strategies via UI and API earn points; this confirms mechanics only, not that the points season is currently active.",
+    },
+}
+
+
+WAVE1_PROGRAM_LIFECYCLE_VERIFICATION: dict[str, dict[str, object]] = {
+    "pacifica": {
+        "status": "ACTIVE",
+        "sources": ["https://docs.pacifica.fi/points-program"],
+        "verified_at": "2026-08-11T05:55:47+09:00",
+        "note": "Official Points Program describes current weekly snapshots and distributions.",
+    },
+    "hibachi": {
+        "status": "ACTIVE",
+        "sources": [
+            "https://docs.hibachi.xyz/hibachi-rewards/hibachi-points",
+            "https://docs.hibachi.xyz/faq",
+        ],
+        "verified_at": "2026-08-11T05:55:47+09:00",
+        "note": "Official Hibachi docs describe recurring weekly points distributions and snapshots.",
+    },
+    "kyan": {
+        "status": "REVERIFY",
+        "sources": ["https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more"],
+        "verified_at": "2026-08-11T05:55:47+09:00",
+        "note": "Rewards Hub and Krystals are documented, but this monitor does not treat the current reward program lifecycle as independently confirmed for API farming.",
+    },
+    "lighter": {
+        "status": "CONFLICT",
+        "sources": [
+            "https://docs.lighter.xyz/points-program",
+            "https://docs.lighter.xyz/points-program/retail",
+            "https://docs.lighter.xyz/points-program/market-makers",
+        ],
+        "verified_at": "2026-08-11T05:55:47+09:00",
+        "note": "Official Points/Retail pages still describe Season 2 weekly distributions, while the official Market Makers page says Points Season 2 ended on 2025-12-26. Independent reporting also described the final Season 2 distribution on 2025-12-27. Treat lifecycle as conflicted.",
     },
 }
 
@@ -111,12 +146,17 @@ def _probe_url(url: str | None, timeout: float = 6.0) -> dict[str, object]:
 def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict[str, object]:
     program_probe = _probe_url(target.program_url) if probe_network else {"url": target.program_url, "ok": None, "status_code": None, "error": "network probe skipped"}
     api_probe = _probe_url(target.api_url) if probe_network else {"url": target.api_url, "ok": None, "status_code": None, "error": "network probe skipped"}
-    verification = WAVE1_REWARD_VERIFICATION.get(target.slug)
-    reward_status = verification["status"] if verification else "REVERIFY"
+    reward_verification = WAVE1_REWARD_VERIFICATION.get(target.slug)
+    lifecycle_verification = WAVE1_PROGRAM_LIFECYCLE_VERIFICATION.get(target.slug)
+    reward_status = str(reward_verification["status"]) if reward_verification else "REVERIFY"
+    lifecycle_status = str(lifecycle_verification["status"]) if lifecycle_verification else "REVERIFY"
 
-    if reward_status == "UNVERIFIED":
+    if lifecycle_status == "CONFLICT":
         status = "UNVERIFIED"
-        blocked_reason = verification["note"] if verification else "Reward eligibility is not verified."
+        blocked_reason = str(lifecycle_verification["note"])
+    elif reward_status == "UNVERIFIED":
+        status = "UNVERIFIED"
+        blocked_reason = str(reward_verification["note"])
     elif program_probe["ok"] is False and reward_status != "CONFIRMED":
         status = "UNVERIFIED"
         blocked_reason = "Official program page was not reachable during this pass."
@@ -125,7 +165,7 @@ def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict
         blocked_reason = "Asset movement is human-gated."
     else:
         status = "READY_DRY_RUN"
-        if program_probe["ok"] is False and reward_status == "CONFIRMED":
+        if program_probe["ok"] is False and reward_status == "CONFIRMED" and lifecycle_status == "ACTIVE":
             blocked_reason = "DRY RUN allowed from separately verified official reward evidence; automated program-page reachability is currently degraded. LIVE remains disabled."
         else:
             blocked_reason = "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use."
@@ -136,9 +176,13 @@ def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict
         "program_probe": program_probe,
         "api_probe": api_probe,
         "api_reward_eligibility": reward_status,
-        "reward_evidence_source": verification["source"] if verification else None,
-        "reward_rule_verified_at": verification["verified_at"] if verification else None,
-        "reward_evidence_note": verification["note"] if verification else None,
+        "reward_evidence_source": reward_verification["source"] if reward_verification else None,
+        "reward_rule_verified_at": reward_verification["verified_at"] if reward_verification else None,
+        "reward_evidence_note": reward_verification["note"] if reward_verification else None,
+        "program_lifecycle_status": lifecycle_status,
+        "program_lifecycle_sources": lifecycle_verification["sources"] if lifecycle_verification else [],
+        "program_lifecycle_verified_at": lifecycle_verification["verified_at"] if lifecycle_verification else None,
+        "program_lifecycle_note": lifecycle_verification["note"] if lifecycle_verification else None,
         "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
         "live_approved": False,
         "points_before": None,
