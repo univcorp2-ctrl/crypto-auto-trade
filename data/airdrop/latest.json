@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T14:42:16.072854+00:00",
+  "generated_at": "2026-08-10T15:50:42.459956+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
@@ -31,14 +31,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.741921+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.970289+00:00"
     },
     {
       "slug": "hyprearn",
@@ -64,6 +67,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -71,7 +77,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:14.827490+00:00"
+      "checked_at": "2026-08-10T15:50:40.972745+00:00"
     },
     {
       "slug": "pacifica",
@@ -83,9 +89,9 @@
       "reward_unit": "points",
       "wave": 1,
       "seed_note": "Wave 1. Re-verify current API reward eligibility before any live use.",
-      "status": "UNVERIFIED",
+      "status": "READY_DRY_RUN",
       "program_probe": {
-        "url": "https://docs.pacifica.fi/points-program",
+        "url": "https://docs.pacifica.fi/points-program/",
         "ok": false,
         "status_code": 404,
         "error": "HTTP 404"
@@ -96,15 +102,18 @@
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "REVERIFY",
+      "api_reward_eligibility": "CONFIRMED",
+      "reward_evidence_source": "https://docs.pacifica.fi/points-program",
+      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_evidence_note": "Official Points Program states organic trading via GUI or API earns points; self-trading, Sybil and manipulative activity are excluded.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "Official program page was not reachable during this pass.",
-      "checked_at": "2026-08-10T14:42:15.247054+00:00"
+      "blocked_reason": "DRY RUN allowed from separately verified official reward evidence; automated program-page reachability is currently degraded. LIVE remains disabled.",
+      "checked_at": "2026-08-10T15:50:41.633841+00:00"
     },
     {
       "slug": "hibachi",
@@ -129,15 +138,18 @@
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "REVERIFY",
+      "api_reward_eligibility": "CONFIRMED",
+      "reward_evidence_source": "https://docs.hibachi.xyz/faq",
+      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_evidence_note": "Official FAQ states the points system is the same for UI and API trading; abusive activity can be disqualified.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.057314+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.211490+00:00"
     },
     {
       "slug": "standx-maker",
@@ -163,14 +175,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:14.803465+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.101220+00:00"
     },
     {
       "slug": "standx-position",
@@ -196,6 +211,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -203,7 +221,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:14.788128+00:00"
+      "checked_at": "2026-08-10T15:50:41.082034+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -229,14 +247,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.152627+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.361215+00:00"
     },
     {
       "slug": "decibel-liquidity",
@@ -262,6 +283,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -269,7 +293,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:15.037605+00:00"
+      "checked_at": "2026-08-10T15:50:41.357082+00:00"
     },
     {
       "slug": "grvt",
@@ -295,14 +319,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.389351+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.318091+00:00"
     },
     {
       "slug": "reya-trading",
@@ -328,14 +355,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:14.943143+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.143572+00:00"
     },
     {
       "slug": "reya-staking",
@@ -361,6 +391,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -368,7 +401,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:15.003951+00:00"
+      "checked_at": "2026-08-10T15:50:41.154843+00:00"
     },
     {
       "slug": "extended-trading",
@@ -394,14 +427,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.178211+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.493585+00:00"
     },
     {
       "slug": "extended-liquidity",
@@ -427,6 +463,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -434,7 +473,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:15.461376+00:00"
+      "checked_at": "2026-08-10T15:50:41.600897+00:00"
     },
     {
       "slug": "nado-trading",
@@ -460,14 +499,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.732537+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.767564+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -493,6 +535,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -500,21 +545,21 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:15.519149+00:00"
+      "checked_at": "2026-08-10T15:50:41.546738+00:00"
     },
     {
       "slug": "kyan",
       "name": "Kyan MCP Krystals Agent",
       "mode": "DRY_RUN",
       "priority": "S",
-      "program_url": "https://docs.kyan.blue/",
+      "program_url": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
       "api_url": "https://docs.kyan.blue/docs/mcp",
       "reward_unit": "Krystals",
       "wave": 1,
-      "seed_note": "Wave 1. Only use MCP configuration re-confirmed from official documentation.",
-      "status": "READY_DRY_RUN",
+      "seed_note": "Wave 1. Kyan confirms Krystals and API/MCP separately; API-trading-to-Krystals equivalence still requires explicit official confirmation.",
+      "status": "UNVERIFIED",
       "program_probe": {
-        "url": "https://docs.kyan.blue/",
+        "url": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
         "ok": true,
         "status_code": 200,
         "error": null
@@ -525,15 +570,18 @@
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "REVERIFY",
+      "api_reward_eligibility": "UNVERIFIED",
+      "reward_evidence_source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
+      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_evidence_note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.516331+00:00"
+      "blocked_reason": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
+      "checked_at": "2026-08-10T15:50:42.458868+00:00"
     },
     {
       "slug": "lighter",
@@ -558,15 +606,18 @@
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "REVERIFY",
+      "api_reward_eligibility": "CONFIRMED",
+      "reward_evidence_source": "https://docs.lighter.xyz/points-program",
+      "reward_rule_verified_at": "2026-08-11T00:43:26+09:00",
+      "reward_evidence_note": "Official Points Program states organic trading strategies via UI and API earn points; Sybil and self-trading do not.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:16.071071+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:42.017480+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -592,14 +643,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.623790+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:42.069052+00:00"
     },
     {
       "slug": "ethereal-margin",
@@ -625,6 +679,9 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -632,7 +689,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T14:42:15.679514+00:00"
+      "checked_at": "2026-08-10T15:50:42.224733+00:00"
     },
     {
       "slug": "exchange01",
@@ -658,14 +715,17 @@
         "error": null
       },
       "api_reward_eligibility": "REVERIFY",
+      "reward_evidence_source": null,
+      "reward_rule_verified_at": null,
+      "reward_evidence_note": null,
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification.",
-      "checked_at": "2026-08-10T14:42:15.710735+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-10T15:50:41.774789+00:00"
     }
   ]
 }
