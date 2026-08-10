@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-10T21:00:09.967321+00:00",
+  "generated_at": "2026-08-10T21:00:50.085387+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
@@ -45,7 +45,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.043435+00:00"
+      "checked_at": "2026-08-10T21:00:48.715631+00:00"
     },
     {
       "slug": "hyprearn",
@@ -85,7 +85,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:08.351724+00:00"
+      "checked_at": "2026-08-10T21:00:48.227237+00:00"
     },
     {
       "slug": "pacifica",
@@ -127,7 +127,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "DRY RUN allowed from separately verified official reward evidence; automated program-page reachability is currently degraded. LIVE remains disabled.",
-      "checked_at": "2026-08-10T21:00:08.861588+00:00"
+      "checked_at": "2026-08-10T21:00:49.209343+00:00"
     },
     {
       "slug": "hibachi",
@@ -170,7 +170,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.127500+00:00"
+      "checked_at": "2026-08-10T21:00:48.613639+00:00"
     },
     {
       "slug": "standx-maker",
@@ -210,7 +210,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:07.750622+00:00"
+      "checked_at": "2026-08-10T21:00:48.346130+00:00"
     },
     {
       "slug": "standx-position",
@@ -250,7 +250,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:07.861092+00:00"
+      "checked_at": "2026-08-10T21:00:48.315017+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -290,7 +290,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.186618+00:00"
+      "checked_at": "2026-08-10T21:00:48.496726+00:00"
     },
     {
       "slug": "decibel-liquidity",
@@ -330,7 +330,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:08.079223+00:00"
+      "checked_at": "2026-08-10T21:00:48.545744+00:00"
     },
     {
       "slug": "grvt",
@@ -370,7 +370,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.140824+00:00"
+      "checked_at": "2026-08-10T21:00:48.712610+00:00"
     },
     {
       "slug": "reya-trading",
@@ -410,7 +410,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:07.991701+00:00"
+      "checked_at": "2026-08-10T21:00:48.310825+00:00"
     },
     {
       "slug": "reya-staking",
@@ -450,7 +450,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:08.175859+00:00"
+      "checked_at": "2026-08-10T21:00:48.333191+00:00"
     },
     {
       "slug": "extended-trading",
@@ -490,7 +490,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.316961+00:00"
+      "checked_at": "2026-08-10T21:00:48.876658+00:00"
     },
     {
       "slug": "extended-liquidity",
@@ -530,7 +530,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:08.353720+00:00"
+      "checked_at": "2026-08-10T21:00:49.071073+00:00"
     },
     {
       "slug": "nado-trading",
@@ -570,7 +570,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:09.134804+00:00"
+      "checked_at": "2026-08-10T21:00:49.248938+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -610,7 +610,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:08.941429+00:00"
+      "checked_at": "2026-08-10T21:00:48.985582+00:00"
     },
     {
       "slug": "kyan",
@@ -652,7 +652,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
-      "checked_at": "2026-08-10T21:00:09.966342+00:00"
+      "checked_at": "2026-08-10T21:00:50.084453+00:00"
     },
     {
       "slug": "lighter",
@@ -696,7 +696,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Official Points/Retail pages still describe Season 2 weekly distributions, while the official Market Makers page says Points Season 2 ended on 2025-12-26. Independent reporting also described the final Season 2 distribution on 2025-12-27. Treat lifecycle as conflicted.",
-      "checked_at": "2026-08-10T21:00:09.167119+00:00"
+      "checked_at": "2026-08-10T21:00:49.562984+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -736,7 +736,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.850600+00:00"
+      "checked_at": "2026-08-10T21:00:49.234608+00:00"
     },
     {
       "slug": "ethereal-margin",
@@ -776,7 +776,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-10T21:00:08.857662+00:00"
+      "checked_at": "2026-08-10T21:00:49.212123+00:00"
     },
     {
       "slug": "exchange01",
@@ -816,7 +816,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-10T21:00:08.489533+00:00"
+      "checked_at": "2026-08-10T21:00:49.031556+00:00"
     }
   ]
 }
