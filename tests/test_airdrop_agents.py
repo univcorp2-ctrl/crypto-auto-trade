@@ -25,6 +25,7 @@ def test_verified_wave_one_api_reward_rules_are_recorded() -> None:
     for slug in ("pacifica", "hibachi"):
         result = dry_run_target(_target(slug), probe_network=False)
         assert result["api_reward_eligibility"] == "CONFIRMED"
+        assert result["program_lifecycle_status"] == "ACTIVE"
         assert result["reward_evidence_source"]
         assert result["reward_rule_verified_at"]
         assert result["status"] == "READY_DRY_RUN"
@@ -33,15 +34,17 @@ def test_verified_wave_one_api_reward_rules_are_recorded() -> None:
 def test_kyan_stays_unverified_until_api_reward_equivalence_is_explicit() -> None:
     result = dry_run_target(_target("kyan"), probe_network=False)
     assert result["api_reward_eligibility"] == "UNVERIFIED"
+    assert result["program_lifecycle_status"] == "REVERIFY"
     assert result["status"] == "UNVERIFIED"
     assert result["live_approved"] is False
 
 
-def test_lighter_stays_unverified_while_official_season_status_conflicts() -> None:
+def test_lighter_separates_api_points_mechanics_from_program_lifecycle() -> None:
     result = dry_run_target(_target("lighter"), probe_network=False)
-    assert result["api_reward_eligibility"] == "UNVERIFIED"
+    assert result["api_reward_eligibility"] == "CONFIRMED"
+    assert result["program_lifecycle_status"] == "CONFLICT"
     assert result["status"] == "UNVERIFIED"
-    assert "Season 2" in result["reward_evidence_note"]
+    assert "2025-12-26" in result["program_lifecycle_note"]
     assert result["live_approved"] is False
 
 
