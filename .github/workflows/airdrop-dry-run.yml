@@ -10,8 +10,9 @@ on:
       - feat/airdrop-agent-web
     paths:
       - "crypto_auto_trade/airdrop_agents.py"
-      - "tests/test_airdrop_agents.py"
+      - "tests/test_airdrop*.py"
       - "static/airdrop.*"
+      - "static/index.html"
       - "crypto_auto_trade/web.py"
       - ".github/workflows/airdrop-dry-run.yml"
 
@@ -39,8 +40,8 @@ jobs:
       - name: Install test dependencies
         run: pip install -e '.[dev,web]'
 
-      - name: Safety tests
-        run: pytest -q tests/test_airdrop_agents.py
+      - name: Safety and web tests
+        run: pytest -q tests/test_airdrop_agents.py tests/test_airdrop_web.py
 
       - name: Generate latest DRY RUN status
         run: python -m crypto_auto_trade.airdrop_agents --output data/airdrop/latest.json
