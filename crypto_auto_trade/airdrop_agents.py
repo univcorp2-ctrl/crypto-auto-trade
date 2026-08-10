@@ -44,12 +44,40 @@ TARGETS: tuple[AirdropTarget, ...] = (
     AirdropTarget("extended-liquidity", "Extended Liquidity/Vault Agent", "READ_ONLY", "A", "https://docs.extended.exchange/extended-resources/points", "https://docs.extended.exchange/", "points", 3, "Liquidity/vault monitor only; asset movement remains human-gated."),
     AirdropTarget("nado-trading", "Nado Trading Points Agent", "DRY_RUN", "S", "https://docs.nado.xyz/points", "https://docs.nado.xyz/developer-resources", "points", 2, "REST/WebSocket dry-run seed; no real orders."),
     AirdropTarget("nado-nlp", "Nado NLP Liquidity Agent", "READ_ONLY", "A", "https://docs.nado.xyz/points", "https://docs.nado.xyz/", "points", 3, "NLP liquidity monitor; deposit/redeem remains human-gated."),
-    AirdropTarget("kyan", "Kyan MCP Krystals Agent", "DRY_RUN", "S", "https://docs.kyan.blue/", "https://docs.kyan.blue/docs/mcp", "Krystals", 1, "Wave 1. Only use MCP configuration re-confirmed from official documentation."),
+    AirdropTarget("kyan", "Kyan MCP Krystals Agent", "DRY_RUN", "S", "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more", "https://docs.kyan.blue/docs/mcp", "Krystals", 1, "Wave 1. Kyan confirms Krystals and API/MCP separately; API-trading-to-Krystals equivalence still requires explicit official confirmation."),
     AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. Re-verify current season and API reward eligibility before live use."),
     AirdropTarget("ethereal-trading", "Ethereal API Points Trader", "DRY_RUN", "S", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 2, "Authentic-trading simulation only; no artificial volume."),
     AirdropTarget("ethereal-margin", "Ethereal USDe/Margin Points Agent", "READ_ONLY", "A", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 3, "Margin/deposit monitor; approvals and asset movement remain human-gated."),
     AirdropTarget("exchange01", "01 Exchange Participation Agent", "DRY_RUN", "C", "https://docs.01.xyz/support/faq/general", "https://docs.01.xyz/", "participation", 3, "Low-confidence reward economics; treat monetary value as UNKNOWN."),
 )
+
+
+WAVE1_REWARD_VERIFICATION: dict[str, dict[str, str]] = {
+    "pacifica": {
+        "status": "CONFIRMED",
+        "source": "https://docs.pacifica.fi/points-program",
+        "verified_at": "2026-08-11T00:43:26+09:00",
+        "note": "Official Points Program states organic trading via GUI or API earns points; self-trading, Sybil and manipulative activity are excluded.",
+    },
+    "hibachi": {
+        "status": "CONFIRMED",
+        "source": "https://docs.hibachi.xyz/faq",
+        "verified_at": "2026-08-11T00:43:26+09:00",
+        "note": "Official FAQ states the points system is the same for UI and API trading; abusive activity can be disqualified.",
+    },
+    "kyan": {
+        "status": "UNVERIFIED",
+        "source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
+        "verified_at": "2026-08-11T00:43:26+09:00",
+        "note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
+    },
+    "lighter": {
+        "status": "CONFIRMED",
+        "source": "https://docs.lighter.xyz/points-program",
+        "verified_at": "2026-08-11T00:43:26+09:00",
+        "note": "Official Points Program states organic trading strategies via UI and API earn points; Sybil and self-trading do not.",
+    },
+}
 
 
 def utc_now() -> str:
@@ -59,20 +87,37 @@ def utc_now() -> str:
 def _probe_url(url: str | None, timeout: float = 6.0) -> dict[str, object]:
     if not url:
         return {"url": None, "ok": None, "status_code": None, "error": None}
-    request = urllib.request.Request(url, headers={"User-Agent": "crypto-auto-trade-airdrop-monitor/0.1"})
-    try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310 - fixed seed URLs only
-            return {"url": url, "ok": True, "status_code": response.status, "error": None}
-    except urllib.error.HTTPError as exc:
-        return {"url": url, "ok": False, "status_code": exc.code, "error": f"HTTP {exc.code}"}
-    except (urllib.error.URLError, TimeoutError, socket.timeout, OSError) as exc:
-        return {"url": url, "ok": False, "status_code": None, "error": str(exc)[:200]}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; crypto-auto-trade-airdrop-monitor/0.2; +https://github.com/univcorp2-ctrl/crypto-auto-trade)",
+        "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.8",
+    }
+    candidates = [url]
+    if "?" not in url and not url.endswith("/"):
+        candidates.append(f"{url}/")
+    last_error: dict[str, object] | None = None
+    for candidate in candidates:
+        request = urllib.request.Request(candidate, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310 - fixed seed URLs only
+                return {"url": candidate, "ok": True, "status_code": response.status, "error": None}
+        except urllib.error.HTTPError as exc:
+            last_error = {"url": candidate, "ok": False, "status_code": exc.code, "error": f"HTTP {exc.code}"}
+        except (urllib.error.URLError, TimeoutError, socket.timeout, OSError) as exc:
+            last_error = {"url": candidate, "ok": False, "status_code": None, "error": str(exc)[:200]}
+    return last_error or {"url": url, "ok": False, "status_code": None, "error": "probe failed"}
 
 
 def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict[str, object]:
     program_probe = _probe_url(target.program_url) if probe_network else {"url": target.program_url, "ok": None, "status_code": None, "error": "network probe skipped"}
     api_probe = _probe_url(target.api_url) if probe_network else {"url": target.api_url, "ok": None, "status_code": None, "error": "network probe skipped"}
-    if program_probe["ok"] is False:
+    verification = WAVE1_REWARD_VERIFICATION.get(target.slug)
+    reward_status = verification["status"] if verification else "REVERIFY"
+
+    if reward_status == "UNVERIFIED":
+        status = "UNVERIFIED"
+        blocked_reason = verification["note"] if verification else "Reward eligibility is not verified."
+    elif program_probe["ok"] is False and reward_status != "CONFIRMED":
         status = "UNVERIFIED"
         blocked_reason = "Official program page was not reachable during this pass."
     elif target.mode == "READ_ONLY":
@@ -80,13 +125,20 @@ def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict
         blocked_reason = "Asset movement is human-gated."
     else:
         status = "READY_DRY_RUN"
-        blocked_reason = "LIVE disabled; legal/terms/reward eligibility require explicit re-verification."
+        if program_probe["ok"] is False and reward_status == "CONFIRMED":
+            blocked_reason = "DRY RUN allowed from separately verified official reward evidence; automated program-page reachability is currently degraded. LIVE remains disabled."
+        else:
+            blocked_reason = "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use."
+
     return {
         **asdict(target),
         "status": status,
         "program_probe": program_probe,
         "api_probe": api_probe,
-        "api_reward_eligibility": "REVERIFY",
+        "api_reward_eligibility": reward_status,
+        "reward_evidence_source": verification["source"] if verification else None,
+        "reward_rule_verified_at": verification["verified_at"] if verification else None,
+        "reward_evidence_note": verification["note"] if verification else None,
         "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
         "live_approved": False,
         "points_before": None,
