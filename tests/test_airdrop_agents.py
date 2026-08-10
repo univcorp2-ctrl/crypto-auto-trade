@@ -22,7 +22,7 @@ def test_dry_run_never_enables_live() -> None:
 
 
 def test_verified_wave_one_api_reward_rules_are_recorded() -> None:
-    for slug in ("pacifica", "hibachi", "lighter"):
+    for slug in ("pacifica", "hibachi"):
         result = dry_run_target(_target(slug), probe_network=False)
         assert result["api_reward_eligibility"] == "CONFIRMED"
         assert result["reward_evidence_source"]
@@ -34,6 +34,14 @@ def test_kyan_stays_unverified_until_api_reward_equivalence_is_explicit() -> Non
     result = dry_run_target(_target("kyan"), probe_network=False)
     assert result["api_reward_eligibility"] == "UNVERIFIED"
     assert result["status"] == "UNVERIFIED"
+    assert result["live_approved"] is False
+
+
+def test_lighter_stays_unverified_while_official_season_status_conflicts() -> None:
+    result = dry_run_target(_target("lighter"), probe_network=False)
+    assert result["api_reward_eligibility"] == "UNVERIFIED"
+    assert result["status"] == "UNVERIFIED"
+    assert "Season 2" in result["reward_evidence_note"]
     assert result["live_approved"] is False
 
 
