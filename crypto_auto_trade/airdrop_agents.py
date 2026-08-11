@@ -31,7 +31,7 @@ class AirdropTarget:
 TARGETS: tuple[AirdropTarget, ...] = (
     AirdropTarget("okx-ai", "OKX.AI Airdrop Hunter Scout", "SCOUT", "A", "https://www.okx.ai/zh-hans/agents/2175", None, "candidate", 3, "Discovery-only seed; never executes wallet actions."),
     AirdropTarget("hyprearn", "HyprEarn Multi-DEX Points Vault", "READ_ONLY", "B", "https://hyprearn.com/", None, "points/yield", 3, "Third-party vault research only; deposits remain human-gated."),
-    AirdropTarget("pacifica", "Pacifica API Points Trader", "DRY_RUN", "S", "https://docs.pacifica.fi/points-program", "https://docs.pacifica.fi/api-documentation", "points", 1, "Wave 1. Re-verify current API reward eligibility before any live use."),
+    AirdropTarget("pacifica", "Pacifica API Points Trader", "DRY_RUN", "S", "https://pacifica.gitbook.io/docs/programs/points-program", "https://docs.pacifica.fi/api-documentation", "points", 1, "Wave 1. Re-verify current API reward eligibility before any live use."),
     AirdropTarget("hibachi", "Hibachi API Points Trader", "DRY_RUN", "S", "https://docs.hibachi.xyz/hibachi-rewards/hibachi-points", "https://docs.hibachi.xyz/hibachi-docs/api-and-developer-tools", "points", 1, "Wave 1. Re-verify current API/UI points treatment before any live use."),
     AirdropTarget("standx-maker", "StandX Community Maker Yield Bot", "DRY_RUN", "A", "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield", "https://docs.standx.com/", "reward", 2, "Two-sided maker simulation only; no self-match or quote stuffing."),
     AirdropTarget("standx-position", "StandX Position Yield Agent", "READ_ONLY", "B", "https://docs.standx.com/sip/sip-2-position-yield", "https://docs.standx.com/", "yield", 2, "Position carry monitor; opening exposure remains human-gated."),
@@ -55,7 +55,7 @@ TARGETS: tuple[AirdropTarget, ...] = (
 WAVE1_REWARD_VERIFICATION: dict[str, dict[str, object]] = {
     "pacifica": {
         "status": "CONFIRMED",
-        "source": "https://docs.pacifica.fi/points-program",
+        "source": "https://pacifica.gitbook.io/docs/programs/points-program",
         "verified_at": "2026-08-11T05:55:47+09:00",
         "note": "Official Points Program states organic trading via GUI or API earns points; self-trading, Sybil and manipulative activity are excluded.",
     },
@@ -83,7 +83,7 @@ WAVE1_REWARD_VERIFICATION: dict[str, dict[str, object]] = {
 WAVE1_PROGRAM_LIFECYCLE_VERIFICATION: dict[str, dict[str, object]] = {
     "pacifica": {
         "status": "ACTIVE",
-        "sources": ["https://docs.pacifica.fi/points-program"],
+        "sources": ["https://pacifica.gitbook.io/docs/programs/points-program"],
         "verified_at": "2026-08-11T05:55:47+09:00",
         "note": "Official Points Program describes current weekly snapshots and distributions.",
     },
