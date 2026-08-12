@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 5, 30, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 12, 6, 30, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -58,6 +58,9 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     nado_trading = _action(report, "nado-trading")
     nado_nlp = _action(report, "nado-nlp")
     ethereal_margin = _action(report, "ethereal-margin")
+    reya_staking = _action(report, "reya-staking")
+    extended_trading = _action(report, "extended-trading")
+    extended_liquidity = _action(report, "extended-liquidity")
 
     assert hyprearn["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
     assert hyprearn["requires_asset_move"] is True
@@ -104,6 +107,29 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     assert ethereal_margin["requires_real_order"] is False
     assert ethereal_margin["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
 
+    assert reya_staking["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert reya_staking["requires_asset_move"] is True
+    assert reya_staking["requires_real_order"] is False
+    assert reya_staking["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+    assert extended_trading["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert extended_trading["requires_real_order"] is True
+    assert extended_trading["requires_asset_move"] is False
+    assert extended_trading["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+    assert extended_liquidity["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert extended_liquidity["requires_asset_move"] is True
+    assert extended_liquidity["requires_real_order"] is False
+    assert extended_liquidity["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+
+def test_api_specific_reward_paths_stay_reverify_without_direct_evidence() -> None:
+    report = _report()
+
+    assert _action(report, "reya-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "ethereal-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "exchange01")["acquisition_state"] == "REVERIFY_REQUIRED"
+
 
 def test_future_dated_verification_does_not_become_current() -> None:
     before_new_verification = datetime(2026, 8, 12, 5, 20, tzinfo=UTC)
@@ -112,6 +138,9 @@ def test_future_dated_verification_does_not_become_current() -> None:
     assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "reya-staking")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "extended-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "extended-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
 
 
 def test_verified_gated_evidence_expires_back_to_reverify() -> None:
@@ -127,6 +156,9 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "reya-staking")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "extended-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "extended-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
 
 
 def test_unverified_wave_one_targets_stay_blocked() -> None:
@@ -139,11 +171,11 @@ def test_unverified_wave_one_targets_stay_blocked() -> None:
 def test_current_queue_breakdown_is_explicit() -> None:
     report = _report()
 
-    assert report["verified_gated_action_count"] == 9
-    assert report["approval_required_count"] == 11
+    assert report["verified_gated_action_count"] == 12
+    assert report["approval_required_count"] == 14
     assert report["blocked_unverified_count"] == 2
     assert report["discovery_only_count"] == 1
-    assert report["reverify_required_count"] == 6
+    assert report["reverify_required_count"] == 3
 
 
 def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
