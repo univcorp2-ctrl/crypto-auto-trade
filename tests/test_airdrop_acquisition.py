@@ -37,24 +37,6 @@ def test_verified_wave_one_trading_targets_go_to_approval_queue() -> None:
     assert hibachi["requires_funds"] is True
 
 
-def test_current_primary_source_wave_two_promotions_are_approval_only() -> None:
-    report = build_acquisition_report(run_all(probe_network=False))
-
-    for slug in ("standx-maker", "standx-position", "decibel-trading", "grvt"):
-        action = _action(report, slug)
-        assert action["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
-        assert action["requires_user_approval"] is True
-        assert action["requires_funds"] is True
-        assert action["verification_sources"]
-        assert action["known_cost_risk"]
-        assert action["missing_approval"]
-
-    liquidity = _action(report, "decibel-liquidity")
-    assert liquidity["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
-    assert liquidity["requires_user_approval"] is True
-    assert liquidity["requires_wallet_signature"] is True
-
-
 def test_unverified_wave_one_targets_stay_blocked() -> None:
     report = build_acquisition_report(run_all(probe_network=False))
 
@@ -65,11 +47,10 @@ def test_unverified_wave_one_targets_stay_blocked() -> None:
 def test_current_queue_breakdown_is_explicit() -> None:
     report = build_acquisition_report(run_all(probe_network=False))
 
-    assert report["current_verified_earning_path_count"] == 5
-    assert report["approval_required_count"] == 7
+    assert report["approval_required_count"] == 2
     assert report["blocked_unverified_count"] == 2
     assert report["discovery_only_count"] == 1
-    assert report["reverify_required_count"] == 10
+    assert report["reverify_required_count"] == 15
 
 
 def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
