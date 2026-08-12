@@ -48,6 +48,18 @@ def test_lighter_scopes_old_market_maker_end_date_without_blocking_current_retai
     assert result["live_approved"] is False
 
 
+def test_exchange01_legacy_rewards_path_is_blocked_after_n1_migration() -> None:
+    result = dry_run_target(_target("exchange01"), probe_network=False)
+
+    assert result["program_url"] == "https://01.xyz/points"
+    assert result["api_reward_eligibility"] == "UNVERIFIED"
+    assert result["program_lifecycle_status"] == "UNVERIFIED"
+    assert result["status"] == "UNVERIFIED"
+    assert "moving to N1" in result["reward_evidence_note"]
+    assert "legacy 01 reward path is blocked" in result["program_lifecycle_note"]
+    assert result["live_approved"] is False
+
+
 def test_run_all_is_dry_run_only() -> None:
     report = run_all(probe_network=False)
     assert report["mode"] == "DRY_RUN"
