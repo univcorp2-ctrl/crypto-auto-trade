@@ -23,6 +23,28 @@ DEFAULT_ACQUISITION_OUTPUT = ROOT / "data" / "airdrop" / "acquisition-latest.jso
 # adapter is verified against current primary documentation and covered by tests.
 SAFE_AUTO_ACTIONS: dict[str, dict[str, Any]] = {}
 
+# Current reward/participation actions that appear non-financial and do not
+# require wallet signing on the public flow, but cannot be executed by this
+# agent because an authenticated account/session is required. These are kept
+# separate from SAFE_AUTO_ACTIONS so "safe" is never confused with "executed".
+VERIFIED_SAFE_AUTH_ACTIONS: dict[str, dict[str, Any]] = {
+    "exchange01": {
+        "verified_at": "2026-08-12T12:35:00+00:00",
+        "evidence_source": "https://hub.n1.xyz/",
+        "evidence_note": "Current official N1 Hub announces a new 01 OG badge and tells users to log in, check eligibility and claim it. The public sign-in surface currently offers Discord while X and wallet sign-in are marked coming soon.",
+        "acquisition_state": "SAFE_ACTION_AUTH_REQUIRED",
+        "requires_funds": False,
+        "requires_wallet_signature": False,
+        "requires_real_order": False,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_N1_TERMS_PRIVACY_AND_ACCOUNT_BADGE_ELIGIBILITY_AFTER_AUTH",
+        "known_cost_or_risk": "No financial action is visible on the public badge flow, but Discord/N1 authentication exposes account/privacy data and badge eligibility is account-specific. Do not infer eligibility before login and do not switch to a future wallet flow without re-verification.",
+        "missing_approval": "No financial approval is required for the public badge path. Missing prerequisite is a supported authenticated N1/Discord session plus account-specific eligibility confirmation.",
+        "next_action": "When an authenticated N1/Discord session is available through a supported connector/browser, check 01 OG badge eligibility and claim only the badge if eligible; do not connect a wallet, move assets or trade as part of this action.",
+    },
+}
+
 # Primary-source reward mechanics verified during the scheduled acquisition
 # review. These entries DO NOT authorize execution. They only move a target from
 # a generic REVERIFY state into the appropriate approval queue with the exact
@@ -157,6 +179,22 @@ VERIFIED_GATED_ACTIONS: dict[str, dict[str, Any]] = {
         "known_cost_or_risk": "Qualification requires depositing capital into NLP. Capital is exposed to vault/strategy PnL, withdrawal gating or lock periods, smart-contract/oracle risk and opportunity cost; current vault caps and parameters can change.",
         "missing_approval": "Current terms/jurisdiction, account/authentication, vault cap/lock/withdrawal mechanics plus explicit deposit amount, maximum acceptable loss and liquidity tolerance.",
         "next_action": "Verify current user eligibility and live NLP vault parameters, then prepare a capped deposit plan for explicit approval; do not deposit, sign or move assets automatically.",
+    },
+    "kyan": {
+        "verified_at": "2026-08-12T12:35:00+00:00",
+        "evidence_source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
+        "evidence_note": "Current official Kyan rewards material says users continue earning Krystals from their own trading, while official Kyan API/MCP documentation enables authenticated programmatic trading and live production API calls on the same exchange. Taken together, genuine API trades are treated as the same channel-neutral trading activity; this is an inference from current primary documents rather than an explicit sentence saying API trades earn Krystals.",
+        "evidence_basis": "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE",
+        "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+        "requires_funds": True,
+        "requires_wallet_signature": True,
+        "requires_real_order": True,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_CURRENT_KRYSTALS_LIFECYCLE_TERMS_JURISDICTION_ACCOUNT_API_KEY_AND_SIGNING",
+        "known_cost_or_risk": "Qualification requires genuine derivatives trading. Real orders create fee, spread/slippage, funding/option-premium, margin, liquidation and directional PnL risk. Kyan one-click sessions require an initial EIP-712 wallet signature, and Krystals weights or program parameters can change.",
+        "missing_approval": "Current Krystals lifecycle, terms/jurisdiction, account eligibility, API-key/session and EIP-712 signer setup plus explicit market/product, maximum notional, leverage, fee/premium budget and maximum loss.",
+        "next_action": "Re-check current Krystals/account eligibility and API/session signing requirements, then prepare a capped genuine API-trading plan for explicit approval; do not create a signed session or submit real orders automatically and never use self-trading, wash trading or manipulative activity.",
     },
     "ethereal-trading": {
         "verified_at": "2026-08-12T11:57:20+00:00",
@@ -296,6 +334,18 @@ def _classify_target(target: dict[str, Any], *, now: datetime) -> dict[str, Any]
             "reason": target.get("blocked_reason") or "Reward eligibility or program lifecycle is not verified.",
         }
 
+    safe_auth_spec = VERIFIED_SAFE_AUTH_ACTIONS.get(slug)
+    if safe_auth_spec and _verified_spec_is_fresh(safe_auth_spec, now=now):
+        expires_at = datetime.fromisoformat(str(safe_auth_spec["verified_at"])).astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
+        return {
+            **base,
+            **safe_auth_spec,
+            "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+            "verification_expires_at": expires_at.isoformat(),
+            "requires_user_approval": False,
+            "reason": safe_auth_spec["evidence_note"],
+        }
+
     verified_spec = VERIFIED_GATED_ACTIONS.get(slug)
     if verified_spec and _verified_spec_is_fresh(verified_spec, now=now):
         expires_at = datetime.fromisoformat(str(verified_spec["verified_at"])).astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
@@ -380,6 +430,7 @@ def build_acquisition_report(status_report: dict[str, Any], *, now: datetime | N
         "target_count": len(actions),
         "safe_auto_adapter_count": len(SAFE_AUTO_ACTIONS),
         "verified_gated_action_count": sum(item.get("evidence_status") == "PRIMARY_VERIFIED_CURRENT" for item in actions),
+        "safe_auth_required_count": sum(item["acquisition_state"] == "SAFE_ACTION_AUTH_REQUIRED" for item in actions),
         "auto_executed_action_count": sum(bool(item["auto_executed"]) for item in actions),
         "approval_required_count": sum(bool(item["requires_user_approval"]) for item in actions),
         "blocked_unverified_count": sum(item["acquisition_state"] == "BLOCKED_UNVERIFIED" for item in actions),
@@ -427,6 +478,7 @@ def main() -> None:
                 "output": str(args.output),
                 "target_count": report["target_count"],
                 "verified_gated_action_count": report["verified_gated_action_count"],
+                "safe_auth_required_count": report["safe_auth_required_count"],
                 "auto_executed_action_count": report["auto_executed_action_count"],
                 "approval_required_count": report["approval_required_count"],
                 "blocked_unverified_count": report["blocked_unverified_count"],
