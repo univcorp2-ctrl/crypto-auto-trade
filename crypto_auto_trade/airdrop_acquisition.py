@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -19,16 +19,90 @@ DEFAULT_ACQUISITION_OUTPUT = ROOT / "data" / "airdrop" / "acquisition-latest.jso
 # - explicitly permitted by current official program rules
 # - deterministic proof that the action can earn the advertised reward
 #
-# No current Wave 1 target meets that standard. Keep this registry empty until an
+# No current target meets that standard. Keep this registry empty until an
 # adapter is verified against current primary documentation and covered by tests.
 SAFE_AUTO_ACTIONS: dict[str, dict[str, Any]] = {}
+
+# Primary-source reward mechanics verified during the scheduled acquisition
+# review. These entries DO NOT authorize execution. They only move a target from
+# a generic REVERIFY state into the appropriate approval queue with the exact
+# financial/asset-movement risk made explicit.
+#
+# Evidence is deliberately short-lived. After the TTL, the target falls back to
+# REVERIFY_REQUIRED until current official documentation is checked again.
+VERIFICATION_TTL_DAYS = 7
+VERIFIED_GATED_ACTIONS: dict[str, dict[str, Any]] = {
+    "standx-maker": {
+        "verified_at": "2026-08-12T03:25:00+00:00",
+        "evidence_source": "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield",
+        "evidence_note": "Official live parameters require real executable two-sided orders within 10 bps and at least 30 qualifying minutes per hour; yield is settled daily.",
+        "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+        "requires_funds": True,
+        "requires_real_order": True,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_PERPS_USER_ELIGIBILITY",
+        "known_cost_or_risk": "Real maker orders can fill and create directional exposure, adverse selection, funding, margin and liquidation risk. Per-pair minimum qualifying sizes and caps vary; no live quoting is authorized.",
+        "missing_approval": "Explicit approval of account eligibility, authentication/signing method, maximum notional and maximum loss before any real maker order.",
+        "next_action": "Re-check current Perps user eligibility and authentication, then prepare a capped genuine two-sided maker plan for explicit approval; do not place orders automatically.",
+    },
+    "decibel-trading": {
+        "verified_at": "2026-08-12T03:25:00+00:00",
+        "evidence_source": "https://docs.decibel.trade/rewards/amps",
+        "evidence_note": "Official Amps Season 1 documentation says Amps accrue daily from organic trading activity and explicitly weights leverage, holding duration, market exploration and consistency.",
+        "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+        "requires_funds": True,
+        "requires_real_order": True,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_TERMS_AND_JURISDICTION",
+        "known_cost_or_risk": "Perpetual trading creates PnL, fee, funding, leverage and liquidation risk. Exact Amps formulas are intentionally undisclosed, so reward-per-dollar cannot be guaranteed.",
+        "missing_approval": "Current terms/jurisdiction and authentication check plus explicit maximum notional, fee budget and maximum loss.",
+        "next_action": "Verify current user eligibility and authentication, then prepare a capped organic-trading plan for explicit approval; do not submit real orders automatically.",
+    },
+    "decibel-liquidity": {
+        "verified_at": "2026-08-12T03:25:00+00:00",
+        "evidence_source": "https://docs.decibel.trade/rewards/amps",
+        "evidence_note": "Official Amps Season 1 documentation says providing capital to the DLP Vault or user-managed vaults accrues a dedicated portion of daily emissions based on depth and duration.",
+        "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
+        "requires_funds": True,
+        "requires_real_order": False,
+        "requires_asset_move": True,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_TERMS_AND_JURISDICTION",
+        "known_cost_or_risk": "Qualifying requires committing capital to a vault. Capital can face vault/strategy loss, withdrawal constraints and opportunity cost; reward formulas are not guaranteed.",
+        "missing_approval": "Current terms/jurisdiction and authentication check plus explicit deposit amount, maximum acceptable loss and lock/withdrawal tolerance.",
+        "next_action": "Verify current user eligibility, vault mechanics and authentication, then prepare a capped deposit plan for explicit approval; do not move assets automatically.",
+    },
+    "grvt": {
+        "verified_at": "2026-08-12T03:25:00+00:00",
+        "evidence_source": "https://help.grvt.io/en/articles/12332040-live-rewards-season-2-0",
+        "evidence_note": "Official live Rewards Season 2.0 states trading earns points and explicitly says API-based trades earn points, although less than UI-based trades.",
+        "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+        "requires_funds": True,
+        "requires_real_order": True,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "JAPAN_NOT_LISTED_IN_CURRENT_RESTRICTED_JURISDICTIONS_ACCOUNT_ELIGIBILITY_STILL_REVERIFY",
+        "known_cost_or_risk": "Real perpetual trading creates PnL, funding, slippage and liquidation risk. Current Level 1 perps fees are maker -0.0001% and taker 0.0450%; actual all-in cost can be higher.",
+        "missing_approval": "Account-specific eligibility/authentication check plus explicit maximum notional, fee budget and maximum loss.",
+        "next_action": "Confirm account eligibility and authentication, then prepare a capped genuine API-trading plan for explicit approval; do not submit real orders automatically.",
+    },
+}
 
 
 def utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
+def _verified_spec_is_fresh(spec: dict[str, Any], *, now: datetime) -> bool:
+    verified_at = datetime.fromisoformat(str(spec["verified_at"]))
+    if verified_at.tzinfo is None:
+        verified_at = verified_at.replace(tzinfo=UTC)
+    return now <= verified_at.astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
+
+
+def _classify_target(target: dict[str, Any], *, now: datetime) -> dict[str, Any]:
     slug = str(target["slug"])
     status = str(target["status"])
     mode = str(target["mode"])
@@ -47,6 +121,9 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
         "requires_user_approval": False,
         "requires_funds": False,
         "requires_wallet_signature": False,
+        "requires_real_order": False,
+        "requires_asset_move": False,
+        "authentication_recheck_required": False,
         "points_delta": None,
     }
 
@@ -57,6 +134,18 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
             "acquisition_state": "BLOCKED_UNVERIFIED",
             "next_action": "Re-verify current reward mechanics and program lifecycle from official sources before any acquisition action.",
             "reason": target.get("blocked_reason") or "Reward eligibility or program lifecycle is not verified.",
+        }
+
+    verified_spec = VERIFIED_GATED_ACTIONS.get(slug)
+    if verified_spec and _verified_spec_is_fresh(verified_spec, now=now):
+        expires_at = datetime.fromisoformat(str(verified_spec["verified_at"])).astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
+        return {
+            **base,
+            **verified_spec,
+            "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+            "verification_expires_at": expires_at.isoformat(),
+            "requires_user_approval": True,
+            "reason": verified_spec["evidence_note"],
         }
 
     if slug in SAFE_AUTO_ACTIONS:
@@ -79,6 +168,7 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
             "requires_user_approval": True,
             "requires_funds": True,
             "requires_wallet_signature": slug == "pacifica",
+            "requires_real_order": True,
             "next_action": "Queue a capped genuine-trading plan for explicit approval; do not place orders automatically.",
             "reason": "Current official reward mechanics require genuine exchange activity; this creates economic exposure and can require signed/authenticated orders.",
         }
@@ -107,6 +197,7 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
             "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
             "requires_user_approval": True,
             "requires_funds": True,
+            "requires_asset_move": True,
             "next_action": "Verify current reward rules, then prepare any deposit/stake/liquidity action for explicit approval.",
             "reason": "The configured target is read-only because earning may require asset movement or capital lock-up.",
         }
@@ -119,14 +210,16 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def build_acquisition_report(status_report: dict[str, Any]) -> dict[str, Any]:
-    actions = [_classify_target(target) for target in status_report.get("targets", [])]
+def build_acquisition_report(status_report: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
+    current_time = now or datetime.now(UTC)
+    actions = [_classify_target(target, now=current_time) for target in status_report.get("targets", [])]
     return {
-        "generated_at": utc_now(),
+        "generated_at": current_time.astimezone(UTC).isoformat(),
         "mode": "ACQUISITION_GATED",
         "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
         "target_count": len(actions),
         "safe_auto_adapter_count": len(SAFE_AUTO_ACTIONS),
+        "verified_gated_action_count": sum(item.get("evidence_status") == "PRIMARY_VERIFIED_CURRENT" for item in actions),
         "auto_executed_action_count": sum(bool(item["auto_executed"]) for item in actions),
         "approval_required_count": sum(bool(item["requires_user_approval"]) for item in actions),
         "blocked_unverified_count": sum(item["acquisition_state"] == "BLOCKED_UNVERIFIED" for item in actions),
@@ -173,6 +266,7 @@ def main() -> None:
                 "mode": report["mode"],
                 "output": str(args.output),
                 "target_count": report["target_count"],
+                "verified_gated_action_count": report["verified_gated_action_count"],
                 "auto_executed_action_count": report["auto_executed_action_count"],
                 "approval_required_count": report["approval_required_count"],
                 "blocked_unverified_count": report["blocked_unverified_count"],
