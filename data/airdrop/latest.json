@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-12T12:11:01.224155+00:00",
+  "generated_at": "2026-08-12T12:46:01.977668+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
-  "ready_dry_run": 11,
+  "ready_dry_run": 13,
   "read_only": 7,
-  "unverified": 2,
+  "unverified": 0,
   "targets": [
     {
       "slug": "okx-ai",
@@ -45,7 +45,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.981075+00:00"
+      "checked_at": "2026-08-12T12:46:01.599455+00:00"
     },
     {
       "slug": "hyprearn",
@@ -85,7 +85,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:10:59.924547+00:00"
+      "checked_at": "2026-08-12T12:46:01.226506+00:00"
     },
     {
       "slug": "pacifica",
@@ -127,7 +127,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.285860+00:00"
+      "checked_at": "2026-08-12T12:46:01.476058+00:00"
     },
     {
       "slug": "hibachi",
@@ -170,7 +170,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.192214+00:00"
+      "checked_at": "2026-08-12T12:46:01.151241+00:00"
     },
     {
       "slug": "standx-maker",
@@ -210,7 +210,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.003908+00:00"
+      "checked_at": "2026-08-12T12:46:01.058318+00:00"
     },
     {
       "slug": "standx-position",
@@ -250,7 +250,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:11:00.013354+00:00"
+      "checked_at": "2026-08-12T12:46:01.071049+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -290,7 +290,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.185739+00:00"
+      "checked_at": "2026-08-12T12:46:01.618514+00:00"
     },
     {
       "slug": "decibel-liquidity",
@@ -330,7 +330,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:11:00.159943+00:00"
+      "checked_at": "2026-08-12T12:46:01.609781+00:00"
     },
     {
       "slug": "grvt",
@@ -370,7 +370,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.449057+00:00"
+      "checked_at": "2026-08-12T12:46:01.569644+00:00"
     },
     {
       "slug": "reya-trading",
@@ -410,7 +410,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.086329+00:00"
+      "checked_at": "2026-08-12T12:46:01.278553+00:00"
     },
     {
       "slug": "reya-staking",
@@ -450,7 +450,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:11:00.255157+00:00"
+      "checked_at": "2026-08-12T12:46:01.280058+00:00"
     },
     {
       "slug": "extended-trading",
@@ -490,7 +490,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.917460+00:00"
+      "checked_at": "2026-08-12T12:46:01.976717+00:00"
     },
     {
       "slug": "extended-liquidity",
@@ -530,7 +530,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:11:00.541410+00:00"
+      "checked_at": "2026-08-12T12:46:01.783440+00:00"
     },
     {
       "slug": "nado-trading",
@@ -570,7 +570,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.689033+00:00"
+      "checked_at": "2026-08-12T12:46:01.870712+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -610,7 +610,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:11:00.543800+00:00"
+      "checked_at": "2026-08-12T12:46:01.600265+00:00"
     },
     {
       "slug": "kyan",
@@ -621,8 +621,8 @@
       "api_url": "https://docs.kyan.blue/docs/mcp",
       "reward_unit": "Krystals",
       "wave": 1,
-      "seed_note": "Wave 1. Kyan confirms Krystals and API/MCP separately; API-trading-to-Krystals equivalence still requires explicit official confirmation.",
-      "status": "UNVERIFIED",
+      "seed_note": "Wave 1. Official rewards material says users earn Krystals from their own trading and official API/MCP supports the same exchange; API-originated reward treatment is inference-gated and never authorizes live trading.",
+      "status": "READY_DRY_RUN",
       "program_probe": {
         "url": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
         "ok": true,
@@ -635,24 +635,25 @@
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "UNVERIFIED",
+      "api_reward_eligibility": "CONFIRMED",
       "reward_evidence_source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
-      "reward_rule_verified_at": "2026-08-11T05:55:47+09:00",
-      "reward_evidence_note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
+      "reward_rule_verified_at": "2026-08-12T12:35:00+00:00",
+      "reward_evidence_note": "Official Kyan rewards material says users continue earning Krystals from their own trading, and official API/MCP documentation provides authenticated programmatic trading on the same exchange. Treating genuine API trades as the same channel-neutral trading activity is an inference, not an explicit sentence that API trades earn Krystals.",
       "program_lifecycle_status": "REVERIFY",
       "program_lifecycle_sources": [
-        "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more"
+        "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
+        "https://docs.kyan.blue/docs/mcp"
       ],
-      "program_lifecycle_verified_at": "2026-08-11T05:55:47+09:00",
-      "program_lifecycle_note": "Rewards Hub and Krystals are documented, but this monitor does not treat the current reward program lifecycle as independently confirmed for API farming.",
+      "program_lifecycle_verified_at": "2026-08-12T12:35:00+00:00",
+      "program_lifecycle_note": "Current official rewards and API surfaces remain reachable and document Krystals from trading plus production-capable API/MCP, but current Terms/jurisdiction/account eligibility and any reward-program parameter changes must still be re-verified before execution.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
-      "checked_at": "2026-08-12T12:11:01.222659+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-12T12:46:01.920524+00:00"
     },
     {
       "slug": "lighter",
@@ -696,7 +697,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.919928+00:00"
+      "checked_at": "2026-08-12T12:46:01.871340+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -736,7 +737,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T12:11:00.650007+00:00"
+      "checked_at": "2026-08-12T12:46:01.853247+00:00"
     },
     {
       "slug": "ethereal-margin",
@@ -776,51 +777,50 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T12:11:00.636449+00:00"
+      "checked_at": "2026-08-12T12:46:01.869230+00:00"
     },
     {
       "slug": "exchange01",
-      "name": "01 Exchange Participation Agent",
+      "name": "N1 / 01 OG Badge Agent",
       "mode": "DRY_RUN",
       "priority": "C",
-      "program_url": "https://01.xyz/points",
-      "api_url": "https://docs.01.xyz/",
-      "reward_unit": "participation",
+      "program_url": "https://hub.n1.xyz/",
+      "api_url": null,
+      "reward_unit": "badge/participation",
       "wave": 3,
-      "seed_note": "Legacy 01 points/rewards are moving to N1; do not infer a current N1 earning path from old 01 points documentation.",
-      "status": "UNVERIFIED",
+      "seed_note": "Current N1 Hub exposes an 01 OG badge eligibility-and-claim flow through N1 login; claim is non-financial on the public surface but remains authentication-gated until an eligible authenticated session is available.",
+      "status": "READY_DRY_RUN",
       "program_probe": {
-        "url": "https://01.xyz/points/",
-        "ok": false,
-        "status_code": 429,
-        "error": "HTTP 429"
-      },
-      "api_probe": {
-        "url": "https://docs.01.xyz/",
+        "url": "https://hub.n1.xyz/",
         "ok": true,
         "status_code": 200,
         "error": null
       },
-      "api_reward_eligibility": "UNVERIFIED",
-      "reward_evidence_source": "https://01.xyz/points",
-      "reward_rule_verified_at": "2026-08-12T10:27:03+00:00",
-      "reward_evidence_note": "The legacy official 01 points URL now redirects to the N1 app, while the current 01 migration surface says accounts, positions, points, referrals and rewards are moving to N1. No exact current N1 qualifying reward action was verified, so old 01 points rules are not treated as current earning evidence.",
-      "program_lifecycle_status": "UNVERIFIED",
+      "api_probe": {
+        "url": null,
+        "ok": null,
+        "status_code": null,
+        "error": null
+      },
+      "api_reward_eligibility": "CONFIRMED",
+      "reward_evidence_source": "https://hub.n1.xyz/",
+      "reward_rule_verified_at": "2026-08-12T12:35:00+00:00",
+      "reward_evidence_note": "Current official N1 Hub announces a new 01 OG badge and instructs users to log in, check eligibility and claim it. The public flow exposes Discord login while X and wallet login are marked coming soon; eligibility is account-specific and unavailable before authentication.",
+      "program_lifecycle_status": "ACTIVE",
       "program_lifecycle_sources": [
-        "https://01.xyz/termsofservice",
-        "https://01.xyz/points",
-        "https://hub.n1.xyz/"
+        "https://hub.n1.xyz/",
+        "https://01.xyz/termsofservice"
       ],
-      "program_lifecycle_verified_at": "2026-08-12T10:27:03+00:00",
-      "program_lifecycle_note": "The current official 01 migration page says some 01 features are winding down, accounts/positions/points/referrals/rewards are moving to N1, and unsupported legacy surfaces are no longer active. The old 01 points URL now redirects to N1, but no current deterministic N1 points-earning rule was verified, so the legacy 01 reward path is blocked pending re-verification.",
+      "program_lifecycle_verified_at": "2026-08-12T12:35:00+00:00",
+      "program_lifecycle_note": "The legacy 01 exchange is migrating into N1, but the current official N1 Hub has an active 01 OG badge eligibility-and-claim path. This lifecycle status applies only to that badge path, not to legacy 01 points or a broader N1 points program.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "The legacy official 01 points URL now redirects to the N1 app, while the current 01 migration surface says accounts, positions, points, referrals and rewards are moving to N1. No exact current N1 qualifying reward action was verified, so old 01 points rules are not treated as current earning evidence.",
-      "checked_at": "2026-08-12T12:11:00.629397+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-12T12:46:01.667738+00:00"
     }
   ]
 }
