@@ -11,19 +11,24 @@
     <header class="hero">
       <div>
         <a class="back-link" href="/">← Crypto Auto Trade</a>
-        <p class="eyebrow">20 ADAPTERS · SCHEDULED DRY RUN</p>
+        <p class="eyebrow">20 ADAPTERS · HOURLY ACQUISITION CYCLE</p>
         <h1>Airdrop Agent</h1>
-        <p class="lead">ポイント・XP・報酬候補を毎時監視。初期状態はDRY RUN / READ ONLYで、実資金注文・入出金・署名は行いません。</p>
+        <p class="lead">毎時、①公式ルール確認 → ②安全に自動実行できる獲得アクション実行 → ③実取引・資金移動・署名が必要なものを承認キューへ → ④未確認案件を停止、まで進めます。監視だけで「獲得済み」とは扱いません。</p>
       </div>
       <div class="hero-actions">
-        <button id="runDry">今すぐDRY RUN</button>
+        <button id="runDry">状態を再確認（DRY RUN）</button>
         <button id="refresh" class="secondary">再読込</button>
       </div>
     </header>
 
     <section class="notice">
-      <strong>LIVEは無効</strong>
-      <span>Legal / Terms / API reward eligibility / Risk / Human Gateが揃うまで本番実行しません。</span>
+      <strong>獲得サイクル: 毎時23分</strong>
+      <span>自動実行は「資金移動なし・wallet署名なし・実注文なし」で公式に報酬対象と確認できたものだけ。実取引等は承認待ちにします。詳細は <a href="https://github.com/univcorp2-ctrl/crypto-auto-trade/blob/main/AIRDROP_OPERATIONS.md" target="_blank" rel="noreferrer">運用仕様 ↗</a> / <a href="https://github.com/univcorp2-ctrl/crypto-auto-trade/blob/main/data/airdrop/acquisition-latest.json" target="_blank" rel="noreferrer">最新獲得キュー ↗</a>。</span>
+    </section>
+
+    <section class="notice">
+      <strong>LIVE金融操作は無効</strong>
+      <span>Deposit / Withdrawal / Bridge / token approval / wallet signature / real order は自動実行しません。Legal / Terms / reward mechanics / program lifecycle が未確認なら停止します。</span>
     </section>
 
     <section class="metrics" aria-label="Airdrop status summary">
@@ -31,7 +36,7 @@
       <article><span>Ready DRY RUN</span><strong id="readyCount">-</strong></article>
       <article><span>Read Only</span><strong id="readOnlyCount">-</strong></article>
       <article><span>Unverified</span><strong id="unverifiedCount">-</strong></article>
-      <article><span>Last Run</span><strong id="lastRun">-</strong></article>
+      <article><span>Last Status Check</span><strong id="lastRun">-</strong></article>
     </section>
 
     <section class="toolbar">
@@ -54,7 +59,7 @@
       <label>検索
         <input id="search" placeholder="Pacifica / points / Kyan ..."/>
       </label>
-      <span class="schedule">Scheduler: GitHub Actions / hourly</span>
+      <span class="schedule">Scheduler: GitHub Actions / hourly at :23</span>
     </section>
 
     <section id="loading" class="loading">Loading...</section>
