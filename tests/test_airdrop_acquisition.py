@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 12, 5, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 12, 12, 40, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -33,6 +33,7 @@ def test_verified_wave_one_trading_targets_go_to_approval_queue() -> None:
 
     pacifica = _action(report, "pacifica")
     hibachi = _action(report, "hibachi")
+    kyan = _action(report, "kyan")
     lighter = _action(report, "lighter")
 
     assert pacifica["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
@@ -45,6 +46,13 @@ def test_verified_wave_one_trading_targets_go_to_approval_queue() -> None:
     assert hibachi["requires_user_approval"] is True
     assert hibachi["requires_funds"] is True
     assert hibachi["requires_real_order"] is True
+
+    assert kyan["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert kyan["requires_user_approval"] is True
+    assert kyan["requires_funds"] is True
+    assert kyan["requires_wallet_signature"] is True
+    assert kyan["requires_real_order"] is True
+    assert kyan["evidence_basis"] == "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE"
 
     assert lighter["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert lighter["requires_user_approval"] is True
@@ -65,6 +73,7 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     lighter = _action(report, "lighter")
     nado_trading = _action(report, "nado-trading")
     nado_nlp = _action(report, "nado-nlp")
+    kyan = _action(report, "kyan")
     ethereal_trading = _action(report, "ethereal-trading")
     ethereal_margin = _action(report, "ethereal-margin")
     reya_trading = _action(report, "reya-trading")
@@ -118,6 +127,13 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     assert nado_nlp["requires_real_order"] is False
     assert nado_nlp["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
 
+    assert kyan["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert kyan["requires_real_order"] is True
+    assert kyan["requires_wallet_signature"] is True
+    assert kyan["requires_asset_move"] is False
+    assert kyan["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert kyan["evidence_basis"] == "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE"
+
     assert ethereal_trading["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert ethereal_trading["requires_real_order"] is True
     assert ethereal_trading["requires_wallet_signature"] is True
@@ -156,31 +172,32 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
 def test_channel_neutral_api_trading_paths_are_inference_gated() -> None:
     report = _report()
 
+    kyan = _action(report, "kyan")
     reya = _action(report, "reya-trading")
     ethereal = _action(report, "ethereal-trading")
 
-    assert reya["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
-    assert reya["requires_user_approval"] is True
-    assert reya["requires_wallet_signature"] is True
-    assert reya["evidence_basis"] == "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE"
-    assert "inference" in str(reya["evidence_note"]).lower()
-
-    assert ethereal["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
-    assert ethereal["requires_user_approval"] is True
-    assert ethereal["requires_wallet_signature"] is True
-    assert ethereal["evidence_basis"] == "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE"
-    assert "inference" in str(ethereal["evidence_note"]).lower()
+    for action in (kyan, reya, ethereal):
+        assert action["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+        assert action["requires_user_approval"] is True
+        assert action["requires_wallet_signature"] is True
+        assert action["evidence_basis"] == "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE"
+        assert "inference" in str(action["evidence_note"]).lower()
 
 
-def test_exchange01_is_blocked_while_legacy_points_move_to_n1() -> None:
+def test_n1_og_badge_is_safe_but_authentication_gated() -> None:
     report = _report()
-    exchange01 = _action(report, "exchange01")
+    n1_badge = _action(report, "exchange01")
 
-    assert exchange01["acquisition_state"] == "BLOCKED_UNVERIFIED"
-    assert exchange01["requires_user_approval"] is False
-    assert exchange01["requires_funds"] is False
-    assert exchange01["requires_real_order"] is False
-    assert "N1" in str(exchange01["reason"])
+    assert n1_badge["acquisition_state"] == "SAFE_ACTION_AUTH_REQUIRED"
+    assert n1_badge["requires_user_approval"] is False
+    assert n1_badge["requires_funds"] is False
+    assert n1_badge["requires_wallet_signature"] is False
+    assert n1_badge["requires_real_order"] is False
+    assert n1_badge["requires_asset_move"] is False
+    assert n1_badge["authentication_recheck_required"] is True
+    assert n1_badge["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "Discord" in str(n1_badge["evidence_note"])
+    assert "do not connect a wallet" in str(n1_badge["next_action"]).lower()
 
 
 def test_future_dated_verification_does_not_become_current() -> None:
@@ -190,6 +207,8 @@ def test_future_dated_verification_does_not_become_current() -> None:
     assert _action(report, "lighter")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "kyan")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "exchange01")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "reya-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
@@ -211,6 +230,8 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "lighter")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "kyan")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "exchange01")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "reya-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
@@ -219,18 +240,13 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "extended-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
 
 
-def test_unverified_wave_one_target_stays_blocked() -> None:
-    report = _report()
-
-    assert _action(report, "kyan")["acquisition_state"] == "BLOCKED_UNVERIFIED"
-
-
 def test_current_queue_breakdown_is_explicit() -> None:
     report = _report()
 
-    assert report["verified_gated_action_count"] == 15
-    assert report["approval_required_count"] == 17
-    assert report["blocked_unverified_count"] == 2
+    assert report["verified_gated_action_count"] == 17
+    assert report["safe_auth_required_count"] == 1
+    assert report["approval_required_count"] == 18
+    assert report["blocked_unverified_count"] == 0
     assert report["discovery_only_count"] == 1
     assert report["reverify_required_count"] == 0
 
