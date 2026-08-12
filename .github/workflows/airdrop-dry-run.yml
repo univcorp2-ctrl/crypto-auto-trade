@@ -10,6 +10,7 @@ on:
       - main
       - feat/airdrop-agent-web
       - feat/airdrop-acquisition-cycle
+      - feat/airdrop-wave2-verification
     paths:
       - "crypto_auto_trade/airdrop_agents.py"
       - "crypto_auto_trade/airdrop_acquisition.py"
