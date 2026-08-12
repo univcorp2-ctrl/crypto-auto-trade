@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 5, 0, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 12, 5, 30, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -55,6 +55,9 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     decibel_trading = _action(report, "decibel-trading")
     decibel_liquidity = _action(report, "decibel-liquidity")
     grvt = _action(report, "grvt")
+    nado_trading = _action(report, "nado-trading")
+    nado_nlp = _action(report, "nado-nlp")
+    ethereal_margin = _action(report, "ethereal-margin")
 
     assert hyprearn["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
     assert hyprearn["requires_asset_move"] is True
@@ -85,6 +88,31 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     assert grvt["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert "0.0450%" in str(grvt["known_cost_or_risk"])
 
+    assert nado_trading["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert nado_trading["requires_real_order"] is True
+    assert nado_trading["requires_asset_move"] is False
+    assert nado_trading["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "wash" in str(nado_trading["next_action"]).lower()
+
+    assert nado_nlp["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert nado_nlp["requires_asset_move"] is True
+    assert nado_nlp["requires_real_order"] is False
+    assert nado_nlp["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+    assert ethereal_margin["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert ethereal_margin["requires_asset_move"] is True
+    assert ethereal_margin["requires_real_order"] is False
+    assert ethereal_margin["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+
+def test_future_dated_verification_does_not_become_current() -> None:
+    before_new_verification = datetime(2026, 8, 12, 5, 20, tzinfo=UTC)
+    report = _report(now=before_new_verification)
+
+    assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
+
 
 def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     stale_now = TEST_NOW + timedelta(days=VERIFICATION_TTL_DAYS + 1)
@@ -96,6 +124,9 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "decibel-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "decibel-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "grvt")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
 
 
 def test_unverified_wave_one_targets_stay_blocked() -> None:
@@ -108,11 +139,11 @@ def test_unverified_wave_one_targets_stay_blocked() -> None:
 def test_current_queue_breakdown_is_explicit() -> None:
     report = _report()
 
-    assert report["verified_gated_action_count"] == 6
-    assert report["approval_required_count"] == 8
+    assert report["verified_gated_action_count"] == 9
+    assert report["approval_required_count"] == 11
     assert report["blocked_unverified_count"] == 2
     assert report["discovery_only_count"] == 1
-    assert report["reverify_required_count"] == 9
+    assert report["reverify_required_count"] == 6
 
 
 def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
