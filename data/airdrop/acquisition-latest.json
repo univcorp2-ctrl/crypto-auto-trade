@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T10:31:45.731271+00:00",
+  "generated_at": "2026-08-12T10:38:43.853647+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -7,8 +7,8 @@
   "verified_gated_action_count": 13,
   "auto_executed_action_count": 0,
   "approval_required_count": 15,
-  "blocked_unverified_count": 1,
-  "reverify_required_count": 3,
+  "blocked_unverified_count": 2,
+  "reverify_required_count": 2,
   "discovery_only_count": 1,
   "financial_actions_executed": 0,
   "asset_transfers_executed": 0,
@@ -485,7 +485,7 @@
       "slug": "exchange01",
       "name": "01 Exchange Participation Agent",
       "wave": 3,
-      "program_url": "https://docs.01.xyz/support/faq/general",
+      "program_url": "https://01.xyz/points",
       "reward_unit": "participation",
       "action_taken": "NONE",
       "auto_executed": false,
@@ -496,9 +496,9 @@
       "requires_asset_move": false,
       "authentication_recheck_required": false,
       "points_delta": null,
-      "acquisition_state": "REVERIFY_REQUIRED",
-      "next_action": "Verify current earning action, program lifecycle, Japan/Terms eligibility, costs and required authentication before implementing acquisition.",
-      "reason": "This target is queued for current primary-source re-verification; it is not treated as a confirmed failure or confirmed earning path."
+      "acquisition_state": "BLOCKED_UNVERIFIED",
+      "next_action": "Re-verify current reward mechanics and program lifecycle from official sources before any acquisition action.",
+      "reason": "The legacy official 01 points URL now redirects to the N1 app, while the current 01 migration surface says accounts, positions, points, referrals and rewards are moving to N1. No exact current N1 qualifying reward action was verified, so old 01 points rules are not treated as current earning evidence."
     }
   ]
 }
