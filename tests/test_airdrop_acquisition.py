@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 4, 0, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 12, 5, 0, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -46,18 +46,30 @@ def test_verified_wave_one_trading_targets_go_to_approval_queue() -> None:
     assert hibachi["requires_real_order"] is True
 
 
-def test_primary_verified_wave_two_targets_move_to_exact_approval_queues() -> None:
+def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     report = _report()
 
-    standx = _action(report, "standx-maker")
+    hyprearn = _action(report, "hyprearn")
+    standx_maker = _action(report, "standx-maker")
+    standx_position = _action(report, "standx-position")
     decibel_trading = _action(report, "decibel-trading")
     decibel_liquidity = _action(report, "decibel-liquidity")
     grvt = _action(report, "grvt")
 
-    assert standx["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
-    assert standx["requires_real_order"] is True
-    assert standx["authentication_recheck_required"] is True
-    assert standx["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert hyprearn["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert hyprearn["requires_asset_move"] is True
+    assert hyprearn["requires_real_order"] is True
+    assert hyprearn["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+    assert standx_maker["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert standx_maker["requires_real_order"] is True
+    assert standx_maker["authentication_recheck_required"] is True
+    assert standx_maker["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
+    assert standx_position["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert standx_position["requires_real_order"] is True
+    assert standx_position["requires_funds"] is True
+    assert standx_position["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
 
     assert decibel_trading["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert decibel_trading["requires_real_order"] is True
@@ -78,7 +90,9 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     stale_now = TEST_NOW + timedelta(days=VERIFICATION_TTL_DAYS + 1)
     report = _report(now=stale_now)
 
+    assert _action(report, "hyprearn")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "standx-maker")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "standx-position")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "decibel-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "decibel-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "grvt")["acquisition_state"] == "REVERIFY_REQUIRED"
@@ -94,11 +108,11 @@ def test_unverified_wave_one_targets_stay_blocked() -> None:
 def test_current_queue_breakdown_is_explicit() -> None:
     report = _report()
 
-    assert report["verified_gated_action_count"] == 4
-    assert report["approval_required_count"] == 6
+    assert report["verified_gated_action_count"] == 6
+    assert report["approval_required_count"] == 8
     assert report["blocked_unverified_count"] == 2
     assert report["discovery_only_count"] == 1
-    assert report["reverify_required_count"] == 11
+    assert report["reverify_required_count"] == 9
 
 
 def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
