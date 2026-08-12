@@ -48,7 +48,7 @@ TARGETS: tuple[AirdropTarget, ...] = (
     AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. Current general Points Program and Retail pages describe ongoing weekly Season 2 distributions and organic UI/API trading; live financial execution remains approval-gated."),
     AirdropTarget("ethereal-trading", "Ethereal API Points Trader", "DRY_RUN", "S", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 2, "Authentic-trading simulation only; no artificial volume."),
     AirdropTarget("ethereal-margin", "Ethereal USDe/Margin Points Agent", "READ_ONLY", "A", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 3, "Margin/deposit monitor; approvals and asset movement remain human-gated."),
-    AirdropTarget("exchange01", "01 Exchange Participation Agent", "DRY_RUN", "C", "https://docs.01.xyz/support/faq/general", "https://docs.01.xyz/", "participation", 3, "Low-confidence reward economics; treat monetary value as UNKNOWN."),
+    AirdropTarget("exchange01", "01 Exchange Participation Agent", "DRY_RUN", "C", "https://01.xyz/points", "https://docs.01.xyz/", "participation", 3, "Legacy 01 points/rewards are moving to N1; do not infer a current N1 earning path from old 01 points documentation."),
 )
 
 
@@ -76,6 +76,12 @@ WAVE1_REWARD_VERIFICATION: dict[str, dict[str, object]] = {
         "source": "https://docs.lighter.xyz/points-program",
         "verified_at": "2026-08-12T09:25:35+00:00",
         "note": "Current official Points Program states Season 2 points are distributed every Friday and organic trading strategies via UI and API earn points; Sybil, self-trading and similar abusive activity are excluded.",
+    },
+    "exchange01": {
+        "status": "UNVERIFIED",
+        "source": "https://01.xyz/points",
+        "verified_at": "2026-08-12T10:27:03+00:00",
+        "note": "The legacy official 01 points URL now redirects to the N1 app, while the current 01 migration surface says accounts, positions, points, referrals and rewards are moving to N1. No exact current N1 qualifying reward action was verified, so old 01 points rules are not treated as current earning evidence.",
     },
 }
 
@@ -111,6 +117,16 @@ WAVE1_PROGRAM_LIFECYCLE_VERIFICATION: dict[str, dict[str, object]] = {
         ],
         "verified_at": "2026-08-12T09:25:35+00:00",
         "note": "Current general Points Program and Retail pages explicitly describe ongoing weekly Season 2 distributions. The Market Makers page's statement that Points Season 2 ended on 2025-12-26 is scoped to the market-maker track and does not override the current Retail/general program pages for organic retail/API trading.",
+    },
+    "exchange01": {
+        "status": "UNVERIFIED",
+        "sources": [
+            "https://01.xyz/termsofservice",
+            "https://01.xyz/points",
+            "https://hub.n1.xyz/",
+        ],
+        "verified_at": "2026-08-12T10:27:03+00:00",
+        "note": "The current official 01 migration page says some 01 features are winding down, accounts/positions/points/referrals/rewards are moving to N1, and unsupported legacy surfaces are no longer active. The old 01 points URL now redirects to N1, but no current deterministic N1 points-earning rule was verified, so the legacy 01 reward path is blocked pending re-verification.",
     },
 }
 
