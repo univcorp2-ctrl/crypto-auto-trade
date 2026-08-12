@@ -44,6 +44,15 @@ def test_unverified_wave_one_targets_stay_blocked() -> None:
     assert _action(report, "lighter")["acquisition_state"] == "BLOCKED_UNVERIFIED"
 
 
+def test_current_queue_breakdown_is_explicit() -> None:
+    report = build_acquisition_report(run_all(probe_network=False))
+
+    assert report["approval_required_count"] == 2
+    assert report["blocked_unverified_count"] == 2
+    assert report["discovery_only_count"] == 1
+    assert report["reverify_required_count"] == 15
+
+
 def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
     report = build_acquisition_report(run_all(probe_network=False))
 
