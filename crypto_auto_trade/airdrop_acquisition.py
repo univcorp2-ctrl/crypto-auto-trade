@@ -50,7 +50,8 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
         "points_delta": None,
     }
 
-    if status == "UNVERIFIED" or lifecycle in {"CONFLICT", "REVERIFY", "UNVERIFIED"} or reward_eligibility == "UNVERIFIED":
+    # Hard-block explicit conflicts and explicit unverified reward mechanics.
+    if status == "UNVERIFIED" or lifecycle in {"CONFLICT", "UNVERIFIED"} or reward_eligibility == "UNVERIFIED":
         return {
             **base,
             "acquisition_state": "BLOCKED_UNVERIFIED",
@@ -68,6 +69,9 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
             "reason": "A safe-action specification exists, but executable code is intentionally not enabled yet.",
         }
 
+    # Wave 1 is the first execution wave. Pacifica/Hibachi have verified mechanics,
+    # but earning requires genuine exchange activity, so the cycle prepares rather
+    # than silently submitting financial actions.
     if wave == 1 and slug in {"pacifica", "hibachi"}:
         return {
             **base,
@@ -79,6 +83,24 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
             "reason": "Current official reward mechanics require genuine exchange activity; this creates economic exposure and can require signed/authenticated orders.",
         }
 
+    if mode == "SCOUT":
+        return {
+            **base,
+            "acquisition_state": "DISCOVERY_ONLY",
+            "next_action": "Continue discovery and promote a candidate only after an exact qualifying action is verified.",
+            "reason": "This adapter is a discovery source, not an earning executor.",
+        }
+
+    # Most Wave 2/3 adapters have not yet had current mechanics/lifecycle promoted
+    # from REVERIFY. Keep them distinct from hard-blocked/conflicted Wave 1 targets.
+    if lifecycle == "REVERIFY" or reward_eligibility == "REVERIFY":
+        return {
+            **base,
+            "acquisition_state": "REVERIFY_REQUIRED",
+            "next_action": "Verify current earning action, program lifecycle, Japan/Terms eligibility, costs and required authentication before implementing acquisition.",
+            "reason": "This target is queued for current primary-source re-verification; it is not treated as a confirmed failure or confirmed earning path.",
+        }
+
     if mode == "READ_ONLY":
         return {
             **base,
@@ -87,14 +109,6 @@ def _classify_target(target: dict[str, Any]) -> dict[str, Any]:
             "requires_funds": True,
             "next_action": "Verify current reward rules, then prepare any deposit/stake/liquidity action for explicit approval.",
             "reason": "The configured target is read-only because earning may require asset movement or capital lock-up.",
-        }
-
-    if mode == "SCOUT":
-        return {
-            **base,
-            "acquisition_state": "DISCOVERY_ONLY",
-            "next_action": "Continue discovery and promote a candidate only after an exact qualifying action is verified.",
-            "reason": "This adapter is a discovery source, not an earning executor.",
         }
 
     return {
@@ -162,6 +176,7 @@ def main() -> None:
                 "auto_executed_action_count": report["auto_executed_action_count"],
                 "approval_required_count": report["approval_required_count"],
                 "blocked_unverified_count": report["blocked_unverified_count"],
+                "reverify_required_count": report["reverify_required_count"],
                 "live_approved": report["live_approved"],
             },
             ensure_ascii=False,
