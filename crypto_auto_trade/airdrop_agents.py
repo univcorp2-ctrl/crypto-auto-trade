@@ -44,11 +44,11 @@ TARGETS: tuple[AirdropTarget, ...] = (
     AirdropTarget("extended-liquidity", "Extended Liquidity/Vault Agent", "READ_ONLY", "A", "https://docs.extended.exchange/extended-resources/points", "https://docs.extended.exchange/", "points", 3, "Liquidity/vault monitor only; asset movement remains human-gated."),
     AirdropTarget("nado-trading", "Nado Trading Points Agent", "DRY_RUN", "S", "https://docs.nado.xyz/points", "https://docs.nado.xyz/developer-resources", "points", 2, "REST/WebSocket dry-run seed; no real orders."),
     AirdropTarget("nado-nlp", "Nado NLP Liquidity Agent", "READ_ONLY", "A", "https://docs.nado.xyz/points", "https://docs.nado.xyz/", "points", 3, "NLP liquidity monitor; deposit/redeem remains human-gated."),
-    AirdropTarget("kyan", "Kyan MCP Krystals Agent", "DRY_RUN", "S", "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more", "https://docs.kyan.blue/docs/mcp", "Krystals", 1, "Wave 1. Kyan confirms Krystals and API/MCP separately; API-trading-to-Krystals equivalence still requires explicit official confirmation."),
+    AirdropTarget("kyan", "Kyan MCP Krystals Agent", "DRY_RUN", "S", "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more", "https://docs.kyan.blue/docs/mcp", "Krystals", 1, "Wave 1. Official rewards material says users earn Krystals from their own trading and official API/MCP supports the same exchange; API-originated reward treatment is inference-gated and never authorizes live trading."),
     AirdropTarget("lighter", "Lighter API Points Trader", "DRY_RUN", "S", "https://docs.lighter.xyz/points-program", "https://apidocs.lighter.xyz/", "points", 1, "Wave 1. Current general Points Program and Retail pages describe ongoing weekly Season 2 distributions and organic UI/API trading; live financial execution remains approval-gated."),
     AirdropTarget("ethereal-trading", "Ethereal API Points Trader", "DRY_RUN", "S", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 2, "Authentic-trading simulation only; no artificial volume."),
     AirdropTarget("ethereal-margin", "Ethereal USDe/Margin Points Agent", "READ_ONLY", "A", "https://docs.ethereal.trade/points/ethereal-points", "https://docs.ethereal.trade/", "points", 3, "Margin/deposit monitor; approvals and asset movement remain human-gated."),
-    AirdropTarget("exchange01", "01 Exchange Participation Agent", "DRY_RUN", "C", "https://01.xyz/points", "https://docs.01.xyz/", "participation", 3, "Legacy 01 points/rewards are moving to N1; do not infer a current N1 earning path from old 01 points documentation."),
+    AirdropTarget("exchange01", "N1 / 01 OG Badge Agent", "DRY_RUN", "C", "https://hub.n1.xyz/", None, "badge/participation", 3, "Current N1 Hub exposes an 01 OG badge eligibility-and-claim flow through N1 login; claim is non-financial on the public surface but remains authentication-gated until an eligible authenticated session is available."),
 )
 
 
@@ -66,10 +66,10 @@ WAVE1_REWARD_VERIFICATION: dict[str, dict[str, object]] = {
         "note": "Official FAQ states the points system is the same for UI and API trading; abusive activity can be disqualified.",
     },
     "kyan": {
-        "status": "UNVERIFIED",
+        "status": "CONFIRMED",
         "source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
-        "verified_at": "2026-08-11T05:55:47+09:00",
-        "note": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
+        "verified_at": "2026-08-12T12:35:00+00:00",
+        "note": "Official Kyan rewards material says users continue earning Krystals from their own trading, and official API/MCP documentation provides authenticated programmatic trading on the same exchange. Treating genuine API trades as the same channel-neutral trading activity is an inference, not an explicit sentence that API trades earn Krystals.",
     },
     "lighter": {
         "status": "CONFIRMED",
@@ -78,10 +78,10 @@ WAVE1_REWARD_VERIFICATION: dict[str, dict[str, object]] = {
         "note": "Current official Points Program states Season 2 points are distributed every Friday and organic trading strategies via UI and API earn points; Sybil, self-trading and similar abusive activity are excluded.",
     },
     "exchange01": {
-        "status": "UNVERIFIED",
-        "source": "https://01.xyz/points",
-        "verified_at": "2026-08-12T10:27:03+00:00",
-        "note": "The legacy official 01 points URL now redirects to the N1 app, while the current 01 migration surface says accounts, positions, points, referrals and rewards are moving to N1. No exact current N1 qualifying reward action was verified, so old 01 points rules are not treated as current earning evidence.",
+        "status": "CONFIRMED",
+        "source": "https://hub.n1.xyz/",
+        "verified_at": "2026-08-12T12:35:00+00:00",
+        "note": "Current official N1 Hub announces a new 01 OG badge and instructs users to log in, check eligibility and claim it. The public flow exposes Discord login while X and wallet login are marked coming soon; eligibility is account-specific and unavailable before authentication.",
     },
 }
 
@@ -104,9 +104,12 @@ WAVE1_PROGRAM_LIFECYCLE_VERIFICATION: dict[str, dict[str, object]] = {
     },
     "kyan": {
         "status": "REVERIFY",
-        "sources": ["https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more"],
-        "verified_at": "2026-08-11T05:55:47+09:00",
-        "note": "Rewards Hub and Krystals are documented, but this monitor does not treat the current reward program lifecycle as independently confirmed for API farming.",
+        "sources": [
+            "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
+            "https://docs.kyan.blue/docs/mcp",
+        ],
+        "verified_at": "2026-08-12T12:35:00+00:00",
+        "note": "Current official rewards and API surfaces remain reachable and document Krystals from trading plus production-capable API/MCP, but current Terms/jurisdiction/account eligibility and any reward-program parameter changes must still be re-verified before execution.",
     },
     "lighter": {
         "status": "ACTIVE",
@@ -119,14 +122,13 @@ WAVE1_PROGRAM_LIFECYCLE_VERIFICATION: dict[str, dict[str, object]] = {
         "note": "Current general Points Program and Retail pages explicitly describe ongoing weekly Season 2 distributions. The Market Makers page's statement that Points Season 2 ended on 2025-12-26 is scoped to the market-maker track and does not override the current Retail/general program pages for organic retail/API trading.",
     },
     "exchange01": {
-        "status": "UNVERIFIED",
+        "status": "ACTIVE",
         "sources": [
-            "https://01.xyz/termsofservice",
-            "https://01.xyz/points",
             "https://hub.n1.xyz/",
+            "https://01.xyz/termsofservice",
         ],
-        "verified_at": "2026-08-12T10:27:03+00:00",
-        "note": "The current official 01 migration page says some 01 features are winding down, accounts/positions/points/referrals/rewards are moving to N1, and unsupported legacy surfaces are no longer active. The old 01 points URL now redirects to N1, but no current deterministic N1 points-earning rule was verified, so the legacy 01 reward path is blocked pending re-verification.",
+        "verified_at": "2026-08-12T12:35:00+00:00",
+        "note": "The legacy 01 exchange is migrating into N1, but the current official N1 Hub has an active 01 OG badge eligibility-and-claim path. This lifecycle status applies only to that badge path, not to legacy 01 points or a broader N1 points program.",
     },
 }
 
