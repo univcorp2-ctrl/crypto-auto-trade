@@ -8,8 +8,7 @@ on:
   push:
     branches:
       - main
-      - feat/airdrop-agent-web
-      - feat/airdrop-acquisition-cycle
+      - feat/airdrop-*
     paths:
       - "crypto_auto_trade/airdrop_agents.py"
       - "crypto_auto_trade/airdrop_acquisition.py"
