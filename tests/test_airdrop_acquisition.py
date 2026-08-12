@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 6, 30, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 12, 9, 30, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -33,6 +33,7 @@ def test_verified_wave_one_trading_targets_go_to_approval_queue() -> None:
 
     pacifica = _action(report, "pacifica")
     hibachi = _action(report, "hibachi")
+    lighter = _action(report, "lighter")
 
     assert pacifica["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert pacifica["requires_user_approval"] is True
@@ -45,6 +46,12 @@ def test_verified_wave_one_trading_targets_go_to_approval_queue() -> None:
     assert hibachi["requires_funds"] is True
     assert hibachi["requires_real_order"] is True
 
+    assert lighter["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert lighter["requires_user_approval"] is True
+    assert lighter["requires_funds"] is True
+    assert lighter["requires_real_order"] is True
+    assert lighter["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+
 
 def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     report = _report()
@@ -55,6 +62,7 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     decibel_trading = _action(report, "decibel-trading")
     decibel_liquidity = _action(report, "decibel-liquidity")
     grvt = _action(report, "grvt")
+    lighter = _action(report, "lighter")
     nado_trading = _action(report, "nado-trading")
     nado_nlp = _action(report, "nado-nlp")
     ethereal_margin = _action(report, "ethereal-margin")
@@ -90,6 +98,12 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     assert grvt["requires_real_order"] is True
     assert grvt["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert "0.0450%" in str(grvt["known_cost_or_risk"])
+
+    assert lighter["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert lighter["requires_real_order"] is True
+    assert lighter["requires_asset_move"] is False
+    assert lighter["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "self-trading" in str(lighter["next_action"]).lower()
 
     assert nado_trading["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert nado_trading["requires_real_order"] is True
@@ -135,6 +149,7 @@ def test_future_dated_verification_does_not_become_current() -> None:
     before_new_verification = datetime(2026, 8, 12, 5, 20, tzinfo=UTC)
     report = _report(now=before_new_verification)
 
+    assert _action(report, "lighter")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
@@ -153,6 +168,7 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "decibel-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "decibel-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "grvt")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert _action(report, "lighter")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "nado-nlp")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-margin")["acquisition_state"] == "REVERIFY_REQUIRED"
@@ -161,19 +177,18 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "extended-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
 
 
-def test_unverified_wave_one_targets_stay_blocked() -> None:
+def test_unverified_wave_one_target_stays_blocked() -> None:
     report = _report()
 
     assert _action(report, "kyan")["acquisition_state"] == "BLOCKED_UNVERIFIED"
-    assert _action(report, "lighter")["acquisition_state"] == "BLOCKED_UNVERIFIED"
 
 
 def test_current_queue_breakdown_is_explicit() -> None:
     report = _report()
 
-    assert report["verified_gated_action_count"] == 12
-    assert report["approval_required_count"] == 14
-    assert report["blocked_unverified_count"] == 2
+    assert report["verified_gated_action_count"] == 13
+    assert report["approval_required_count"] == 15
+    assert report["blocked_unverified_count"] == 1
     assert report["discovery_only_count"] == 1
     assert report["reverify_required_count"] == 3
 

@@ -22,7 +22,7 @@ def test_dry_run_never_enables_live() -> None:
 
 
 def test_verified_wave_one_api_reward_rules_are_recorded() -> None:
-    for slug in ("pacifica", "hibachi"):
+    for slug in ("pacifica", "hibachi", "lighter"):
         result = dry_run_target(_target(slug), probe_network=False)
         assert result["api_reward_eligibility"] == "CONFIRMED"
         assert result["program_lifecycle_status"] == "ACTIVE"
@@ -39,12 +39,12 @@ def test_kyan_stays_unverified_until_api_reward_equivalence_is_explicit() -> Non
     assert result["live_approved"] is False
 
 
-def test_lighter_separates_api_points_mechanics_from_program_lifecycle() -> None:
+def test_lighter_scopes_old_market_maker_end_date_without_blocking_current_retail_program() -> None:
     result = dry_run_target(_target("lighter"), probe_network=False)
     assert result["api_reward_eligibility"] == "CONFIRMED"
-    assert result["program_lifecycle_status"] == "CONFLICT"
-    assert result["status"] == "UNVERIFIED"
-    assert "2025-12-26" in result["program_lifecycle_note"]
+    assert result["program_lifecycle_status"] == "ACTIVE"
+    assert result["status"] == "READY_DRY_RUN"
+    assert "market-maker track" in result["program_lifecycle_note"]
     assert result["live_approved"] is False
 
 
