@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 9, 30, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 12, 10, 30, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -142,7 +142,17 @@ def test_api_specific_reward_paths_stay_reverify_without_direct_evidence() -> No
 
     assert _action(report, "reya-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "ethereal-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
-    assert _action(report, "exchange01")["acquisition_state"] == "REVERIFY_REQUIRED"
+
+
+def test_exchange01_is_blocked_while_legacy_points_move_to_n1() -> None:
+    report = _report()
+    exchange01 = _action(report, "exchange01")
+
+    assert exchange01["acquisition_state"] == "BLOCKED_UNVERIFIED"
+    assert exchange01["requires_user_approval"] is False
+    assert exchange01["requires_funds"] is False
+    assert exchange01["requires_real_order"] is False
+    assert "N1" in str(exchange01["reason"])
 
 
 def test_future_dated_verification_does_not_become_current() -> None:
@@ -188,9 +198,9 @@ def test_current_queue_breakdown_is_explicit() -> None:
 
     assert report["verified_gated_action_count"] == 13
     assert report["approval_required_count"] == 15
-    assert report["blocked_unverified_count"] == 1
+    assert report["blocked_unverified_count"] == 2
     assert report["discovery_only_count"] == 1
-    assert report["reverify_required_count"] == 3
+    assert report["reverify_required_count"] == 2
 
 
 def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
