@@ -32,6 +32,20 @@ SAFE_AUTO_ACTIONS: dict[str, dict[str, Any]] = {}
 # REVERIFY_REQUIRED until current official documentation is checked again.
 VERIFICATION_TTL_DAYS = 7
 VERIFIED_GATED_ACTIONS: dict[str, dict[str, Any]] = {
+    "hyprearn": {
+        "verified_at": "2026-08-12T04:24:23+00:00",
+        "evidence_source": "https://hyprearn.com/",
+        "evidence_note": "Official HyprEarn pages state that curated agents run strategies across multiple perpetual DEXs, users allocate capital into those agents to pursue yield and stack DEX points, and every executed trade contributes to HyprEarn points.",
+        "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
+        "requires_funds": True,
+        "requires_real_order": True,
+        "requires_asset_move": True,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_TERMS_JURISDICTION_AND_AGENT_RISK",
+        "known_cost_or_risk": "Qualification requires capital allocation and the delegated agents subsequently trade perpetuals. This creates strategy/PnL, fee, funding, liquidation, smart-contract/custody-interface and withdrawal/liquidity risk; point and yield outcomes are not guaranteed.",
+        "missing_approval": "Current terms/jurisdiction and wallet/authentication check plus explicit allocation amount, maximum acceptable loss, withdrawal tolerance and delegated-agent risk approval.",
+        "next_action": "Verify current account eligibility, wallet/authentication and agent/vault withdrawal mechanics, then prepare a capped allocation plan for explicit approval; do not connect/sign a wallet, allocate capital or launch trading agents automatically.",
+    },
     "standx-maker": {
         "verified_at": "2026-08-12T03:25:00+00:00",
         "evidence_source": "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield",
@@ -45,6 +59,20 @@ VERIFIED_GATED_ACTIONS: dict[str, dict[str, Any]] = {
         "known_cost_or_risk": "Real maker orders can fill and create directional exposure, adverse selection, funding, margin and liquidation risk. Per-pair minimum qualifying sizes and caps vary; no live quoting is authorized.",
         "missing_approval": "Explicit approval of account eligibility, authentication/signing method, maximum notional and maximum loss before any real maker order.",
         "next_action": "Re-check current Perps user eligibility and authentication, then prepare a capped genuine two-sided maker plan for explicit approval; do not place orders automatically.",
+    },
+    "standx-position": {
+        "verified_at": "2026-08-12T04:24:23+00:00",
+        "evidence_source": "https://docs.standx.com/sip/sip-2-position-yield",
+        "evidence_note": "Official SIP-2 is marked Implemented and allocates Position Yield only to valid open perpetual positions that satisfy holding, risk-state, supported-market and rewardable-leverage rules; a position must experience at least one complete funding settlement cycle before accrual.",
+        "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+        "requires_funds": True,
+        "requires_real_order": True,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_PERPS_USER_ELIGIBILITY_AND_LIVE_PARAMETERS",
+        "known_cost_or_risk": "Earning requires opening and holding a real perpetual position. That creates directional PnL, funding, margin, liquidation and parameter-change risk; the fee-pool ratio, supported markets, minimum hold time, leverage limits and settlement mechanism are configurable.",
+        "missing_approval": "Current account eligibility/authentication and live SIP-2 parameter check plus explicit market, side, maximum notional, leverage, holding duration and maximum loss.",
+        "next_action": "Re-check current eligible markets and live SIP-2 parameters, then prepare a capped genuine position-holding plan for explicit approval; do not open or hold a real position automatically.",
     },
     "decibel-trading": {
         "verified_at": "2026-08-12T03:25:00+00:00",
