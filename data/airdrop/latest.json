@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-12T08:43:59.426794+00:00",
+  "generated_at": "2026-08-12T09:39:24.908089+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
-  "ready_dry_run": 11,
+  "ready_dry_run": 12,
   "read_only": 7,
-  "unverified": 2,
+  "unverified": 1,
   "targets": [
     {
       "slug": "okx-ai",
@@ -45,7 +45,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:58.124385+00:00"
+      "checked_at": "2026-08-12T09:39:24.077329+00:00"
     },
     {
       "slug": "hyprearn",
@@ -85,7 +85,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:57.701295+00:00"
+      "checked_at": "2026-08-12T09:39:23.474583+00:00"
     },
     {
       "slug": "pacifica",
@@ -127,7 +127,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:57.867824+00:00"
+      "checked_at": "2026-08-12T09:39:23.688923+00:00"
     },
     {
       "slug": "hibachi",
@@ -170,7 +170,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:57.704047+00:00"
+      "checked_at": "2026-08-12T09:39:23.571234+00:00"
     },
     {
       "slug": "standx-maker",
@@ -210,7 +210,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:57.621407+00:00"
+      "checked_at": "2026-08-12T09:39:23.489929+00:00"
     },
     {
       "slug": "standx-position",
@@ -250,7 +250,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:57.619537+00:00"
+      "checked_at": "2026-08-12T09:39:23.352438+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -290,7 +290,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:57.929098+00:00"
+      "checked_at": "2026-08-12T09:39:23.888479+00:00"
     },
     {
       "slug": "decibel-liquidity",
@@ -330,7 +330,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:57.895148+00:00"
+      "checked_at": "2026-08-12T09:39:23.896719+00:00"
     },
     {
       "slug": "grvt",
@@ -370,7 +370,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:58.119157+00:00"
+      "checked_at": "2026-08-12T09:39:23.762075+00:00"
     },
     {
       "slug": "reya-trading",
@@ -410,7 +410,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:57.674745+00:00"
+      "checked_at": "2026-08-12T09:39:23.517653+00:00"
     },
     {
       "slug": "reya-staking",
@@ -450,7 +450,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:57.752182+00:00"
+      "checked_at": "2026-08-12T09:39:23.524473+00:00"
     },
     {
       "slug": "extended-trading",
@@ -490,7 +490,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:58.295266+00:00"
+      "checked_at": "2026-08-12T09:39:24.131968+00:00"
     },
     {
       "slug": "extended-liquidity",
@@ -530,7 +530,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:58.083603+00:00"
+      "checked_at": "2026-08-12T09:39:24.072812+00:00"
     },
     {
       "slug": "nado-trading",
@@ -570,7 +570,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:58.241425+00:00"
+      "checked_at": "2026-08-12T09:39:24.301591+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -610,7 +610,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:58.158544+00:00"
+      "checked_at": "2026-08-12T09:39:24.099071+00:00"
     },
     {
       "slug": "kyan",
@@ -652,7 +652,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Official Kyan sources confirm Krystals from trading and API/MCP automation capability, but no explicit statement was found that API trading earns Krystals on the same basis.",
-      "checked_at": "2026-08-12T08:43:59.425830+00:00"
+      "checked_at": "2026-08-12T09:39:24.907065+00:00"
     },
     {
       "slug": "lighter",
@@ -663,8 +663,8 @@
       "api_url": "https://apidocs.lighter.xyz/",
       "reward_unit": "points",
       "wave": 1,
-      "seed_note": "Wave 1. API points mechanics are documented, but current program lifecycle is conflicted in official sources.",
-      "status": "UNVERIFIED",
+      "seed_note": "Wave 1. Current general Points Program and Retail pages describe ongoing weekly Season 2 distributions and organic UI/API trading; live financial execution remains approval-gated.",
+      "status": "READY_DRY_RUN",
       "program_probe": {
         "url": "https://docs.lighter.xyz/points-program",
         "ok": true,
@@ -679,24 +679,24 @@
       },
       "api_reward_eligibility": "CONFIRMED",
       "reward_evidence_source": "https://docs.lighter.xyz/points-program",
-      "reward_rule_verified_at": "2026-08-11T05:55:47+09:00",
-      "reward_evidence_note": "Official Points Program states organic trading strategies via UI and API earn points; this confirms mechanics only, not that the points season is currently active.",
-      "program_lifecycle_status": "CONFLICT",
+      "reward_rule_verified_at": "2026-08-12T09:25:35+00:00",
+      "reward_evidence_note": "Current official Points Program states Season 2 points are distributed every Friday and organic trading strategies via UI and API earn points; Sybil, self-trading and similar abusive activity are excluded.",
+      "program_lifecycle_status": "ACTIVE",
       "program_lifecycle_sources": [
         "https://docs.lighter.xyz/points-program",
         "https://docs.lighter.xyz/points-program/retail",
         "https://docs.lighter.xyz/points-program/market-makers"
       ],
-      "program_lifecycle_verified_at": "2026-08-11T05:55:47+09:00",
-      "program_lifecycle_note": "Official Points/Retail pages still describe Season 2 weekly distributions, while the official Market Makers page says Points Season 2 ended on 2025-12-26. Independent reporting also described the final Season 2 distribution on 2025-12-27. Treat lifecycle as conflicted.",
+      "program_lifecycle_verified_at": "2026-08-12T09:25:35+00:00",
+      "program_lifecycle_note": "Current general Points Program and Retail pages explicitly describe ongoing weekly Season 2 distributions. The Market Makers page's statement that Points Season 2 ended on 2025-12-26 is scoped to the market-maker track and does not override the current Retail/general program pages for organic retail/API trading.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
       "points_after": null,
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
-      "blocked_reason": "Official Points/Retail pages still describe Season 2 weekly distributions, while the official Market Makers page says Points Season 2 ended on 2025-12-26. Independent reporting also described the final Season 2 distribution on 2025-12-27. Treat lifecycle as conflicted.",
-      "checked_at": "2026-08-12T08:43:58.398695+00:00"
+      "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
+      "checked_at": "2026-08-12T09:39:24.311945+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -736,7 +736,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:58.371293+00:00"
+      "checked_at": "2026-08-12T09:39:24.231923+00:00"
     },
     {
       "slug": "ethereal-margin",
@@ -776,7 +776,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T08:43:58.299758+00:00"
+      "checked_at": "2026-08-12T09:39:24.186281+00:00"
     },
     {
       "slug": "exchange01",
@@ -816,7 +816,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T08:43:58.127230+00:00"
+      "checked_at": "2026-08-12T09:39:24.296476+00:00"
     }
   ]
 }
