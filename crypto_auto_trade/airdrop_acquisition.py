@@ -116,6 +116,48 @@ VERIFIED_GATED_ACTIONS: dict[str, dict[str, Any]] = {
         "missing_approval": "Account-specific eligibility/authentication check plus explicit maximum notional, fee budget and maximum loss.",
         "next_action": "Confirm account eligibility and authentication, then prepare a capped genuine API-trading plan for explicit approval; do not submit real orders automatically.",
     },
+    "nado-trading": {
+        "verified_at": "2026-08-12T05:25:00+00:00",
+        "evidence_source": "https://docs.nado.xyz/points/season-1",
+        "evidence_note": "Official Nado Season 1 documentation describes a recurring weekly points program and says genuine trading, market making, liquidations and other system-supporting trading activity earn points; wash trading and self-matching are explicitly ineligible.",
+        "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+        "requires_funds": True,
+        "requires_real_order": True,
+        "requires_asset_move": False,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_TERMS_JURISDICTION_ACCOUNT_AND_API_ELIGIBILITY",
+        "known_cost_or_risk": "Qualification requires genuine market activity. Real spot/perpetual trading creates fee, spread/slippage, funding, margin, liquidation and directional PnL risk; point allocation is activity-based rather than a guaranteed reward-per-dollar formula.",
+        "missing_approval": "Current terms/jurisdiction, account/authentication and API-reward eligibility check plus explicit market, maximum notional, fee budget, leverage and maximum loss.",
+        "next_action": "Verify current user/account and API eligibility, then prepare a capped genuine-trading plan for explicit approval; do not submit real orders automatically and do not use self-matching or wash activity.",
+    },
+    "nado-nlp": {
+        "verified_at": "2026-08-12T05:25:00+00:00",
+        "evidence_source": "https://docs.nado.xyz/points/season-1",
+        "evidence_note": "Official Nado Season 1 documentation says NLP participants earn points based on their average proportional share of the vault during each weekly epoch; current NLP documentation describes USDT0 deposits being deployed into active liquidity strategies and a post-mint withdrawal lock.",
+        "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
+        "requires_funds": True,
+        "requires_real_order": False,
+        "requires_asset_move": True,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_TERMS_JURISDICTION_ACCOUNT_AND_CURRENT_VAULT_PARAMETERS",
+        "known_cost_or_risk": "Qualification requires depositing capital into NLP. Capital is exposed to vault/strategy PnL, withdrawal gating or lock periods, smart-contract/oracle risk and opportunity cost; current vault caps and parameters can change.",
+        "missing_approval": "Current terms/jurisdiction, account/authentication, vault cap/lock/withdrawal mechanics plus explicit deposit amount, maximum acceptable loss and liquidity tolerance.",
+        "next_action": "Verify current user eligibility and live NLP vault parameters, then prepare a capped deposit plan for explicit approval; do not deposit, sign or move assets automatically.",
+    },
+    "ethereal-margin": {
+        "verified_at": "2026-08-12T05:25:00+00:00",
+        "evidence_source": "https://docs.ethereal.trade/points/ethereal-points",
+        "evidence_note": "Official Ethereal Rewards & Points documentation says users automatically earn rewards by holding USDe margin, and the current Season One documentation lists holding USDe margin as a core points-earning activity during mainnet/public-beta epochs.",
+        "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
+        "requires_funds": True,
+        "requires_real_order": False,
+        "requires_asset_move": True,
+        "authentication_recheck_required": True,
+        "terms_status": "REVERIFY_TERMS_JURISDICTION_ACCOUNT_AND_CURRENT_SEASON_PARAMETERS",
+        "known_cost_or_risk": "Qualification requires maintaining USDe margin on Ethereal. Moving/holding capital creates stablecoin, smart-contract/platform, withdrawal/liquidity and opportunity-cost risk; points and reward rates can change by epoch or program parameters.",
+        "missing_approval": "Current terms/jurisdiction, account/authentication and live Season One/points parameters plus explicit deposit amount, maximum acceptable loss and withdrawal tolerance.",
+        "next_action": "Verify current user eligibility and live points/reward parameters, then prepare a capped USDe-margin allocation for explicit approval; do not deposit, sign or move assets automatically.",
+    },
 }
 
 
@@ -127,7 +169,9 @@ def _verified_spec_is_fresh(spec: dict[str, Any], *, now: datetime) -> bool:
     verified_at = datetime.fromisoformat(str(spec["verified_at"]))
     if verified_at.tzinfo is None:
         verified_at = verified_at.replace(tzinfo=UTC)
-    return now <= verified_at.astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
+    verified_at = verified_at.astimezone(UTC)
+    current_time = now.astimezone(UTC)
+    return verified_at <= current_time <= verified_at + timedelta(days=VERIFICATION_TTL_DAYS)
 
 
 def _classify_target(target: dict[str, Any], *, now: datetime) -> dict[str, Any]:
