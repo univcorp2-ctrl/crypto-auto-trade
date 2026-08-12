@@ -31,11 +31,12 @@ def test_verified_wave_one_api_reward_rules_are_recorded() -> None:
         assert result["status"] == "READY_DRY_RUN"
 
 
-def test_kyan_stays_unverified_until_api_reward_equivalence_is_explicit() -> None:
+def test_kyan_reward_rule_is_confirmed_but_lifecycle_still_reverified_before_live_use() -> None:
     result = dry_run_target(_target("kyan"), probe_network=False)
-    assert result["api_reward_eligibility"] == "UNVERIFIED"
+    assert result["api_reward_eligibility"] == "CONFIRMED"
     assert result["program_lifecycle_status"] == "REVERIFY"
-    assert result["status"] == "UNVERIFIED"
+    assert result["status"] == "READY_DRY_RUN"
+    assert "inference" in result["reward_evidence_note"].lower()
     assert result["live_approved"] is False
 
 
@@ -48,15 +49,16 @@ def test_lighter_scopes_old_market_maker_end_date_without_blocking_current_retai
     assert result["live_approved"] is False
 
 
-def test_exchange01_legacy_rewards_path_is_blocked_after_n1_migration() -> None:
+def test_exchange01_tracks_current_n1_og_badge_instead_of_legacy_points() -> None:
     result = dry_run_target(_target("exchange01"), probe_network=False)
 
-    assert result["program_url"] == "https://01.xyz/points"
-    assert result["api_reward_eligibility"] == "UNVERIFIED"
-    assert result["program_lifecycle_status"] == "UNVERIFIED"
-    assert result["status"] == "UNVERIFIED"
-    assert "moving to N1" in result["reward_evidence_note"]
-    assert "legacy 01 reward path is blocked" in result["program_lifecycle_note"]
+    assert result["program_url"] == "https://hub.n1.xyz/"
+    assert result["name"] == "N1 / 01 OG Badge Agent"
+    assert result["api_reward_eligibility"] == "CONFIRMED"
+    assert result["program_lifecycle_status"] == "ACTIVE"
+    assert result["status"] == "READY_DRY_RUN"
+    assert "01 OG badge" in result["reward_evidence_note"]
+    assert "badge path" in result["program_lifecycle_note"]
     assert result["live_approved"] is False
 
 
