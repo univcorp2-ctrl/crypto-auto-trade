@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T17:24:02.878090+00:00",
+  "generated_at": "2026-08-12T19:32:25.247356+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
@@ -45,7 +45,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:01.246508+00:00"
+      "checked_at": "2026-08-12T19:32:25.246256+00:00"
     },
     {
       "slug": "hyprearn",
@@ -85,7 +85,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:00.450778+00:00"
+      "checked_at": "2026-08-12T19:32:23.325231+00:00"
     },
     {
       "slug": "pacifica",
@@ -127,7 +127,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:00.937862+00:00"
+      "checked_at": "2026-08-12T19:32:24.187484+00:00"
     },
     {
       "slug": "hibachi",
@@ -170,7 +170,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:00.909966+00:00"
+      "checked_at": "2026-08-12T19:32:23.456440+00:00"
     },
     {
       "slug": "standx-maker",
@@ -210,7 +210,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:00.521267+00:00"
+      "checked_at": "2026-08-12T19:32:23.400404+00:00"
     },
     {
       "slug": "standx-position",
@@ -250,7 +250,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:00.464807+00:00"
+      "checked_at": "2026-08-12T19:32:23.379546+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -290,7 +290,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:00.842848+00:00"
+      "checked_at": "2026-08-12T19:32:23.620564+00:00"
     },
     {
       "slug": "decibel-liquidity",
@@ -330,7 +330,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:00.811640+00:00"
+      "checked_at": "2026-08-12T19:32:23.590111+00:00"
     },
     {
       "slug": "grvt",
@@ -370,7 +370,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:00.658559+00:00"
+      "checked_at": "2026-08-12T19:32:23.883949+00:00"
     },
     {
       "slug": "reya-trading",
@@ -410,7 +410,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:00.642412+00:00"
+      "checked_at": "2026-08-12T19:32:23.607168+00:00"
     },
     {
       "slug": "reya-staking",
@@ -450,7 +450,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:00.603814+00:00"
+      "checked_at": "2026-08-12T19:32:23.569977+00:00"
     },
     {
       "slug": "extended-trading",
@@ -490,7 +490,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:01.025476+00:00"
+      "checked_at": "2026-08-12T19:32:24.542120+00:00"
     },
     {
       "slug": "extended-liquidity",
@@ -530,7 +530,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:01.088816+00:00"
+      "checked_at": "2026-08-12T19:32:24.495162+00:00"
     },
     {
       "slug": "nado-trading",
@@ -570,7 +570,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:01.256422+00:00"
+      "checked_at": "2026-08-12T19:32:24.159132+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -610,7 +610,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:00.915845+00:00"
+      "checked_at": "2026-08-12T19:32:24.046376+00:00"
     },
     {
       "slug": "kyan",
@@ -653,7 +653,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:02.439672+00:00"
+      "checked_at": "2026-08-12T19:32:24.431282+00:00"
     },
     {
       "slug": "lighter",
@@ -697,7 +697,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:01.722557+00:00"
+      "checked_at": "2026-08-12T19:32:24.536582+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -737,7 +737,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:02.876799+00:00"
+      "checked_at": "2026-08-12T19:32:24.230191+00:00"
     },
     {
       "slug": "ethereal-margin",
@@ -777,7 +777,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-12T17:24:02.579480+00:00"
+      "checked_at": "2026-08-12T19:32:24.288568+00:00"
     },
     {
       "slug": "exchange01",
@@ -820,7 +820,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-12T17:24:01.094318+00:00"
+      "checked_at": "2026-08-12T19:32:23.799557+00:00"
     }
   ]
 }
