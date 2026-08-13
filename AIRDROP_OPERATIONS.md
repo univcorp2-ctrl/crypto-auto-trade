@@ -11,7 +11,7 @@
 5. ルール未確認・公式資料競合なら停止
 6. 実行結果、止まった理由、次に必要な操作をJSONへ保存
 
-GitHub Actionsのスケジュールは毎時23分（UTC基準のcron `23 * * * *`）です。
+GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動機会を設けています。どちらのscheduled runでも `data/airdrop/latest.json` が45分未満なら重い獲得サイクルをskipするため、cron取りこぼしへの耐性を持たせつつ実処理はおおむね毎時1回に抑えます。
 
 ## どこを見ればいいか
 
@@ -54,12 +54,14 @@ GitHub Actionsのスケジュールは毎時23分（UTC基準のcron `23 * * * *
 
 ## 現在のWave 1
 
+2026-08-14時点のリポジトリ判定です。`READY_DRY_RUN`や`CONFIRMED`はLIVE実行許可を意味しません。全件 `LEGAL_REVIEW_REQUIRED` / `live_approved=false` を維持します。
+
 | Target | 現状 | 獲得までの次工程 |
 |---|---|---|
-| Pacifica | Reward mechanics確認済み / Program ACTIVE | ポイント獲得は実取引が必要。上限付き取引案を承認キューへ |
-| Hibachi | Reward mechanics確認済み / Program ACTIVE | ポイント獲得はexchange activityが必要。上限付き取引案を承認キューへ |
-| Kyan | API取引→Krystalsの直接適格性未確認 | 公式根拠を再確認するまで停止 |
-| Lighter | API points mechanicsは確認済みだが公式lifecycle記述が競合 | 矛盾解消まで停止 |
+| Pacifica | Reward mechanics `CONFIRMED` / Program `ACTIVE`。公式Program/API到達確認済み | ポイント獲得は実取引が必要。現行Terms・日本居住者適格性・口座条件を再確認後、上限付き実取引案を明示承認キューへ |
+| Hibachi | Reward mechanics `CONFIRMED` / Program `ACTIVE`。UI/APIのpoints算定同一を公式FAQで確認済み | exchange activityが必要。現行Terms・日本居住者適格性・口座条件を再確認後、上限付き実取引案を明示承認キューへ |
+| Kyan | Repo上Reward mechanics `CONFIRMED`だが、API取引→Krystalsは公式一次資料を組み合わせた `PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE`。Program lifecycleは `REVERIFY` | 現行Krystals lifecycle、Terms/管轄、口座/API key、EIP-712署名条件を再確認し、上限付きAPI取引案を明示承認キューへ。署名・実注文は自動実行しない |
+| Lighter | Reward mechanics `CONFIRMED` / Retail・general pathは `ACTIVE`。一般/RetailはSeason 2週次配布とUI/API取引を記載。Market Makersページの2025-12-26終了記載はMM trackとして分離 | 現行Terms・口座適格性・live Retail points条件を実行直前に再確認後、上限付きorganic API取引案を明示承認キューへ |
 
 ## 自動実行の安全条件
 
