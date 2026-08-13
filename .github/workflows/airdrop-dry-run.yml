@@ -3,8 +3,9 @@ name: Airdrop Agent Hourly Acquisition Cycle
 on:
   workflow_dispatch:
   schedule:
-    # Keep the existing hourly cadence and avoid the busiest start-of-hour window.
-    - cron: "23 * * * *"
+    # Use two off-hour trigger opportunities; the freshness gate below keeps the
+    # acquisition work to roughly once per hour while tolerating a dropped cron event.
+    - cron: "23,53 * * * *"
   push:
     branches:
       - main
@@ -35,24 +36,66 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Decide whether a scheduled cycle is due
+        id: cadence
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          event = os.environ.get("GITHUB_EVENT_NAME", "")
+          run_cycle = True
+          reason = f"{event or 'unknown'} event runs the cycle"
+
+          if event == "schedule":
+              status_path = Path("data/airdrop/latest.json")
+              if status_path.exists():
+                  try:
+                      generated_at = json.loads(status_path.read_text()).get("generated_at")
+                      generated = datetime.fromisoformat(str(generated_at).replace("Z", "+00:00"))
+                      age_seconds = (datetime.now(UTC) - generated.astimezone(UTC)).total_seconds()
+                      if 0 <= age_seconds < 45 * 60:
+                          run_cycle = False
+                          reason = f"latest status is only {age_seconds / 60:.1f} minutes old"
+                      else:
+                          reason = f"latest status is {age_seconds / 60:.1f} minutes old"
+                  except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+                      reason = f"freshness check failed safely: {exc}"
+              else:
+                  reason = "latest status is missing"
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"run_cycle={'true' if run_cycle else 'false'}\n")
+              output.write(f"reason={reason}\n")
+          print({"run_cycle": run_cycle, "reason": reason})
+          PY
+
       - uses: actions/setup-python@v6
+        if: steps.cadence.outputs.run_cycle == 'true'
         with:
           python-version: "3.11"
           cache: pip
 
       - name: Install test dependencies
+        if: steps.cadence.outputs.run_cycle == 'true'
         run: pip install -e '.[dev,web]'
 
       - name: Safety, acquisition and web tests
+        if: steps.cadence.outputs.run_cycle == 'true'
         run: pytest -q tests/test_airdrop_agents.py tests/test_airdrop_acquisition.py tests/test_airdrop_web.py
 
       - name: Run gated acquisition cycle
+        if: steps.cadence.outputs.run_cycle == 'true'
         run: |
           python -m crypto_auto_trade.airdrop_acquisition \
             --status-output data/airdrop/latest.json \
             --output data/airdrop/acquisition-latest.json
 
       - name: Show acquisition summary and enforce safety boundary
+        if: steps.cadence.outputs.run_cycle == 'true'
         run: |
           python - <<'PY'
           import json
@@ -75,7 +118,7 @@ jobs:
           PY
 
       - name: Commit refreshed status and acquisition queue on scheduled/main runs
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.cadence.outputs.run_cycle == 'true'
         run: |
           if git diff --quiet -- data/airdrop/latest.json data/airdrop/acquisition-latest.json && \
              git ls-files --error-unmatch data/airdrop/latest.json >/dev/null 2>&1 && \
