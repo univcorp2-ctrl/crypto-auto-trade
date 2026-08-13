@@ -22,8 +22,8 @@
     </header>
 
     <section class="notice">
-      <strong>獲得サイクル: 毎時23分</strong>
-      <span>自動実行は「資金移動なし・wallet署名なし・実注文なし」で公式に報酬対象と確認できたものだけ。実取引等は承認待ちにします。詳細は <a href="https://github.com/univcorp2-ctrl/crypto-auto-trade/blob/main/AIRDROP_OPERATIONS.md" target="_blank" rel="noreferrer">運用仕様 ↗</a> / <a href="https://github.com/univcorp2-ctrl/crypto-auto-trade/blob/main/data/airdrop/acquisition-latest.json" target="_blank" rel="noreferrer">最新獲得キュー ↗</a>。</span>
+      <strong>獲得サイクル: 毎時23分 + 53分の2回判定</strong>
+      <span>23分と53分の2つのtrigger機会を使い、どちらのscheduled runでもlatest statusが45分未満なら重い処理をskipします。これによりcron取りこぼしを補いながら、実処理はおおむね毎時1回に抑えます。自動実行は「資金移動なし・wallet署名なし・実注文なし」で公式に報酬対象と確認できたものだけ。実取引等は承認待ちにします。詳細は <a href="https://github.com/univcorp2-ctrl/crypto-auto-trade/blob/main/AIRDROP_OPERATIONS.md" target="_blank" rel="noreferrer">運用仕様 ↗</a> / <a href="https://github.com/univcorp2-ctrl/crypto-auto-trade/blob/main/data/airdrop/acquisition-latest.json" target="_blank" rel="noreferrer">最新獲得キュー ↗</a>。</span>
     </section>
 
     <section class="notice">
@@ -59,7 +59,7 @@
       <label>検索
         <input id="search" placeholder="Pacifica / points / Kyan ..."/>
       </label>
-      <span class="schedule">Scheduler: GitHub Actions / hourly at :23</span>
+      <span class="schedule">Scheduler: GitHub Actions / :23 + :53 opportunities · freshness gate on both</span>
     </section>
 
     <section id="loading" class="loading">Loading...</section>
