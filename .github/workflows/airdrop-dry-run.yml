@@ -85,7 +85,7 @@ jobs:
 
       - name: Safety, acquisition and web tests
         if: steps.cadence.outputs.run_cycle == 'true'
-        run: pytest -q tests/test_airdrop_agents.py tests/test_airdrop_acquisition.py tests/test_airdrop_web.py
+        run: pytest -q tests/test_airdrop*.py
 
       - name: Run gated acquisition cycle
         if: steps.cadence.outputs.run_cycle == 'true'

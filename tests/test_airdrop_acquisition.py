@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 14, 9, 25, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 14, 12, 30, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -115,6 +115,9 @@ def test_primary_verified_targets_move_to_exact_approval_queues() -> None:
     assert grvt["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert grvt["requires_real_order"] is True
     assert grvt["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert grvt["reward_scope"] == "PERPETUAL_TRADES_ONLY"
+    assert grvt["weekly_activity_weights"]["trading_volume_pct"] == 50
+    assert "spot" in str(grvt["known_cost_or_risk"]).lower()
     assert "0.0450%" in str(grvt["known_cost_or_risk"])
 
     assert lighter["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
