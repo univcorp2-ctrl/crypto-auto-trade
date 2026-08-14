@@ -11,7 +11,7 @@
 5. ルール未確認・公式資料競合なら停止
 6. 実行結果、止まった理由、次に必要な操作をJSONへ保存
 
-GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動機会を設けています。どちらのscheduled runでも `data/airdrop/latest.json` が45分未満なら重い獲得サイクルをskipするため、cron取りこぼしへの耐性を持たせつつ実処理はおおむね毎時1回に抑えます。
+GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動機会を設けています。どちらのscheduled runでも `data/airdrop/latest.json` が35分未満なら重い獲得サイクルをskipします。35分以上なら実行することで、1回のcron取りこぼし後にstatusが90〜100分超古くなるリスクを下げつつ、不要な重複処理を抑えます。
 
 ## どこを見ればいいか
 

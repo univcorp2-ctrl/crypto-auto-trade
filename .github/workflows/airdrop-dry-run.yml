@@ -57,7 +57,7 @@ jobs:
                       generated_at = json.loads(status_path.read_text()).get("generated_at")
                       generated = datetime.fromisoformat(str(generated_at).replace("Z", "+00:00"))
                       age_seconds = (datetime.now(UTC) - generated.astimezone(UTC)).total_seconds()
-                      if 0 <= age_seconds < 45 * 60:
+                      if 0 <= age_seconds < 35 * 60:
                           run_cycle = False
                           reason = f"latest status is only {age_seconds / 60:.1f} minutes old"
                       else:
