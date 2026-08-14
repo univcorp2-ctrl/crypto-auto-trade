@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T12:32:31.097536+00:00",
+  "generated_at": "2026-08-14T12:36:51.296119+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -259,17 +259,33 @@
       "requires_asset_move": false,
       "authentication_recheck_required": true,
       "points_delta": null,
-      "verified_at": "2026-08-12T03:25:00+00:00",
+      "verified_at": "2026-08-14T12:24:50+00:00",
       "evidence_source": "https://help.grvt.io/en/articles/12332040-live-rewards-season-2-0",
-      "evidence_note": "Official live Rewards Season 2.0 states trading earns points and explicitly says API-based trades earn points, although less than UI-based trades.",
+      "evidence_sources": [
+        "https://help.grvt.io/en/articles/12332040-live-rewards-season-2-0",
+        "https://help.grvt.io/en/articles/15583631-how-rewards-are-calculated-on-grvt",
+        "https://help.grvt.io/en/articles/9614699-how-does-grvt-s-fee-model-work",
+        "https://help.grvt.io/en/articles/9711621-restricted-jurisdictions",
+        "https://help.grvt.io/en/articles/14117414-how-to-troubleshoot-authentication-errors-when-using-the-grvt-api"
+      ],
+      "evidence_note": "Current official GRVT Rewards Season 2.0 says points are earned from exchange activity and API-based trades earn fewer points than UI-based trades. GRVT's current rewards calculation page narrows the Points Program to perpetual trades only: spot trades do not contribute to points. Weekly allocation weights are Trading Volume 50%, Open Interest 15%, Liquidity Provision 5%, Liquidations 5%, TVL 5%, and Direct Referrals 20%.",
+      "reward_scope": "PERPETUAL_TRADES_ONLY",
+      "weekly_activity_weights": {
+        "trading_volume_pct": 50,
+        "open_interest_pct": 15,
+        "liquidity_provision_pct": 5,
+        "liquidations_pct": 5,
+        "tvl_pct": 5,
+        "direct_referrals_pct": 20
+      },
       "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
-      "terms_status": "JAPAN_NOT_LISTED_IN_CURRENT_RESTRICTED_JURISDICTIONS_ACCOUNT_ELIGIBILITY_STILL_REVERIFY",
-      "known_cost_or_risk": "Real perpetual trading creates PnL, funding, slippage and liquidation risk. Current Level 1 perps fees are maker -0.0001% and taker 0.0450%; actual all-in cost can be higher.",
-      "missing_approval": "Account-specific eligibility/authentication check plus explicit maximum notional, fee budget and maximum loss.",
-      "next_action": "Confirm account eligibility and authentication, then prepare a capped genuine API-trading plan for explicit approval; do not submit real orders automatically.",
+      "terms_status": "JAPAN_NOT_LISTED_IN_CURRENT_RESTRICTED_JURISDICTIONS_REVERIFY_ACCOUNT_KYC_TERMS_AND_API_ORIGIN",
+      "known_cost_or_risk": "Points require perpetual-market activity; spot trading does not earn Points Program points. UI trades receive more points than API trades and taker volume receives more points than maker volume, but points have no verified cash value here, so higher-fee activity is not automatically economical. Current Level 1 perps fees are maker -0.0001% and taker 0.0450%; real perps trading also creates spread/slippage, funding, margin, liquidation and directional PnL risk. GRVT's API guide also blocks API access from U.S., U.K. and China IPs and can enforce API-key/IP permissions.",
+      "missing_approval": "Current account-specific KYC/eligibility and Terms check, compliant API origin/IP/API-key permissions if API is used, plus explicit perpetual market, maximum notional, leverage, fee/funding budget and maximum acceptable loss. Spot must not be used as a Points Program earning path, and UI/taker weighting must not be treated as sufficient reason to increase economic risk.",
+      "next_action": "Confirm current account KYC/Terms and authentication, then prepare a capped genuine perpetual-trading plan for explicit approval. Compare UI versus API and maker versus taker only after fees, funding, slippage and unknown point value are considered; do not use spot for points, do not submit real orders automatically, and do not evade geographic or bot controls.",
       "evidence_status": "PRIMARY_VERIFIED_CURRENT",
-      "verification_expires_at": "2026-08-19T03:25:00+00:00",
-      "reason": "Official live Rewards Season 2.0 states trading earns points and explicitly says API-based trades earn points, although less than UI-based trades."
+      "verification_expires_at": "2026-08-21T12:24:50+00:00",
+      "reason": "Current official GRVT Rewards Season 2.0 says points are earned from exchange activity and API-based trades earn fewer points than UI-based trades. GRVT's current rewards calculation page narrows the Points Program to perpetual trades only: spot trades do not contribute to points. Weekly allocation weights are Trading Volume 50%, Open Interest 15%, Liquidity Provision 5%, Liquidations 5%, TVL 5%, and Direct Referrals 20%."
     },
     {
       "slug": "reya-trading",
