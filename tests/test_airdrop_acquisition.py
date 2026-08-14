@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS, build_acquisition_report
 from crypto_auto_trade.airdrop_agents import run_all
 
-TEST_NOW = datetime(2026, 8, 12, 12, 40, tzinfo=UTC)
+TEST_NOW = datetime(2026, 8, 14, 9, 25, tzinfo=UTC)
 
 
 def _report(*, now: datetime = TEST_NOW) -> dict[str, object]:
@@ -16,11 +16,18 @@ def _action(report: dict[str, object], slug: str) -> dict[str, object]:
     return next(action for action in actions if action["slug"] == slug)
 
 
+def _additional_path(report: dict[str, object], slug: str) -> dict[str, object]:
+    paths = report["additional_approval_paths"]
+    assert isinstance(paths, list)
+    return next(path for path in paths if path["slug"] == slug)
+
+
 def test_acquisition_cycle_never_executes_financial_side_effects() -> None:
     report = _report()
 
     assert report["mode"] == "ACQUISITION_GATED"
     assert report["target_count"] == 20
+    assert report["reward_path_count"] == 21
     assert report["financial_actions_executed"] == 0
     assert report["asset_transfers_executed"] == 0
     assert report["wallet_signatures_executed"] == 0
@@ -200,6 +207,24 @@ def test_n1_og_badge_is_safe_but_authentication_gated() -> None:
     assert "do not connect a wallet" in str(n1_badge["next_action"]).lower()
 
 
+def test_n1_points_launch_adds_financial_approval_path_without_overwriting_badge_path() -> None:
+    report = _report()
+    n1_badge = _action(report, "exchange01")
+    n1_points = _additional_path(report, "n1-points-trading")
+
+    assert n1_badge["acquisition_state"] == "SAFE_ACTION_AUTH_REQUIRED"
+    assert n1_points["parent_slug"] == "exchange01"
+    assert n1_points["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert n1_points["requires_user_approval"] is True
+    assert n1_points["requires_funds"] is True
+    assert n1_points["requires_real_order"] is True
+    assert n1_points["requires_asset_move"] is False
+    assert n1_points["auto_executed"] is False
+    assert n1_points["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "75 million" in str(n1_points["evidence_note"])
+    assert "exact" in str(n1_points["missing_approval"]).lower()
+
+
 def test_future_dated_verification_does_not_become_current() -> None:
     before_new_verification = datetime(2026, 8, 12, 5, 20, tzinfo=UTC)
     report = _report(now=before_new_verification)
@@ -215,6 +240,7 @@ def test_future_dated_verification_does_not_become_current() -> None:
     assert _action(report, "reya-staking")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "extended-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "extended-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert report["additional_approval_required_count"] == 0
 
 
 def test_verified_gated_evidence_expires_back_to_reverify() -> None:
@@ -238,14 +264,18 @@ def test_verified_gated_evidence_expires_back_to_reverify() -> None:
     assert _action(report, "reya-staking")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "extended-trading")["acquisition_state"] == "REVERIFY_REQUIRED"
     assert _action(report, "extended-liquidity")["acquisition_state"] == "REVERIFY_REQUIRED"
+    assert report["additional_approval_required_count"] == 0
 
 
 def test_current_queue_breakdown_is_explicit() -> None:
     report = _report()
 
     assert report["verified_gated_action_count"] == 17
+    assert report["verified_additional_path_count"] == 1
     assert report["safe_auth_required_count"] == 1
-    assert report["approval_required_count"] == 18
+    assert report["primary_approval_required_count"] == 18
+    assert report["additional_approval_required_count"] == 1
+    assert report["approval_required_count"] == 19
     assert report["blocked_unverified_count"] == 0
     assert report["discovery_only_count"] == 1
     assert report["reverify_required_count"] == 0
@@ -257,3 +287,4 @@ def test_current_registry_does_not_claim_reward_actions_were_executed() -> None:
     assert report["safe_auto_adapter_count"] == 0
     assert report["auto_executed_action_count"] == 0
     assert all(action["action_taken"] == "NONE" for action in report["actions"])
+    assert all(path["action_taken"] == "NONE" for path in report["additional_approval_paths"])

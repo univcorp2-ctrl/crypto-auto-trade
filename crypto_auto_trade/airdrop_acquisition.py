@@ -29,9 +29,9 @@ SAFE_AUTO_ACTIONS: dict[str, dict[str, Any]] = {}
 # separate from SAFE_AUTO_ACTIONS so "safe" is never confused with "executed".
 VERIFIED_SAFE_AUTH_ACTIONS: dict[str, dict[str, Any]] = {
     "exchange01": {
-        "verified_at": "2026-08-12T12:35:00+00:00",
+        "verified_at": "2026-08-14T09:20:00+00:00",
         "evidence_source": "https://hub.n1.xyz/",
-        "evidence_note": "Current official N1 Hub announces a new 01 OG badge and tells users to log in, check eligibility and claim it. The public sign-in surface currently offers Discord while X and wallet sign-in are marked coming soon.",
+        "evidence_note": "Current official N1 Hub still exposes the 01 OG badge flow and tells users to log in, check eligibility and claim it. The public sign-in surface offers Discord while X and wallet sign-in are marked coming soon.",
         "acquisition_state": "SAFE_ACTION_AUTH_REQUIRED",
         "requires_funds": False,
         "requires_wallet_signature": False,
@@ -43,6 +43,37 @@ VERIFIED_SAFE_AUTH_ACTIONS: dict[str, dict[str, Any]] = {
         "missing_approval": "No financial approval is required for the public badge path. Missing prerequisite is a supported authenticated N1/Discord session plus account-specific eligibility confirmation.",
         "next_action": "When an authenticated N1/Discord session is available through a supported connector/browser, check 01 OG badge eligibility and claim only the badge if eligible; do not connect a wallet, move assets or trade as part of this action.",
     },
+}
+
+# A single project can expose more than one materially different reward path.
+# Keep secondary paths separate instead of overwriting the safer primary path.
+# These paths are informational approval queues only and never authorize execution.
+VERIFIED_ADDITIONAL_APPROVAL_PATHS: dict[str, list[dict[str, Any]]] = {
+    "exchange01": [
+        {
+            "slug": "n1-points-trading",
+            "name": "N1 Points Season 1 Trading Path",
+            "verified_at": "2026-08-14T09:20:00+00:00",
+            "evidence_source": "https://www.n1.xyz/blog/n1x",
+            "evidence_sources": [
+                "https://www.n1.xyz/blog/n1x",
+                "https://www.n1.xyz/blog/n1-01",
+                "https://hub.n1.xyz/",
+            ],
+            "evidence_note": "N1's official Aug. 11, 2026 launch post says N1 Points launched that day to reward users who bring liquidity, activity and new markets to the N1 Exchange. Season 1 distributes 75 million N1 Points weekly for 26 weeks plus 37 million retroactive Points, and Momentum increases a user's weekly share for consistent weekly activity. The exact per-action points formula is not published in the public article, so this path is approval-gated and not treated as deterministic reward-per-dollar evidence.",
+            "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+            "requires_user_approval": True,
+            "requires_funds": True,
+            "requires_wallet_signature": False,
+            "requires_real_order": True,
+            "requires_asset_move": False,
+            "authentication_recheck_required": True,
+            "terms_status": "REVERIFY_N1_POINTS_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_AUTHENTICATION_AND_EXACT_ACTIVITY_WEIGHTS",
+            "known_cost_or_risk": "The public launch ties N1 Points to exchange liquidity/activity, so pursuing this path requires genuine exchange activity rather than a zero-risk claim. Real trading can incur fees, spread/slippage, funding, margin/liquidation and directional PnL risk. Exact point weights, account eligibility and current terms/jurisdiction are not fully specified by the public launch article.",
+            "missing_approval": "Current N1 Points terms/jurisdiction and account eligibility/authentication, plus explicit market, maximum notional, leverage, fee/funding budget and maximum acceptable loss. The exact activity-to-points weighting must also be re-checked before any economic action.",
+            "next_action": "Re-check current N1 Points account eligibility, terms and any in-app points rules/weights, then prepare a capped genuine-trading plan for explicit approval; do not place real orders, deposit funds, sign a wallet message or manufacture volume automatically.",
+        }
+    ]
 }
 
 # Primary-source reward mechanics verified during the scheduled acquisition
@@ -300,6 +331,30 @@ def _verified_spec_is_fresh(spec: dict[str, Any], *, now: datetime) -> bool:
     return verified_at <= current_time <= verified_at + timedelta(days=VERIFICATION_TTL_DAYS)
 
 
+def _current_additional_approval_paths(actions: list[dict[str, Any]], *, now: datetime) -> list[dict[str, Any]]:
+    current_paths: list[dict[str, Any]] = []
+    active_slugs = {str(action["slug"]) for action in actions}
+    for parent_slug, specs in VERIFIED_ADDITIONAL_APPROVAL_PATHS.items():
+        if parent_slug not in active_slugs:
+            continue
+        for spec in specs:
+            if not _verified_spec_is_fresh(spec, now=now):
+                continue
+            expires_at = datetime.fromisoformat(str(spec["verified_at"])).astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
+            current_paths.append(
+                {
+                    "parent_slug": parent_slug,
+                    **spec,
+                    "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+                    "verification_expires_at": expires_at.isoformat(),
+                    "action_taken": "NONE",
+                    "auto_executed": False,
+                    "points_delta": None,
+                }
+            )
+    return current_paths
+
+
 def _classify_target(target: dict[str, Any], *, now: datetime) -> dict[str, Any]:
     slug = str(target["slug"])
     status = str(target["status"])
@@ -423,16 +478,22 @@ def _classify_target(target: dict[str, Any], *, now: datetime) -> dict[str, Any]
 def build_acquisition_report(status_report: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
     current_time = now or datetime.now(UTC)
     actions = [_classify_target(target, now=current_time) for target in status_report.get("targets", [])]
+    additional_approval_paths = _current_additional_approval_paths(actions, now=current_time)
+    primary_approval_required_count = sum(bool(item["requires_user_approval"]) for item in actions)
     return {
         "generated_at": current_time.astimezone(UTC).isoformat(),
         "mode": "ACQUISITION_GATED",
         "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
         "target_count": len(actions),
+        "reward_path_count": len(actions) + len(additional_approval_paths),
         "safe_auto_adapter_count": len(SAFE_AUTO_ACTIONS),
         "verified_gated_action_count": sum(item.get("evidence_status") == "PRIMARY_VERIFIED_CURRENT" for item in actions),
+        "verified_additional_path_count": sum(path.get("evidence_status") == "PRIMARY_VERIFIED_CURRENT" for path in additional_approval_paths),
         "safe_auth_required_count": sum(item["acquisition_state"] == "SAFE_ACTION_AUTH_REQUIRED" for item in actions),
         "auto_executed_action_count": sum(bool(item["auto_executed"]) for item in actions),
-        "approval_required_count": sum(bool(item["requires_user_approval"]) for item in actions),
+        "primary_approval_required_count": primary_approval_required_count,
+        "additional_approval_required_count": len(additional_approval_paths),
+        "approval_required_count": primary_approval_required_count + len(additional_approval_paths),
         "blocked_unverified_count": sum(item["acquisition_state"] == "BLOCKED_UNVERIFIED" for item in actions),
         "reverify_required_count": sum(item["acquisition_state"] == "REVERIFY_REQUIRED" for item in actions),
         "discovery_only_count": sum(item["acquisition_state"] == "DISCOVERY_ONLY" for item in actions),
@@ -441,6 +502,7 @@ def build_acquisition_report(status_report: dict[str, Any], *, now: datetime | N
         "wallet_signatures_executed": 0,
         "live_orders_executed": 0,
         "live_approved": False,
+        "additional_approval_paths": additional_approval_paths,
         "actions": actions,
     }
 
@@ -477,7 +539,9 @@ def main() -> None:
                 "mode": report["mode"],
                 "output": str(args.output),
                 "target_count": report["target_count"],
+                "reward_path_count": report["reward_path_count"],
                 "verified_gated_action_count": report["verified_gated_action_count"],
+                "verified_additional_path_count": report["verified_additional_path_count"],
                 "safe_auth_required_count": report["safe_auth_required_count"],
                 "auto_executed_action_count": report["auto_executed_action_count"],
                 "approval_required_count": report["approval_required_count"],
