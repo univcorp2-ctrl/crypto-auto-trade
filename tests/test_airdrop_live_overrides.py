@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from crypto_auto_trade.airdrop_live_overrides import (
     OVERRIDE_TTL_DAYS,
     REYA_SIGNAL_VERIFIED_AT,
+    REYA_TRADING_PRICING_VERIFIED_AT,
     STANDX_MAKER_LIVE_PARAMETERS,
     STANDX_MAKER_VERIFIED_AT,
     apply_live_overrides,
@@ -44,6 +45,7 @@ def _reya_report() -> dict[str, object]:
         "actions": [
             {
                 "slug": "reya-trading",
+                "evidence_source": "https://docs.reya.xyz/reya-token/reya-chain-points-faqs",
                 "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
                 "requires_user_approval": True,
                 "requires_funds": True,
@@ -76,6 +78,34 @@ def test_standx_live_parameters_refine_approval_queue_without_execution() -> Non
     assert action["live_parameters"]["pairs"]["SPCX-USD"]["max_maker_hours_per_hour"] == 2
     assert "maximum notional" in action["missing_approval"].lower()
     assert "do not place" in action["next_action"].lower()
+    assert report["financial_actions_executed"] == 0
+    assert report["asset_transfers_executed"] == 0
+    assert report["wallet_signatures_executed"] == 0
+    assert report["live_orders_executed"] == 0
+    assert report["live_approved"] is False
+
+
+def test_reya_trading_pricing_refines_cost_queue_without_execution() -> None:
+    now = datetime(2026, 8, 15, 16, 21, tzinfo=UTC)
+    report = apply_live_overrides(_reya_report(), now=now)
+    action = report["actions"][0]
+    fee_model = action["announced_fee_model"]
+
+    assert report["live_override_count"] == 2
+    assert action["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert action["requires_user_approval"] is True
+    assert action["action_taken"] == "NONE"
+    assert action["auto_executed"] is False
+    assert fee_model["standard_taker_fee_bps"] == 3
+    assert fee_model["previous_headline_taker_fee_bps"] == 4
+    assert fee_model["lowest_rolling_30d_volume_taker_fee_bps"] == 2
+    assert fee_model["orderbook_maker_fee_bps"] == 0
+    assert fee_model["orderbook_maker_fee_effective_status"] == "ON_ORDERBOOK_LAUNCH"
+    assert fee_model["maker_rebates_status"] == "TO_FOLLOW_AFTER_ORDERBOOK_LAUNCH"
+    assert "pay-less-to-take-get-paid-to-make" in action["pricing_evidence_source"]
+    assert "spread" in action["known_cost_or_risk"].lower()
+    assert "actually active" in action["missing_approval"].lower()
+    assert "do not assume announced future maker rebates are active" in action["next_action"].lower()
     assert report["financial_actions_executed"] == 0
     assert report["asset_transfers_executed"] == 0
     assert report["wallet_signatures_executed"] == 0
@@ -141,8 +171,9 @@ def test_standx_override_expires_closed() -> None:
 
 
 def test_reya_signal_review_path_expires_closed() -> None:
-    verified = datetime.fromisoformat(REYA_SIGNAL_VERIFIED_AT).astimezone(UTC)
-    stale = verified + timedelta(days=OVERRIDE_TTL_DAYS, seconds=1)
+    signal_verified = datetime.fromisoformat(REYA_SIGNAL_VERIFIED_AT).astimezone(UTC)
+    pricing_verified = datetime.fromisoformat(REYA_TRADING_PRICING_VERIFIED_AT).astimezone(UTC)
+    stale = max(signal_verified, pricing_verified) + timedelta(days=OVERRIDE_TTL_DAYS, seconds=1)
     report = apply_live_overrides(_reya_report(), now=stale)
 
     assert report["live_override_count"] == 0
@@ -151,6 +182,7 @@ def test_reya_signal_review_path_expires_closed() -> None:
     assert report["verified_additional_review_path_count"] == 0
     assert report["reward_path_count"] == 21
     assert report["additional_review_paths"] == []
+    assert "announced_fee_model" not in report["actions"][0]
 
 
 def test_published_pair_table_is_complete_for_current_official_page() -> None:
