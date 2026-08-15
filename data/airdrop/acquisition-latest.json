@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T16:08:07.024519+00:00",
+  "generated_at": "2026-08-15T16:27:17.414957+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -424,12 +424,30 @@
       "evidence_basis": "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE",
       "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
       "terms_status": "REVERIFY_CURRENT_RCP_LIFECYCLE_TERMS_JURISDICTION_ACCOUNT_AND_API_AUTHENTICATION",
-      "known_cost_or_risk": "Qualification requires genuine perpetual trading. Real orders create fees, spread/slippage, funding, margin, liquidation and directional PnL risk; private order actions require wallet signatures and weekly RCP weights can change.",
-      "missing_approval": "Current RCP lifecycle, terms/jurisdiction, account eligibility and wallet/API authentication plus explicit market, maximum notional, leverage, fee budget and maximum loss.",
-      "next_action": "Re-check current RCP lifecycle, account eligibility and wallet/API signing requirements, then prepare a capped genuine API-trading plan for explicit approval; do not sign or submit real orders automatically.",
+      "known_cost_or_risk": "Qualification still requires genuine perpetual trading, so real orders create directional PnL, funding, margin and liquidation risk and private order actions require wallet signatures. Reya's Aug. 13, 2026 official fee-model announcement says the headline taker rate is moving from 4 bps to 3 bps and can fall to 2 bps with rolling 30-day volume; it also says maker fees will be zero when the orderbook launches and maker rebates will follow later. Do not treat the future orderbook maker fee or rebates as currently active without a live pre-trade recheck. Reya also warns that spread can be a larger component of gross trading cost than the visible fee, so fee + spread + funding + PnL risk must be evaluated together.",
+      "missing_approval": "Current RCP lifecycle, terms/jurisdiction, account eligibility and wallet/API authentication; live confirmation of the effective taker tier and whether the announced orderbook maker-fee/rebate model is actually active; plus explicit market, maximum notional, leverage, fee/spread/funding budget and maximum acceptable loss.",
+      "next_action": "Immediately before any economic action, re-open Reya's live trading/fee surface and current Terms/account eligibility, confirm the effective fee tier and orderbook status, then calculate a capped worst-case cost using fee + spread + funding + maximum PnL loss. Prepare that plan for explicit approval only; do not assume announced future maker rebates are active, do not sign a wallet message and do not submit real orders automatically.",
       "evidence_status": "PRIMARY_VERIFIED_CURRENT",
       "verification_expires_at": "2026-08-19T11:57:20+00:00",
-      "reason": "Current official Reya Chain Points FAQs say trading any supported market on Reya earns RCP, while the official Reya DEX REST API v2 provides programmatic order entry for the same exchange and requires wallet signatures on private order actions. Taken together, genuine API trades are treated as the same channel-neutral trading activity; this is an inference from current primary documents rather than an explicit sentence saying API trades earn RCP."
+      "reason": "Current official Reya Chain Points FAQs say trading any supported market on Reya earns RCP, while the official Reya DEX REST API v2 provides programmatic order entry for the same exchange and requires wallet signatures on private order actions. Taken together, genuine API trades are treated as the same channel-neutral trading activity; this is an inference from current primary documents rather than an explicit sentence saying API trades earn RCP.",
+      "evidence_checked_at": "2026-08-15T16:20:09+00:00",
+      "pricing_evidence_source": "https://blog.reya.network/pay-less-to-take-get-paid-to-make/",
+      "evidence_sources": [
+        "https://docs.reya.xyz/reya-token/reya-chain-points-faqs",
+        "https://blog.reya.network/pay-less-to-take-get-paid-to-make/"
+      ],
+      "pricing_evidence_status": "PRIMARY_OFFICIAL_CURRENT_ANNOUNCEMENT_RECHECK_EFFECTIVE_STATUS_BEFORE_EXECUTION",
+      "pricing_verification_expires_at": "2026-08-22T16:20:09+00:00",
+      "announced_fee_model": {
+        "published_at": "2026-08-13",
+        "standard_taker_fee_bps": 3,
+        "previous_headline_taker_fee_bps": 4,
+        "lowest_rolling_30d_volume_taker_fee_bps": 2,
+        "orderbook_maker_fee_bps": 0,
+        "orderbook_maker_fee_effective_status": "ON_ORDERBOOK_LAUNCH",
+        "maker_rebates_status": "TO_FOLLOW_AFTER_ORDERBOOK_LAUNCH",
+        "current_discount_note": "OG and VLTZ discounts continue; future discounts are planned around staked REYA."
+      }
     },
     {
       "slug": "reya-staking",
@@ -720,7 +738,7 @@
       "reason": "Current official N1 Hub still exposes the 01 OG badge flow and tells users to log in, check eligibility and claim it. The public sign-in surface offers Discord while X and wallet sign-in are marked coming soon."
     }
   ],
-  "live_override_count": 2,
+  "live_override_count": 3,
   "additional_review_paths": [
     {
       "parent_slug": "reya-trading",
