@@ -14,6 +14,8 @@ REYA_SIGNAL_EVIDENCE_SOURCE = "https://docs.reya.xyz/reya-token/reya-chain-point
 REYA_SIGNAL_AMBASSADOR_SOURCE = "https://blog.reya.network/introducing-the-reya-ambassador-program/"
 REYA_SIGNAL_BLOG_INDEX_SOURCE = "https://blog.reya.network/"
 REYA_SIGNAL_CORROBORATION_SOURCE = "https://cryptorank.io/drophunting/voltz-labs-activity87"
+REYA_TRADING_PRICING_VERIFIED_AT = "2026-08-15T16:20:09+00:00"
+REYA_TRADING_PRICING_SOURCE = "https://blog.reya.network/pay-less-to-take-get-paid-to-make/"
 OVERRIDE_TTL_DAYS = 7
 
 STANDX_MAKER_LIVE_PARAMETERS: dict[str, Any] = {
@@ -106,6 +108,62 @@ def _verified_at_is_fresh(verified_at: str, *, now: datetime) -> bool:
 
 def _is_fresh(*, now: datetime) -> bool:
     return _verified_at_is_fresh(STANDX_MAKER_VERIFIED_AT, now=now)
+
+
+def _apply_reya_trading_pricing(result: dict[str, Any], *, now: datetime) -> bool:
+    if not _verified_at_is_fresh(REYA_TRADING_PRICING_VERIFIED_AT, now=now):
+        return False
+
+    for action in result.get("actions", []):
+        if not isinstance(action, dict) or action.get("slug") != "reya-trading":
+            continue
+        if action.get("acquisition_state") != "APPROVAL_REQUIRED_FINANCIAL":
+            continue
+        if not action.get("requires_user_approval"):
+            continue
+
+        expires = datetime.fromisoformat(REYA_TRADING_PRICING_VERIFIED_AT).astimezone(UTC) + timedelta(days=OVERRIDE_TTL_DAYS)
+        sources = list(action.get("evidence_sources") or [])
+        if action.get("evidence_source") and action["evidence_source"] not in sources:
+            sources.append(action["evidence_source"])
+        if REYA_TRADING_PRICING_SOURCE not in sources:
+            sources.append(REYA_TRADING_PRICING_SOURCE)
+
+        action.update(
+            {
+                "evidence_checked_at": REYA_TRADING_PRICING_VERIFIED_AT,
+                "pricing_evidence_source": REYA_TRADING_PRICING_SOURCE,
+                "evidence_sources": sources,
+                "pricing_evidence_status": "PRIMARY_OFFICIAL_CURRENT_ANNOUNCEMENT_RECHECK_EFFECTIVE_STATUS_BEFORE_EXECUTION",
+                "pricing_verification_expires_at": expires.isoformat(),
+                "announced_fee_model": {
+                    "published_at": "2026-08-13",
+                    "standard_taker_fee_bps": 3,
+                    "previous_headline_taker_fee_bps": 4,
+                    "lowest_rolling_30d_volume_taker_fee_bps": 2,
+                    "orderbook_maker_fee_bps": 0,
+                    "orderbook_maker_fee_effective_status": "ON_ORDERBOOK_LAUNCH",
+                    "maker_rebates_status": "TO_FOLLOW_AFTER_ORDERBOOK_LAUNCH",
+                    "current_discount_note": "OG and VLTZ discounts continue; future discounts are planned around staked REYA.",
+                },
+                "known_cost_or_risk": (
+                    "Qualification still requires genuine perpetual trading, so real orders create directional PnL, funding, margin and liquidation risk and private order actions require wallet signatures. "
+                    "Reya's Aug. 13, 2026 official fee-model announcement says the headline taker rate is moving from 4 bps to 3 bps and can fall to 2 bps with rolling 30-day volume; it also says maker fees will be zero when the orderbook launches and maker rebates will follow later. "
+                    "Do not treat the future orderbook maker fee or rebates as currently active without a live pre-trade recheck. Reya also warns that spread can be a larger component of gross trading cost than the visible fee, so fee + spread + funding + PnL risk must be evaluated together."
+                ),
+                "missing_approval": (
+                    "Current RCP lifecycle, terms/jurisdiction, account eligibility and wallet/API authentication; live confirmation of the effective taker tier and whether the announced orderbook maker-fee/rebate model is actually active; plus explicit market, maximum notional, leverage, fee/spread/funding budget and maximum acceptable loss."
+                ),
+                "next_action": (
+                    "Immediately before any economic action, re-open Reya's live trading/fee surface and current Terms/account eligibility, confirm the effective fee tier and orderbook status, then calculate a capped worst-case cost using fee + spread + funding + maximum PnL loss. "
+                    "Prepare that plan for explicit approval only; do not assume announced future maker rebates are active, do not sign a wallet message and do not submit real orders automatically."
+                ),
+                "action_taken": "NONE",
+                "auto_executed": False,
+            }
+        )
+        return True
+    return False
 
 
 def _apply_reya_signal_path(result: dict[str, Any], *, now: datetime) -> bool:
@@ -201,6 +259,8 @@ def apply_live_overrides(report: dict[str, Any], *, now: datetime | None = None)
             result["live_override_count"] += 1
             break
 
+    if _apply_reya_trading_pricing(result, now=current):
+        result["live_override_count"] += 1
     if _apply_reya_signal_path(result, now=current):
         result["live_override_count"] += 1
     _refresh_review_counts(result)
