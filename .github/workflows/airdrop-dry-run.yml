@@ -14,6 +14,7 @@ on:
       - "crypto_auto_trade/airdrop_agents.py"
       - "crypto_auto_trade/airdrop_acquisition.py"
       - "crypto_auto_trade/airdrop_live_overrides.py"
+      - "crypto_auto_trade/airdrop_additional_current_paths.py"
       - "tests/test_airdrop*.py"
       - "static/airdrop.*"
       - "static/index.html"
@@ -102,6 +103,13 @@ jobs:
             --input data/airdrop/acquisition-latest.json \
             --output data/airdrop/acquisition-latest.json
 
+      - name: Apply current additional reward paths
+        if: steps.cadence.outputs.run_cycle == 'true'
+        run: |
+          python -m crypto_auto_trade.airdrop_additional_current_paths \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
       - name: Show acquisition summary and enforce safety boundary
         if: steps.cadence.outputs.run_cycle == 'true'
         run: |
@@ -113,7 +121,7 @@ jobs:
           acquisition = json.loads(Path('data/airdrop/acquisition-latest.json').read_text())
 
           print({k: status[k] for k in ['generated_at','target_count','ready_dry_run','read_only','unverified','live_approved']})
-          print({k: acquisition[k] for k in ['generated_at','mode','target_count','auto_executed_action_count','approval_required_count','blocked_unverified_count','reverify_required_count','live_override_count']})
+          print({k: acquisition[k] for k in ['generated_at','mode','target_count','reward_path_count','auto_executed_action_count','approval_required_count','additional_approval_required_count','blocked_unverified_count','reverify_required_count','live_override_count']})
 
           assert status['target_count'] == 20
           assert acquisition['target_count'] == 20
