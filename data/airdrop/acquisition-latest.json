@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-15T03:36:20.848850+00:00",
+  "generated_at": "2026-08-15T04:37:20.099585+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
-  "reward_path_count": 21,
+  "reward_path_count": 22,
   "safe_auto_adapter_count": 0,
   "verified_gated_action_count": 17,
   "verified_additional_path_count": 1,
@@ -720,5 +720,34 @@
       "reason": "Current official N1 Hub still exposes the 01 OG badge flow and tells users to log in, check eligibility and claim it. The public sign-in surface offers Discord while X and wallet sign-in are marked coming soon."
     }
   ],
-  "live_override_count": 1
+  "live_override_count": 2,
+  "additional_review_paths": [
+    {
+      "parent_slug": "reya-trading",
+      "slug": "reya-signal",
+      "name": "Reya RCP Signal Contribution Path",
+      "verified_at": "2026-08-15T04:20:00+00:00",
+      "evidence_source": "https://docs.reya.xyz/reya-token/reya-chain-points-faqs",
+      "evidence_note": "Current official Reya Chain Points FAQs list Signal as an RCP-earning category for high-signal code, content or connections that help grow Reya, and explicitly say users can earn RCP through Signal without trading or staking. The same FAQ describes Signal as discretionary rather than a deterministic reward formula. No current official submission/recognition channel or account-linkage procedure was verified in this review.",
+      "acquisition_state": "NONFINANCIAL_REWARD_PATH_REVIEW_REQUIRED",
+      "requires_user_approval": false,
+      "requires_funds": false,
+      "requires_wallet_signature": false,
+      "requires_real_order": false,
+      "requires_asset_move": false,
+      "authentication_recheck_required": true,
+      "reward_deterministic": false,
+      "terms_status": "REVERIFY_SIGNAL_SUBMISSION_CHANNEL_ACCOUNT_LINKAGE_TERMS_AND_DISCRETIONARY_ELIGIBILITY",
+      "known_cost_or_risk": "No financial action is required by the published Signal description, but reward credit is discretionary and not guaranteed. A contribution can consume time and can create privacy, account-linkage or reputation risk if submitted through an unverified channel. Spam, deceptive promotion, referral self-dealing or manufactured engagement must not be used.",
+      "missing_approval": "No financial approval is required for Signal. Missing prerequisites are the current official Signal submission/recognition channel, account linkage or authentication method, applicable Terms, and evidence that a proposed genuine contribution is eligible for discretionary RCP consideration.",
+      "next_action": "Identify a current official Reya Signal submission or recognition channel and the required account linkage. Only then prepare a genuine high-signal code or educational-content contribution for review; do not auto-post, spam, manufacture engagement, use referral self-dealing, connect/sign a wallet, move assets or trade as part of this path.",
+      "action_taken": "NONE",
+      "auto_executed": false,
+      "points_delta": null,
+      "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+      "verification_expires_at": "2026-08-22T04:20:00+00:00"
+    }
+  ],
+  "verified_additional_review_path_count": 1,
+  "nonfinancial_review_required_count": 1
 }
