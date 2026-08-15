@@ -13,6 +13,7 @@ on:
     paths:
       - "crypto_auto_trade/airdrop_agents.py"
       - "crypto_auto_trade/airdrop_acquisition.py"
+      - "crypto_auto_trade/airdrop_live_overrides.py"
       - "tests/test_airdrop*.py"
       - "static/airdrop.*"
       - "static/index.html"
@@ -94,6 +95,13 @@ jobs:
             --status-output data/airdrop/latest.json \
             --output data/airdrop/acquisition-latest.json
 
+      - name: Apply current approval metadata
+        if: steps.cadence.outputs.run_cycle == 'true'
+        run: |
+          python -m crypto_auto_trade.airdrop_live_overrides \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
       - name: Show acquisition summary and enforce safety boundary
         if: steps.cadence.outputs.run_cycle == 'true'
         run: |
@@ -105,7 +113,7 @@ jobs:
           acquisition = json.loads(Path('data/airdrop/acquisition-latest.json').read_text())
 
           print({k: status[k] for k in ['generated_at','target_count','ready_dry_run','read_only','unverified','live_approved']})
-          print({k: acquisition[k] for k in ['generated_at','mode','target_count','auto_executed_action_count','approval_required_count','blocked_unverified_count','reverify_required_count']})
+          print({k: acquisition[k] for k in ['generated_at','mode','target_count','auto_executed_action_count','approval_required_count','blocked_unverified_count','reverify_required_count','live_override_count']})
 
           assert status['target_count'] == 20
           assert acquisition['target_count'] == 20
@@ -115,6 +123,7 @@ jobs:
           assert acquisition['asset_transfers_executed'] == 0
           assert acquisition['wallet_signatures_executed'] == 0
           assert acquisition['live_orders_executed'] == 0
+          assert acquisition['live_override_count'] >= 0
           PY
 
       - name: Commit refreshed status and acquisition queue on scheduled/main runs
