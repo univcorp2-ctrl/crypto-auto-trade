@@ -15,6 +15,7 @@ on:
       - "crypto_auto_trade/airdrop_acquisition.py"
       - "crypto_auto_trade/airdrop_live_overrides.py"
       - "crypto_auto_trade/airdrop_additional_current_paths.py"
+      - "crypto_auto_trade/airdrop_decibel_live_campaigns.py"
       - "tests/test_airdrop*.py"
       - "static/airdrop.*"
       - "static/index.html"
@@ -107,6 +108,13 @@ jobs:
         if: steps.cadence.outputs.run_cycle == 'true'
         run: |
           python -m crypto_auto_trade.airdrop_additional_current_paths \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply current Decibel live campaigns
+        if: steps.cadence.outputs.run_cycle == 'true'
+        run: |
+          python -m crypto_auto_trade.airdrop_decibel_live_campaigns \
             --input data/airdrop/acquisition-latest.json \
             --output data/airdrop/acquisition-latest.json
 
