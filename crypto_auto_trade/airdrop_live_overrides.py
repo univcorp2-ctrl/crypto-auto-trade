@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-STANDX_MAKER_VERIFIED_AT = "2026-08-15T06:25:00+00:00"
+STANDX_MAKER_VERIFIED_AT = "2026-08-15T06:43:29+00:00"
 STANDX_MAKER_EVIDENCE_SOURCE = "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield"
 REYA_SIGNAL_VERIFIED_AT = "2026-08-15T04:20:00+00:00"
 REYA_SIGNAL_EVIDENCE_SOURCE = "https://docs.reya.xyz/reya-token/reya-chain-points-faqs"
