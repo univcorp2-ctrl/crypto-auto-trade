@@ -160,3 +160,24 @@ def test_published_pair_table_is_complete_for_current_official_page() -> None:
         "SPCX-USD",
         "MU-USD",
     }
+
+
+def test_published_max_maker_hours_match_current_official_table() -> None:
+    expected = {
+        "BTC-USD": 10,
+        "ETH-USD": 10,
+        "XAG-USD": 2,
+        "XAU-USD": 2,
+        "CL-USD": 2,
+        "HYPE-USD": 10,
+        "BNB-USD": 10,
+        "SOL-USD": 10,
+        "TSLA-USD": 2,
+        "SPCX-USD": 1,
+        "MU-USD": 2,
+    }
+    actual = {
+        pair: values["max_maker_hours_per_hour"]
+        for pair, values in STANDX_MAKER_LIVE_PARAMETERS["pairs"].items()
+    }
+    assert actual == expected
