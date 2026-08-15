@@ -7,6 +7,7 @@ from crypto_auto_trade.airdrop_decibel_live_campaigns import (
     apply_decibel_live_campaigns,
 )
 
+# This snapshot is intentionally TTL-gated because campaign parameters are dynamic.
 VERIFIED = datetime.fromisoformat(DECIBEL_LIVE_CAMPAIGNS_VERIFIED_AT).astimezone(UTC)
 
 
