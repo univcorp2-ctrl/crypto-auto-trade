@@ -83,8 +83,8 @@ def test_standx_live_parameters_refine_approval_queue_without_execution() -> Non
     assert report["live_approved"] is False
 
 
-def test_reya_signal_is_tracked_as_nonfinancial_review_path_without_execution() -> None:
-    now = datetime(2026, 8, 15, 4, 21, tzinfo=UTC)
+def test_reya_signal_is_blocked_when_no_current_open_submission_channel_is_verified() -> None:
+    now = datetime(2026, 8, 15, 15, 23, tzinfo=UTC)
     report = apply_live_overrides(_reya_report(), now=now)
     paths = report["additional_review_paths"]
     assert isinstance(paths, list)
@@ -94,8 +94,9 @@ def test_reya_signal_is_tracked_as_nonfinancial_review_path_without_execution() 
     assert report["reward_path_count"] == 22
     assert report["approval_required_count"] == 19
     assert report["verified_additional_review_path_count"] == 1
-    assert report["nonfinancial_review_required_count"] == 1
-    assert signal["acquisition_state"] == "NONFINANCIAL_REWARD_PATH_REVIEW_REQUIRED"
+    assert report["nonfinancial_review_required_count"] == 0
+    assert report["nonfinancial_blocked_no_open_channel_count"] == 1
+    assert signal["acquisition_state"] == "NONFINANCIAL_REWARD_PATH_BLOCKED_NO_OPEN_CHANNEL"
     assert signal["requires_user_approval"] is False
     assert signal["requires_funds"] is False
     assert signal["requires_wallet_signature"] is False
@@ -105,9 +106,13 @@ def test_reya_signal_is_tracked_as_nonfinancial_review_path_without_execution() 
     assert signal["action_taken"] == "NONE"
     assert signal["auto_executed"] is False
     assert signal["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert signal["current_open_submission_verified"] is False
+    assert signal["known_formal_channel_status"] == "APPLICATION_WINDOW_CLOSED"
+    assert signal["known_application_deadline"] == "2026-04-01"
     assert "without trading or staking" in signal["evidence_note"].lower()
-    assert "submission" in signal["missing_approval"].lower()
-    assert "do not auto-post" in signal["next_action"].lower()
+    assert "closed on april 1, 2026" in signal["evidence_note"].lower()
+    assert "current official open" in signal["missing_approval"].lower()
+    assert "expired genesis application" in signal["next_action"].lower()
     assert report["financial_actions_executed"] == 0
     assert report["asset_transfers_executed"] == 0
     assert report["wallet_signatures_executed"] == 0
@@ -116,12 +121,13 @@ def test_reya_signal_is_tracked_as_nonfinancial_review_path_without_execution() 
 
 
 def test_reya_signal_overlay_is_idempotent() -> None:
-    now = datetime(2026, 8, 15, 4, 21, tzinfo=UTC)
+    now = datetime(2026, 8, 15, 15, 23, tzinfo=UTC)
     once = apply_live_overrides(_reya_report(), now=now)
     twice = apply_live_overrides(once, now=now)
 
     assert twice["reward_path_count"] == 22
-    assert twice["nonfinancial_review_required_count"] == 1
+    assert twice["nonfinancial_review_required_count"] == 0
+    assert twice["nonfinancial_blocked_no_open_channel_count"] == 1
     assert sum(path["slug"] == "reya-signal" for path in twice["additional_review_paths"]) == 1
 
 
@@ -141,6 +147,7 @@ def test_reya_signal_review_path_expires_closed() -> None:
 
     assert report["live_override_count"] == 0
     assert report["nonfinancial_review_required_count"] == 0
+    assert report["nonfinancial_blocked_no_open_channel_count"] == 0
     assert report["verified_additional_review_path_count"] == 0
     assert report["reward_path_count"] == 21
     assert report["additional_review_paths"] == []

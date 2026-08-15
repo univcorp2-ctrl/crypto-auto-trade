@@ -9,8 +9,11 @@ from typing import Any
 
 STANDX_MAKER_VERIFIED_AT = "2026-08-15T06:43:29+00:00"
 STANDX_MAKER_EVIDENCE_SOURCE = "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield"
-REYA_SIGNAL_VERIFIED_AT = "2026-08-15T04:20:00+00:00"
+REYA_SIGNAL_VERIFIED_AT = "2026-08-15T15:22:00+00:00"
 REYA_SIGNAL_EVIDENCE_SOURCE = "https://docs.reya.xyz/reya-token/reya-chain-points-faqs"
+REYA_SIGNAL_AMBASSADOR_SOURCE = "https://blog.reya.network/introducing-the-reya-ambassador-program/"
+REYA_SIGNAL_BLOG_INDEX_SOURCE = "https://blog.reya.network/"
+REYA_SIGNAL_CORROBORATION_SOURCE = "https://cryptorank.io/drophunting/voltz-labs-activity87"
 OVERRIDE_TTL_DAYS = 7
 
 STANDX_MAKER_LIVE_PARAMETERS: dict[str, Any] = {
@@ -51,11 +54,19 @@ REYA_SIGNAL_PATH: dict[str, Any] = {
     "name": "Reya RCP Signal Contribution Path",
     "verified_at": REYA_SIGNAL_VERIFIED_AT,
     "evidence_source": REYA_SIGNAL_EVIDENCE_SOURCE,
+    "evidence_sources": [
+        REYA_SIGNAL_EVIDENCE_SOURCE,
+        REYA_SIGNAL_AMBASSADOR_SOURCE,
+        REYA_SIGNAL_BLOG_INDEX_SOURCE,
+    ],
+    "corroboration_source": REYA_SIGNAL_CORROBORATION_SOURCE,
+    "source_coverage": "PRIMARY_OFFICIAL_PLUS_INDUSTRY_CORROBORATION_NO_INDEPENDENT_EXPERT_SOURCE",
     "evidence_note": (
-        "Current official Reya Chain Points FAQs list Signal as an RCP-earning category for high-signal code, content or connections that help grow Reya, and explicitly say users can earn RCP through Signal without trading or staking. "
-        "The same FAQ describes Signal as discretionary rather than a deterministic reward formula. No current official submission/recognition channel or account-linkage procedure was verified in this review."
+        "Current official Reya Chain Points FAQs still list Signal as an RCP-earning category for high-signal code, content or connections that help grow Reya, and explicitly say users can earn RCP through Signal without trading or staking. "
+        "A formal official submission/review path existed through the Reya Ambassador Program: qualifying ambassador contributions were reviewed before monthly RCP allocation and the application required a wallet address. However, the Genesis Cohort application window closed on April 1, 2026. "
+        "No newer currently open general Signal submission or account-linkage route was verified in Reya's current docs/blog review, so the path is blocked from execution until an official open channel is found."
     ),
-    "acquisition_state": "NONFINANCIAL_REWARD_PATH_REVIEW_REQUIRED",
+    "acquisition_state": "NONFINANCIAL_REWARD_PATH_BLOCKED_NO_OPEN_CHANNEL",
     "requires_user_approval": False,
     "requires_funds": False,
     "requires_wallet_signature": False,
@@ -63,16 +74,23 @@ REYA_SIGNAL_PATH: dict[str, Any] = {
     "requires_asset_move": False,
     "authentication_recheck_required": True,
     "reward_deterministic": False,
-    "terms_status": "REVERIFY_SIGNAL_SUBMISSION_CHANNEL_ACCOUNT_LINKAGE_TERMS_AND_DISCRETIONARY_ELIGIBILITY",
+    "current_submission_channel_status": "NO_CURRENT_OPEN_GENERAL_SIGNAL_SUBMISSION_CHANNEL_VERIFIED",
+    "current_open_submission_verified": False,
+    "known_formal_channel": "Reya Ambassador Program - Genesis Cohort",
+    "known_formal_channel_status": "APPLICATION_WINDOW_CLOSED",
+    "known_application_deadline": "2026-04-01",
+    "terms_status": "NO_CURRENT_OPEN_SIGNAL_SUBMISSION_CHANNEL_VERIFIED_REVERIFY_FUTURE_COHORT_TERMS_ACCOUNT_LINKAGE_AND_ELIGIBILITY",
     "known_cost_or_risk": (
         "No financial action is required by the published Signal description, but reward credit is discretionary and not guaranteed. "
-        "A contribution can consume time and can create privacy, account-linkage or reputation risk if submitted through an unverified channel. Spam, deceptive promotion, referral self-dealing or manufactured engagement must not be used."
+        "The only formal official submission/review route verified in this review was the Genesis Ambassador cohort, whose application window closed April 1, 2026 and required a wallet address. "
+        "Treating an expired form or an unofficial route as current could create privacy, account-linkage, reputation or phishing risk. Spam, deceptive promotion, referral self-dealing or manufactured engagement must not be used."
     ),
     "missing_approval": (
-        "No financial approval is required for Signal. Missing prerequisites are the current official Signal submission/recognition channel, account linkage or authentication method, applicable Terms, and evidence that a proposed genuine contribution is eligible for discretionary RCP consideration."
+        "No financial approval is required for Signal. The blocker is a current official open submission/recognition channel plus its account-linkage/authentication method, applicable Terms and evidence that a proposed genuine contribution is eligible for discretionary RCP consideration."
     ),
     "next_action": (
-        "Identify a current official Reya Signal submission or recognition channel and the required account linkage. Only then prepare a genuine high-signal code or educational-content contribution for review; do not auto-post, spam, manufacture engagement, use referral self-dealing, connect/sign a wallet, move assets or trade as part of this path."
+        "Monitor Reya's official RCP docs and official blog for a reopened Ambassador cohort or an explicit current Signal submission/recognition route. If one opens, verify its Terms and account linkage before preparing a genuine high-signal code or educational-content contribution. "
+        "Do not submit through the expired Genesis application, auto-post, spam, manufacture engagement, use referral self-dealing, connect/sign a wallet, move assets or trade as part of this path."
     ),
     "action_taken": "NONE",
     "auto_executed": False,
@@ -127,6 +145,9 @@ def _refresh_review_counts(result: dict[str, Any]) -> None:
     )
     result["nonfinancial_review_required_count"] = sum(
         isinstance(path, dict) and path.get("acquisition_state") == "NONFINANCIAL_REWARD_PATH_REVIEW_REQUIRED" for path in paths
+    )
+    result["nonfinancial_blocked_no_open_channel_count"] = sum(
+        isinstance(path, dict) and path.get("acquisition_state") == "NONFINANCIAL_REWARD_PATH_BLOCKED_NO_OPEN_CHANNEL" for path in paths
     )
 
 
@@ -202,6 +223,7 @@ def main() -> None:
                 "ok": True,
                 "live_override_count": updated.get("live_override_count", 0),
                 "nonfinancial_review_required_count": updated.get("nonfinancial_review_required_count", 0),
+                "nonfinancial_blocked_no_open_channel_count": updated.get("nonfinancial_blocked_no_open_channel_count", 0),
             },
             ensure_ascii=False,
         )
