@@ -52,29 +52,82 @@ STANDX_NETWORK_YIELD_PATH: dict[str, Any] = {
     "points_delta": None,
 }
 
+DECIBEL_CAMPAIGN_CLAIM_VERIFIED_AT = "2026-08-15T19:28:47+00:00"
+DECIBEL_CAMPAIGN_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
+DECIBEL_CAMPAIGN_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
 
-def _is_fresh(*, now: datetime) -> bool:
-    verified = datetime.fromisoformat(STANDX_NETWORK_YIELD_VERIFIED_AT).astimezone(UTC)
+DECIBEL_CAMPAIGN_CLAIM_PATH: dict[str, Any] = {
+    "parent_slug": "decibel-trading",
+    "slug": "decibel-campaign-claims",
+    "name": "Decibel Campaign Stablecoin Claim Path",
+    "verified_at": DECIBEL_CAMPAIGN_CLAIM_VERIFIED_AT,
+    "evidence_source": DECIBEL_CAMPAIGN_OVERVIEW_SOURCE,
+    "evidence_sources": [
+        DECIBEL_CAMPAIGN_OVERVIEW_SOURCE,
+        DECIBEL_CAMPAIGN_FAQ_SOURCE,
+        "https://app.decibel.trade/trade",
+    ],
+    "evidence_note": (
+        "Current official Decibel Rewards documentation says Campaigns are separate from Amps and pay USD-denominated stablecoin rewards for specific activities. "
+        "Eligible campaigns appear on /rewards with Not Eligible, In Progress, Ready to Claim, Claimed or Expired status. A Ready to Claim reward is credited directly to the trading-account balance in a single onchain transaction, and recurring unclaimed rewards can expire. "
+        "Most campaigns are automatically evaluated, while some require advance opt-in. The public Decibel app currently requires a wallet connection before account-specific reward status can be inspected."
+    ),
+    "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+    "requires_user_approval": True,
+    "requires_funds": False,
+    "requires_wallet_signature": True,
+    "requires_real_order": False,
+    "requires_asset_move": True,
+    "authentication_recheck_required": True,
+    "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_READY_TO_CLAIM_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
+    "known_cost_or_risk": (
+        "The claim itself does not require a new trade or deposit according to the public reward flow, but it is a financial receipt: a USD-denominated stablecoin reward is credited onchain to the trading account. "
+        "Account-specific eligibility, amount and expiry are unavailable before authentication, claim pools can be exhausted, reward parameters can change, and the exact wallet-signing/onchain transaction flow must be rechecked immediately before any claim. "
+        "Receiving a financial reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
+    ),
+    "missing_approval": (
+        "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; the exact /rewards tile showing Ready to Claim, amount and expiry; confirmation of the claim transaction/signing mechanics and any network cost; and explicit approval to receive the financial reward."
+    ),
+    "next_action": (
+        "When a supported authenticated Decibel session is available, open /rewards and inspect only account-specific campaign tiles. If any tile is Ready to Claim, record the reward amount, asset, expiry and exact signing/onchain requirements, then keep the claim in explicit financial approval. "
+        "Do not connect/sign a wallet, claim a stablecoin reward, trade, deposit, withdraw or move assets automatically."
+    ),
+    "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_VIEW",
+    "action_taken": "NONE",
+    "auto_executed": False,
+    "points_delta": None,
+}
+
+
+def _verified_at_is_fresh(verified_at: str, *, now: datetime) -> bool:
+    verified = datetime.fromisoformat(verified_at).astimezone(UTC)
     current = now.astimezone(UTC)
     return verified <= current <= verified + timedelta(days=VERIFICATION_TTL_DAYS)
 
 
-def apply_additional_current_paths(report: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
-    """Append newly verified approval-only reward paths without authorizing execution."""
-    current = now or datetime.now(UTC)
-    result = copy.deepcopy(report)
+def _is_fresh(*, now: datetime) -> bool:
+    return _verified_at_is_fresh(STANDX_NETWORK_YIELD_VERIFIED_AT, now=now)
 
+
+def _append_path_if_current(
+    result: dict[str, Any],
+    *,
+    path_spec: dict[str, Any],
+    now: datetime,
+) -> None:
     paths = result.setdefault("additional_approval_paths", [])
     if not isinstance(paths, list):
-        return result
+        return
 
     active_slugs = {str(action.get("slug")) for action in result.get("actions", []) if isinstance(action, dict)}
-    already_present = any(isinstance(path, dict) and path.get("slug") == STANDX_NETWORK_YIELD_PATH["slug"] for path in paths)
-    if already_present or STANDX_NETWORK_YIELD_PATH["parent_slug"] not in active_slugs or not _is_fresh(now=current):
-        return result
+    path_slug = str(path_spec["slug"])
+    already_present = any(isinstance(path, dict) and path.get("slug") == path_slug for path in paths)
+    verified_at = str(path_spec["verified_at"])
+    if already_present or str(path_spec["parent_slug"]) not in active_slugs or not _verified_at_is_fresh(verified_at, now=now):
+        return
 
-    expires = datetime.fromisoformat(STANDX_NETWORK_YIELD_VERIFIED_AT).astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
-    path = copy.deepcopy(STANDX_NETWORK_YIELD_PATH)
+    expires = datetime.fromisoformat(verified_at).astimezone(UTC) + timedelta(days=VERIFICATION_TTL_DAYS)
+    path = copy.deepcopy(path_spec)
     path.update(
         {
             "evidence_status": "PRIMARY_VERIFIED_CURRENT",
@@ -87,6 +140,15 @@ def apply_additional_current_paths(report: dict[str, Any], *, now: datetime | No
     result["verified_additional_path_count"] = int(result.get("verified_additional_path_count", 0)) + 1
     result["additional_approval_required_count"] = int(result.get("additional_approval_required_count", 0)) + 1
     result["approval_required_count"] = int(result.get("approval_required_count", 0)) + 1
+
+
+def apply_additional_current_paths(report: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
+    """Append newly verified approval-only reward paths without authorizing execution."""
+    current = now or datetime.now(UTC)
+    result = copy.deepcopy(report)
+
+    _append_path_if_current(result, path_spec=STANDX_NETWORK_YIELD_PATH, now=current)
+    _append_path_if_current(result, path_spec=DECIBEL_CAMPAIGN_CLAIM_PATH, now=current)
     return result
 
 
