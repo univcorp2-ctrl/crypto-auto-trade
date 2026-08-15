@@ -58,7 +58,7 @@ def _reya_report() -> dict[str, object]:
 
 
 def test_standx_live_parameters_refine_approval_queue_without_execution() -> None:
-    now = datetime(2026, 8, 15, 3, 30, tzinfo=UTC)
+    now = datetime(2026, 8, 15, 6, 26, tzinfo=UTC)
     report = apply_live_overrides(_base_report(), now=now)
     action = report["actions"][0]
 
@@ -73,6 +73,7 @@ def test_standx_live_parameters_refine_approval_queue_without_execution() -> Non
     assert action["live_parameters"]["proximity_weights_pct"]["0_bps"] == 200
     assert action["live_parameters"]["pairs"]["BTC-USD"]["session"] == "24/7"
     assert action["live_parameters"]["pairs"]["XAU-USD"]["off_session_multiplier_pct"] == 10
+    assert action["live_parameters"]["pairs"]["SPCX-USD"]["max_maker_hours_per_hour"] == 1
     assert "maximum notional" in action["missing_approval"].lower()
     assert "do not place" in action["next_action"].lower()
     assert report["financial_actions_executed"] == 0
