@@ -35,7 +35,7 @@ STANDX_MAKER_LIVE_PARAMETERS: dict[str, Any] = {
         "BNB-USD": {"unit_size": 300, "per_side_cap": 3000, "max_maker_hours_per_hour": 10, "session": "24/7", "off_session_multiplier_pct": None},
         "SOL-USD": {"unit_size": 1500, "per_side_cap": 15000, "max_maker_hours_per_hour": 10, "session": "24/7", "off_session_multiplier_pct": None},
         "TSLA-USD": {"unit_size": 400, "per_side_cap": 800, "max_maker_hours_per_hour": 2, "session": "US equity session", "off_session_multiplier_pct": 10},
-        "SPCX-USD": {"unit_size": 800, "per_side_cap": 800, "max_maker_hours_per_hour": 1, "session": "US equity session", "off_session_multiplier_pct": 10},
+        "SPCX-USD": {"unit_size": 800, "per_side_cap": 800, "max_maker_hours_per_hour": 2, "session": "US equity session", "off_session_multiplier_pct": 10},
         "MU-USD": {"unit_size": 200, "per_side_cap": 400, "max_maker_hours_per_hour": 2, "session": "US equity session", "off_session_multiplier_pct": 10},
     },
     "market_maker_fee_tiers": {
