@@ -8,6 +8,7 @@ from crypto_auto_trade.airdrop_decibel_claim_surface import (
     apply_decibel_claim_surface,
 )
 
+# Current primary docs now expose /rewards as the active campaign claim surface.
 VERIFIED = datetime.fromisoformat(DECIBEL_CLAIM_SURFACE_VERIFIED_AT).astimezone(UTC)
 
 
