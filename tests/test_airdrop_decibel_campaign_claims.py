@@ -38,13 +38,16 @@ def test_decibel_campaign_claim_is_financial_approval_only() -> None:
     assert claim["requires_real_order"] is False
     assert claim["requires_asset_move"] is True
     assert claim["authentication_recheck_required"] is True
-    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_VIEW"
+    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION"
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
     assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert "USD-denominated stablecoin" in str(claim["evidence_note"])
-    assert "Ready to Claim" in str(claim["evidence_note"])
+    assert "coming soon" in str(claim["evidence_note"]).lower()
+    assert "Claim now" in str(claim["evidence_note"])
     assert "expire" in str(claim["evidence_note"]).lower()
+    assert "in-app" in str(claim["next_action"]).lower()
+    assert "future /rewards page" in str(claim["next_action"])
     assert "do not connect/sign a wallet" in str(claim["next_action"]).lower()
 
     assert result["reward_path_count"] == before["reward_path_count"] + 1
