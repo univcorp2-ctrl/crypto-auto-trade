@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T17:34:42.429883+00:00",
+  "generated_at": "2026-08-16T18:35:24.669569+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -281,7 +281,7 @@
       "requires_asset_move": false,
       "authentication_recheck_required": true,
       "points_delta": null,
-      "verified_at": "2026-08-16T17:21:37+00:00",
+      "verified_at": "2026-08-16T18:27:13+00:00",
       "evidence_source": "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield",
       "evidence_note": "Current official StandX Community Maker Yield parameters require real executable two-sided orders within 10 bps. Standard uptime is at least 30 minutes/hour for 0.5x and boosted uptime is at least 42 minutes/hour for 1.0x. Proximity weight is 200% at 0 bps, 80% at 5 bps and 40% at 10 bps. Per-pair unit size, per-side caps, hourly ceilings and trading sessions are published live in America/New_York time; non-24/7 off-session hours are scored at 10%. Yield is settled daily from a variable reward pool, so no fixed reward-per-dollar is assumed.",
       "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
@@ -290,9 +290,9 @@
       "missing_approval": "Current StandX Terms/jurisdiction and account eligibility, authentication/signing method, selected pair, current published unit size/per-side cap/session, current fee tier, maximum notional, allowed quote distance, intended uptime window, fee/funding/adverse-selection budget and maximum acceptable loss.",
       "next_action": "Immediately before any economic action, re-open the live StandX Community Maker Yield page and current Terms/account eligibility, select one pair, map its current unit size/cap/session and fee tier, and calculate capped worst-case fill/funding/adverse-selection exposure. Prepare that plan for explicit approval only; do not place, cancel, maintain or replenish real maker orders automatically.",
       "evidence_status": "PRIMARY_VERIFIED_CURRENT",
-      "verification_expires_at": "2026-08-23T17:21:37+00:00",
+      "verification_expires_at": "2026-08-23T18:27:13+00:00",
       "reason": "Official live parameters require real executable two-sided orders within 10 bps and at least 30 qualifying minutes per hour; yield is settled daily.",
-      "evidence_checked_at": "2026-08-16T17:21:37+00:00",
+      "evidence_checked_at": "2026-08-16T18:27:13+00:00",
       "live_parameters": {
         "qualifying_band_bps": 10,
         "trading_session_timezone": "America/New_York",
@@ -378,7 +378,7 @@
           "SPCX-USD": {
             "unit_size": 800,
             "per_side_cap": 800,
-            "max_maker_hours_per_hour": 1,
+            "max_maker_hours_per_hour": 2,
             "session": "US equity session",
             "off_session_multiplier_pct": 10
           },
