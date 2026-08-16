@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16T23:06:51.685523+00:00",
+  "generated_at": "2026-08-16T23:23:09.510648+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -111,7 +111,7 @@
       "parent_slug": "decibel-trading",
       "slug": "decibel-campaign-claims",
       "name": "Decibel Campaign Stablecoin Claim Path",
-      "verified_at": "2026-08-16T19:19:37+00:00",
+      "verified_at": "2026-08-16T17:21:37+00:00",
       "evidence_source": "https://docs.decibel.trade/rewards/campaigns/live",
       "evidence_sources": [
         "https://docs.decibel.trade/rewards/campaigns/live",
@@ -120,8 +120,8 @@
         "https://app.decibel.trade/rewards",
         "https://decibel.trade/terms-of-service"
       ],
-      "evidence_note": "Current official Decibel Live Campaigns and Rewards Overview pages now identify /rewards as the active campaign-reward review and claim surface. The Live Campaigns page says eligible rewards can be reviewed and claimed from /rewards and may also be surfaced through in-app 'Claim now' pop-ups. The Rewards Overview documents account-specific statuses (including Ready to Claim), a Claim action, one onchain transaction that credits the trading balance, claim history and expiry windows. The public documentation proves the current claim surface, but it does not prove that this specific account has a claimable reward before authentication.",
-      "claim_surface_status": "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED",
+      "evidence_note": "Current official Decibel Live Campaigns and Rewards Overview pages explicitly mark the /rewards page as coming soon. The Live Campaigns page says active rewards are currently delivered through in-app 'Claim now' pop-ups. The FAQ and campaign detail text describe /rewards tiles, expiry and claim behavior, but those descriptions are treated as future/planned behavior because the broader current-state pages still label /rewards coming soon. The public app route alone does not prove that the account-specific rewards/claim surface is currently live before authentication.",
+      "claim_surface_status": "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_UNCONFIRMED",
       "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
       "requires_user_approval": true,
       "requires_funds": false,
@@ -129,17 +129,17 @@
       "requires_real_order": false,
       "requires_asset_move": true,
       "authentication_recheck_required": true,
-      "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_REWARD_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
-      "known_cost_or_risk": "No new trade or deposit is required merely to inspect an already-earned campaign reward, but an actual claim is still a financial receipt and the official flow credits the trading balance through an onchain transaction. Account-specific eligibility, reward amount, asset, expiry, transaction/signing requirements and any network cost remain unknown before authentication; reward parameters and claim windows can change, and unclaimed rewards can expire. Receiving a USD-denominated stablecoin reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here.",
-      "missing_approval": "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an account-specific /rewards tile or in-app Claim now notification showing Ready to Claim, reward amount, asset and expiry; confirmation of the exact transaction/signing requirements and any network cost; and explicit approval to receive the financial reward.",
-      "next_action": "When a supported authenticated Decibel session is available, inspect /rewards and any in-app Claim now notification for account-specific eligibility and record the status, reward amount, asset, expiry and exact signing/onchain requirements. If a reward is Ready to Claim, keep the claim in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically.",
-      "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION",
+      "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_IN_APP_REWARD_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
+      "known_cost_or_risk": "No new trade or deposit is required merely to inspect an already-earned campaign notification, but an actual claim is still a financial receipt and can require an onchain transaction or wallet signature. Account-specific eligibility, reward amount, asset, expiry and transaction requirements are unavailable before authentication; reward pools and parameters can change, and recurring unclaimed rewards can expire. Treating a documented coming-soon /rewards page as already live could send the agent to the wrong surface or cause it to overstate claimability. Receiving a USD-denominated stablecoin reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here.",
+      "missing_approval": "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an account-specific in-app Claim now notification showing the reward amount, asset and expiry; confirmation of the exact onchain transaction/signing requirements and any network cost; and explicit approval to receive the financial reward. The /rewards page must not be treated as a current claim surface until it is directly verified live for the authenticated account.",
+      "next_action": "When a supported authenticated Decibel session is available, inspect the app for account-specific 'Claim now' reward notifications and record the reward amount, asset, expiry and exact signing/onchain requirements. If the authenticated account also exposes a functional /rewards page, record that as a new current-state verification before using it. If a claim is available, keep it in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically.",
+      "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION",
       "action_taken": "NONE",
       "auto_executed": false,
       "points_delta": null,
-      "evidence_status": "PRIMARY_VERIFIED_CURRENT",
-      "verification_expires_at": "2026-08-23T19:19:37+00:00",
-      "evidence_checked_at": "2026-08-16T19:19:37+00:00"
+      "evidence_status": "PRIMARY_VERIFIED_CURRENT_WITH_OFFICIAL_TIMING_CONFLICT",
+      "verification_expires_at": "2026-08-23T17:21:37+00:00",
+      "evidence_checked_at": "2026-08-16T17:21:37+00:00"
     },
     {
       "parent_slug": "decibel-trading",
@@ -311,7 +311,7 @@
       "requires_asset_move": false,
       "authentication_recheck_required": true,
       "points_delta": null,
-      "verified_at": "2026-08-16T18:27:13+00:00",
+      "verified_at": "2026-08-16T17:21:37+00:00",
       "evidence_source": "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield",
       "evidence_note": "Current official StandX Community Maker Yield parameters require real executable two-sided orders within 10 bps. Standard uptime is at least 30 minutes/hour for 0.5x and boosted uptime is at least 42 minutes/hour for 1.0x. Proximity weight is 200% at 0 bps, 80% at 5 bps and 40% at 10 bps. Per-pair unit size, per-side caps, hourly ceilings and trading sessions are published live in America/New_York time; non-24/7 off-session hours are scored at 10%. Yield is settled daily from a variable reward pool, so no fixed reward-per-dollar is assumed.",
       "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
@@ -320,9 +320,9 @@
       "missing_approval": "Current StandX Terms/jurisdiction and account eligibility, authentication/signing method, selected pair, current published unit size/per-side cap/session, current fee tier, maximum notional, allowed quote distance, intended uptime window, fee/funding/adverse-selection budget and maximum acceptable loss.",
       "next_action": "Immediately before any economic action, re-open the live StandX Community Maker Yield page and current Terms/account eligibility, select one pair, map its current unit size/cap/session and fee tier, and calculate capped worst-case fill/funding/adverse-selection exposure. Prepare that plan for explicit approval only; do not place, cancel, maintain or replenish real maker orders automatically.",
       "evidence_status": "PRIMARY_VERIFIED_CURRENT",
-      "verification_expires_at": "2026-08-23T18:27:13+00:00",
+      "verification_expires_at": "2026-08-23T17:21:37+00:00",
       "reason": "Official live parameters require real executable two-sided orders within 10 bps and at least 30 qualifying minutes per hour; yield is settled daily.",
-      "evidence_checked_at": "2026-08-16T18:27:13+00:00",
+      "evidence_checked_at": "2026-08-16T17:21:37+00:00",
       "live_parameters": {
         "qualifying_band_bps": 10,
         "trading_session_timezone": "America/New_York",
@@ -408,7 +408,7 @@
           "SPCX-USD": {
             "unit_size": 800,
             "per_side_cap": 800,
-            "max_maker_hours_per_hour": 2,
+            "max_maker_hours_per_hour": 1,
             "session": "US equity session",
             "off_session_multiplier_pct": 10
           },
