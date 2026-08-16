@@ -9,7 +9,7 @@ from typing import Any
 
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS
 
-DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-16T13:21:29+00:00"
+DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-16T17:21:37+00:00"
 DECIBEL_LIVE_CAMPAIGNS_SOURCE = "https://docs.decibel.trade/rewards/campaigns/live"
 DECIBEL_REWARDS_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_REWARDS_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
@@ -54,30 +54,29 @@ def apply_decibel_claim_surface(report: dict[str, Any], *, now: datetime | None 
                     DECIBEL_REWARDS_APP_SOURCE,
                     "https://decibel.trade/terms-of-service",
                 ],
-                "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+                "evidence_status": "PRIMARY_VERIFIED_CURRENT_WITH_OFFICIAL_TIMING_CONFLICT",
                 "verification_expires_at": expires.isoformat(),
                 "evidence_note": (
-                    "Current official Decibel reward documentation now consistently treats /rewards as a live campaign-claim surface. "
-                    "The Live Campaigns page says active rewards can be reviewed and claimed from /rewards and that in-app 'Claim now' pop-ups may also surface rewards. "
-                    "The Rewards Overview says /rewards lists account-specific campaign states including Ready to Claim and that tapping Claim credits the reward to the trading account in a single onchain transaction. "
-                    "The current FAQ says claim expiry is shown on each /rewards tile, claimed campaign rewards have no lock-up or vesting period, and new campaigns appear on /rewards. "
-                    "The Decibel app exposes a Rewards route but requires wallet/account authentication before account-specific eligibility, amount or claim status can be inspected."
+                    "Current official Decibel Live Campaigns and Rewards Overview pages explicitly mark the /rewards page as coming soon. "
+                    "The Live Campaigns page says active rewards are currently delivered through in-app 'Claim now' pop-ups. "
+                    "The FAQ and campaign detail text describe /rewards tiles, expiry and claim behavior, but those descriptions are treated as future/planned behavior because the broader current-state pages still label /rewards coming soon. "
+                    "The public app route alone does not prove that the account-specific rewards/claim surface is currently live before authentication."
                 ),
-                "claim_surface_status": "CURRENT_REWARDS_PAGE_CONFIRMED_IN_APP_POPUPS_ALSO_SUPPORTED",
-                "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_REWARDS_TILE_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
+                "claim_surface_status": "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_UNCONFIRMED",
+                "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_IN_APP_REWARD_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
                 "known_cost_or_risk": (
-                    "No new trade or deposit is required merely to inspect an already-earned campaign reward, but an actual claim is still a financial receipt and the official flow settles it in a single onchain transaction. "
+                    "No new trade or deposit is required merely to inspect an already-earned campaign notification, but an actual claim is still a financial receipt and can require an onchain transaction or wallet signature. "
                     "Account-specific eligibility, reward amount, asset, expiry and transaction requirements are unavailable before authentication; reward pools and parameters can change, and recurring unclaimed rewards can expire. "
-                    "Receiving a USD-denominated stablecoin reward can create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
+                    "Treating a documented coming-soon /rewards page as already live could send the agent to the wrong surface or cause it to overstate claimability. Receiving a USD-denominated stablecoin reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
                 ),
                 "missing_approval": (
-                    "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an account-specific /rewards tile in Ready to Claim state showing amount, asset and expiry; confirmation of the exact onchain transaction/signing requirements and any network cost; and explicit approval to receive the financial reward."
+                    "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an account-specific in-app Claim now notification showing the reward amount, asset and expiry; confirmation of the exact onchain transaction/signing requirements and any network cost; and explicit approval to receive the financial reward. The /rewards page must not be treated as a current claim surface until it is directly verified live for the authenticated account."
                 ),
                 "next_action": (
-                    "When a supported authenticated Decibel session is available, inspect /rewards for account-specific Ready to Claim tiles and record the reward amount, asset, expiry and exact signing/onchain requirements. "
-                    "If a claim is available, keep it in explicit financial approval. Do not connect/sign a wallet, submit the claim transaction, trade, deposit, withdraw or move assets automatically."
+                    "When a supported authenticated Decibel session is available, inspect the app for account-specific 'Claim now' reward notifications and record the reward amount, asset, expiry and exact signing/onchain requirements. "
+                    "If the authenticated account also exposes a functional /rewards page, record that as a new current-state verification before using it. If a claim is available, keep it in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically."
                 ),
-                "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_TILE",
+                "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION",
                 "action_taken": "NONE",
                 "auto_executed": False,
                 "points_delta": None,

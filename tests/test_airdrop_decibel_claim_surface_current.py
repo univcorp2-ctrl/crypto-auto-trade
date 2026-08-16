@@ -22,14 +22,14 @@ def _claim(report: dict[str, object]) -> dict[str, object]:
     return next(path for path in paths if path["slug"] == "decibel-campaign-claims")
 
 
-def test_current_decibel_rewards_page_replaces_old_coming_soon_conflict() -> None:
+def test_current_decibel_claim_route_uses_in_app_notification_until_rewards_page_is_live() -> None:
     current = VERIFIED + timedelta(seconds=1)
     updated = apply_decibel_claim_surface(_report(current), now=current)
     claim = _claim(updated)
 
     assert updated["decibel_claim_surface_override_count"] == 1
-    assert claim["claim_surface_status"] == "CURRENT_REWARDS_PAGE_CONFIRMED_IN_APP_POPUPS_ALSO_SUPPORTED"
-    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_TILE"
+    assert claim["claim_surface_status"] == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_UNCONFIRMED"
+    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION"
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert claim["requires_user_approval"] is True
     assert claim["requires_funds"] is False
@@ -38,9 +38,10 @@ def test_current_decibel_rewards_page_replaces_old_coming_soon_conflict() -> Non
     assert claim["requires_asset_move"] is True
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
-    assert "coming soon" not in str(claim["evidence_note"]).lower()
-    assert "Ready to Claim" in str(claim["evidence_note"])
-    assert "/rewards" in str(claim["next_action"])
+    assert "coming soon" in str(claim["evidence_note"]).lower()
+    assert "claim now" in str(claim["evidence_note"]).lower()
+    assert "must not be treated as a current claim surface" in str(claim["missing_approval"]).lower()
+    assert "authenticated account also exposes a functional /rewards page" in str(claim["next_action"]).lower()
     assert "do not connect/sign a wallet" in str(claim["next_action"]).lower()
 
     assert updated["financial_actions_executed"] == 0
