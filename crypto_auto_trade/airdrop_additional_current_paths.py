@@ -52,7 +52,7 @@ STANDX_NETWORK_YIELD_PATH: dict[str, Any] = {
     "points_delta": None,
 }
 
-DECIBEL_CAMPAIGN_CLAIM_VERIFIED_AT = "2026-08-16T04:34:05+00:00"
+DECIBEL_CAMPAIGN_CLAIM_VERIFIED_AT = "2026-08-16T04:41:25+00:00"
 DECIBEL_CAMPAIGN_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_CAMPAIGN_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
 DECIBEL_CAMPAIGN_LIVE_SOURCE = "https://docs.decibel.trade/rewards/campaigns/live"
@@ -71,8 +71,8 @@ DECIBEL_CAMPAIGN_CLAIM_PATH: dict[str, Any] = {
     ],
     "evidence_note": (
         "Current official Decibel Rewards documentation says Campaigns are separate from Amps and pay USD-denominated stablecoin rewards for specific activities. "
-        "The current Live Campaigns page says the /rewards page is still coming soon and that active account-specific rewards are currently delivered through in-app 'Claim now' pop-ups. "
-        "The overview describes the future /rewards statuses such as Ready to Claim, while the current claim flow remains the in-app notification. A successful campaign claim credits the trading-account balance in a single onchain transaction, and recurring unclaimed rewards can expire. "
+        "The current Live Campaigns page says active campaigns are distributing rewards today and that users can review and claim eligible rewards from the /rewards page; users may also see in-app 'Claim now' pop-ups as they trade. "
+        "The overview describes account-specific reward states such as Ready to Claim, and a successful campaign claim credits the trading-account balance in a single onchain transaction; recurring unclaimed rewards can expire. "
         "Most campaigns are automatically evaluated, while some require advance opt-in. The public Decibel app requires wallet/account authentication before account-specific claim availability can be inspected."
     ),
     "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
@@ -82,20 +82,20 @@ DECIBEL_CAMPAIGN_CLAIM_PATH: dict[str, Any] = {
     "requires_real_order": False,
     "requires_asset_move": True,
     "authentication_recheck_required": True,
-    "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_IN_APP_CLAIM_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
+    "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_REWARDS_PAGE_OR_IN_APP_CLAIM_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
     "known_cost_or_risk": (
         "The claim itself does not require a new trade or deposit according to the public reward flow, but it is a financial receipt: a USD-denominated stablecoin reward is credited onchain to the trading account. "
         "Account-specific eligibility, amount and expiry are unavailable before authentication, claim pools can be exhausted, reward parameters can change, and the exact wallet-signing/onchain transaction flow must be rechecked immediately before any claim. "
-        "The documented /rewards page is not yet the current delivery surface, so automation must not navigate to or rely on a future page as though it were live. Receiving a financial reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
+        "The current official Live Campaigns page supports both the /rewards claim surface and in-app claim notifications, so automation must re-check the authenticated current surface rather than assume one route is exclusive. Receiving a financial reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
     ),
     "missing_approval": (
-        "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an actual account-specific in-app 'Claim now' pop-up or equivalent current claim notification showing the reward amount, asset and expiry; confirmation of the claim transaction/signing mechanics and any network cost; and explicit approval to receive the financial reward."
+        "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an actual account-specific /rewards Ready to Claim entry or in-app 'Claim now' notification showing the reward amount, asset and expiry; confirmation of the claim transaction/signing mechanics and any network cost; and explicit approval to receive the financial reward."
     ),
     "next_action": (
-        "When a supported authenticated Decibel session is available, inspect only the current account-specific in-app 'Claim now' pop-up or equivalent reward notification. If a claim is offered, record the reward amount, asset, expiry and exact signing/onchain requirements, then keep the claim in explicit financial approval. "
-        "Do not connect/sign a wallet, claim a stablecoin reward, trade, deposit, withdraw or move assets automatically. Do not treat the future /rewards page as a live acquisition route until Decibel officially ships it."
+        "When a supported authenticated Decibel session is available, inspect the current /rewards page and any account-specific in-app 'Claim now' notification. If a claim is offered, record the reward amount, asset, expiry and exact signing/onchain requirements, then keep the claim in explicit financial approval. "
+        "Do not connect/sign a wallet, claim a stablecoin reward, trade, deposit, withdraw or move assets automatically."
     ),
-    "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION",
+    "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_CLAIM",
     "action_taken": "NONE",
     "auto_executed": False,
     "points_delta": None,
