@@ -38,18 +38,18 @@ def test_decibel_campaign_claim_is_financial_approval_only() -> None:
     assert claim["requires_real_order"] is False
     assert claim["requires_asset_move"] is True
     assert claim["authentication_recheck_required"] is True
-    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_CLAIM"
+    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOW"
+    assert claim["claim_surface_status"] == "CURRENT_IN_APP_CONFIRMED_REWARDS_PAGE_COMING_SOON_DOC_CONFLICT"
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
     assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert "USD-denominated stablecoin" in str(claim["evidence_note"])
-    assert "/rewards" in str(claim["evidence_note"])
+    assert "coming soon" in str(claim["evidence_note"]).lower()
     assert "Claim now" in str(claim["evidence_note"])
-    assert "expire" in str(claim["evidence_note"]).lower()
-    assert "/rewards" in str(claim["next_action"])
-    assert "in-app" in str(claim["next_action"]).lower()
+    assert "/rewards" in str(claim["evidence_note"])
+    assert "authenticated in-app" in str(claim["evidence_note"]).lower()
+    assert "do not assume /rewards" in str(claim["next_action"]).lower()
     assert "do not connect/sign a wallet" in str(claim["next_action"]).lower()
-    assert "coming soon" not in str(claim["evidence_note"]).lower()
 
     assert result["reward_path_count"] == before["reward_path_count"] + 1
     assert result["verified_additional_path_count"] == before["verified_additional_path_count"] + 1
