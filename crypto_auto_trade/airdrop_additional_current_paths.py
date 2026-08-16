@@ -52,6 +52,56 @@ STANDX_NETWORK_YIELD_PATH: dict[str, Any] = {
     "points_delta": None,
 }
 
+LIGHTER_FUNDING_REBATE_VERIFIED_AT = "2026-08-16T22:18:49+00:00"
+LIGHTER_FUNDING_REBATE_SOURCE = "https://docs.lighter.xyz/trading/funding/funding-rate-rebates"
+LIGHTER_FUNDING_SOURCE = "https://docs.lighter.xyz/trading/funding"
+LIGHTER_FUNDING_REBATE_CORROBORATION_SOURCE = "https://app.dexpal.io/campaigns"
+
+LIGHTER_FUNDING_REBATE_PATH: dict[str, Any] = {
+    "parent_slug": "lighter",
+    "slug": "lighter-funding-rate-rebate",
+    "name": "Lighter Funding Rate Rebate Path",
+    "verified_at": LIGHTER_FUNDING_REBATE_VERIFIED_AT,
+    "evidence_source": LIGHTER_FUNDING_REBATE_SOURCE,
+    "evidence_sources": [
+        LIGHTER_FUNDING_REBATE_SOURCE,
+        LIGHTER_FUNDING_SOURCE,
+        LIGHTER_FUNDING_REBATE_CORROBORATION_SOURCE,
+    ],
+    "source_coverage": "PRIMARY_OFFICIAL_PLUS_ONE_INDEPENDENT_INDUSTRY_SOURCE_NO_EXPERT_SOURCE",
+    "evidence_note": (
+        "Current official Lighter Funding Rate Rebates documentation says traders can receive up to a 15% rebate on funding payments incurred on positions that are paying funding, across all listed Lighter markets. "
+        "A Premium Account provides a 6% rebate and staking can add up to 9% more, with the staking bonus capped at 50,000 LIT. The position receiving funding is unaffected by the program. "
+        "Rebates are distributed daily at 00:00 UTC as an L2 transfer from the Lighter Rebates Fund and payments are processed only when the amount exceeds $1. "
+        "An independent industry campaign index currently lists the same Lighter Funding Rate Rebates program as live and describes the same 6% Premium plus up-to-9% staking structure."
+    ),
+    "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+    "requires_user_approval": True,
+    "requires_funds": True,
+    "requires_wallet_signature": False,
+    "requires_real_order": True,
+    "requires_asset_move": False,
+    "authentication_recheck_required": True,
+    "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_PREMIUM_STATUS_FUNDING_REBATE_PARAMETERS_AND_AUTHENTICATION",
+    "known_cost_or_risk": (
+        "The rebate only offsets part of funding paid by a real perpetual position; it does not eliminate directional PnL, spread/slippage, trading fees, margin or liquidation risk and it does not prove positive expected value. "
+        "Opening or holding a position solely to chase a rebate can lose much more than the rebate. The optional extra staking rebate requires staking LIT and therefore adds token-price, staking/liquidity and opportunity-cost risk; that optional asset move is not authorized by this path. "
+        "Premium Account cost/eligibility, current funding rates and current account-specific rebate eligibility can change and must be checked before any economic action."
+    ),
+    "missing_approval": (
+        "Current Lighter Terms/jurisdiction and account eligibility/authentication; whether the account already has Premium status and an existing funding-paying position; the current market funding rate and current rebate parameters; and, if a new position would be needed, explicit market, side, maximum notional, leverage, fee/funding budget and maximum acceptable loss. "
+        "Any LIT acquisition or staking for the optional additional rebate requires separate explicit asset-movement approval and is not included in this approval path."
+    ),
+    "next_action": (
+        "In a supported authenticated Lighter session, first check whether the account already has Premium status and an existing position currently paying funding, and whether a rebate is accruing without adding new exposure. "
+        "If no qualifying existing position exists, calculate a capped genuine-position plan only after current Terms, funding rate and net economics are rechecked, then keep it in explicit financial approval. "
+        "Do not open a position, increase leverage, acquire or stake LIT, move assets or perform any signing action automatically just to obtain a rebate."
+    ),
+    "action_taken": "NONE",
+    "auto_executed": False,
+    "points_delta": None,
+}
+
 DECIBEL_CAMPAIGN_CLAIM_VERIFIED_AT = "2026-08-16T12:27:11+00:00"
 DECIBEL_CAMPAIGN_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_CAMPAIGN_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
@@ -157,6 +207,7 @@ def apply_additional_current_paths(report: dict[str, Any], *, now: datetime | No
     result = copy.deepcopy(report)
 
     _append_path_if_current(result, path_spec=STANDX_NETWORK_YIELD_PATH, now=current)
+    _append_path_if_current(result, path_spec=LIGHTER_FUNDING_REBATE_PATH, now=current)
     _append_path_if_current(result, path_spec=DECIBEL_CAMPAIGN_CLAIM_PATH, now=current)
     return result
 
