@@ -9,7 +9,7 @@ from typing import Any
 
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS
 
-DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-17T18:44:21+00:00"
+DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-17T20:20:58+00:00"
 DECIBEL_LIVE_CAMPAIGNS_SOURCE = "https://docs.decibel.trade/rewards/campaigns/live"
 DECIBEL_REWARDS_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_REWARDS_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
@@ -54,28 +54,32 @@ def apply_decibel_claim_surface(report: dict[str, Any], *, now: datetime | None 
                     DECIBEL_REWARDS_APP_SOURCE,
                     "https://decibel.trade/terms-of-service",
                 ],
-                "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+                "evidence_status": "PRIMARY_VERIFIED_CURRENT_WITH_OFFICIAL_SOURCE_CONFLICT",
                 "verification_expires_at": expires.isoformat(),
                 "evidence_note": (
-                    "Current official Decibel Live Campaigns says active campaigns are distributing rewards today and eligible rewards can be reviewed and claimed from the /rewards page; in-app 'Claim now' pop-ups may also surface rewards while trading. "
-                    "Current Rewards Overview independently documents /rewards campaign statuses, the Claim action, a single onchain transaction that credits the trading balance, claim history and expiry windows. "
-                    "These public primary pages confirm the current claim surfaces, but they do not prove that this specific account has a claimable reward before authentication."
+                    "Current official Decibel Live Campaigns says active rewards are delivered through in-app 'Claim now' pop-ups and explicitly marks the consolidated /rewards page as not yet shipped. "
+                    "The current Rewards Overview likewise labels /rewards as forthcoming, while later Overview/FAQ text still describes future /rewards tiles and Claim actions. "
+                    "Because the official pages are internally inconsistent, the currently verified claim-notification surface is the in-app banner/pop-up; /rewards must not be assumed live until the authenticated product UI confirms it. "
+                    "These public primary pages do not prove that this specific account has a claimable reward before authentication."
                 ),
-                "claim_surface_status": "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED",
+                "claim_surface_status": "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_NOT_YET_SHIPPED_OFFICIAL_DOC_CONFLICT",
                 "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_REWARD_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
                 "known_cost_or_risk": (
                     "No new trade or deposit is required merely to inspect an already-earned campaign reward, but an actual claim is still a financial receipt and the official flow can involve an onchain transaction and wallet authorization. "
                     "Account-specific eligibility, reward amount, asset, expiry, transaction/signing requirements and any network cost remain unknown before authentication; reward parameters and claim windows can change, and unclaimed rewards can expire. "
+                    "The official documentation currently conflicts on whether the consolidated /rewards page is deployed, so an unavailable or stale route must not be treated as evidence of account eligibility. "
                     "Receiving a USD-denominated stablecoin reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
                 ),
                 "missing_approval": (
-                    "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an account-specific /rewards tile or in-app Claim now notification showing eligibility, reward amount, asset and expiry; confirmation of the exact transaction/signing requirements and any network cost; and explicit approval to receive the financial reward."
+                    "A supported authenticated Decibel account/wallet session; current Terms/jurisdiction and exchange eligibility; an account-specific in-app unclaimed-rewards banner or 'Claim now' notification showing eligibility, reward amount, asset and expiry; confirmation of the exact transaction/signing requirements and any network cost; and explicit approval to receive the financial reward. "
+                    "If the authenticated product UI exposes /rewards despite the public docs marking it not yet shipped, record that surface as additional account-specific evidence before relying on it."
                 ),
                 "next_action": (
-                    "When a supported authenticated Decibel session is available, inspect /rewards and any in-app Claim now notification for account-specific eligibility and record the status, reward amount, asset, expiry and exact signing/onchain requirements. "
-                    "If a reward is Ready to Claim, keep the claim in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically."
+                    "When a supported authenticated Decibel session is available, inspect the in-app unclaimed-rewards banner and any 'Claim now' notification first for account-specific eligibility, then record the status, reward amount, asset, expiry and exact signing/onchain requirements. "
+                    "Do not assume /rewards is deployed; inspect /rewards only if the authenticated Decibel UI itself exposes that route. "
+                    "If a reward is Ready to Claim, keep the actual claim in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically."
                 ),
-                "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION",
+                "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION",
                 "action_taken": "NONE",
                 "auto_executed": False,
                 "points_delta": None,
