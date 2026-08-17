@@ -8,7 +8,7 @@ from crypto_auto_trade.airdrop_decibel_claim_surface import (
     apply_decibel_claim_surface,
 )
 
-# Current primary docs expose /rewards as active and also mention in-app Claim now.
+# Current official primary docs expose /rewards as active and also mention in-app Claim now.
 VERIFIED = datetime.fromisoformat(DECIBEL_CLAIM_SURFACE_VERIFIED_AT).astimezone(UTC)
 
 
