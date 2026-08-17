@@ -8,7 +8,7 @@ from crypto_auto_trade.airdrop_decibel_claim_surface import (
     apply_decibel_claim_surface,
 )
 
-# Current top-level official docs say /rewards is coming soon while in-app Claim now is active.
+# Current official docs say /rewards is live for eligible campaign claims and in-app Claim now may also surface rewards.
 VERIFIED = datetime.fromisoformat(DECIBEL_CLAIM_SURFACE_VERIFIED_AT).astimezone(UTC)
 
 
@@ -23,14 +23,14 @@ def _claim(report: dict[str, object]) -> dict[str, object]:
     return next(path for path in paths if path["slug"] == "decibel-campaign-claims")
 
 
-def test_current_decibel_claim_route_prefers_in_app_and_fails_closed_on_rewards_page() -> None:
+def test_current_decibel_claim_routes_are_metadata_only_and_financially_gated() -> None:
     current = VERIFIED + timedelta(seconds=1)
     updated = apply_decibel_claim_surface(_report(current), now=current)
     claim = _claim(updated)
 
     assert updated["decibel_claim_surface_override_count"] == 1
-    assert claim["claim_surface_status"] == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_OR_TIME_AXIS_CONFLICT"
-    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOTIFICATION"
+    assert claim["claim_surface_status"] == "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
+    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION"
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert claim["requires_user_approval"] is True
     assert claim["requires_funds"] is False
@@ -40,11 +40,10 @@ def test_current_decibel_claim_route_prefers_in_app_and_fails_closed_on_rewards_
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
     assert "/rewards" in str(claim["evidence_note"]).lower()
-    assert "coming soon" in str(claim["evidence_note"]).lower()
     assert "claim now" in str(claim["evidence_note"]).lower()
-    assert "time-axis conflict" in str(claim["evidence_note"]).lower()
-    assert "in-app claim now" in str(claim["missing_approval"]).lower()
-    assert "inspect the in-app" in str(claim["next_action"]).lower()
+    assert "coming soon" not in str(claim["evidence_note"]).lower()
+    assert "/rewards" in str(claim["missing_approval"]).lower()
+    assert "inspect /rewards" in str(claim["next_action"]).lower()
     assert "do not connect/sign a wallet" in str(claim["next_action"]).lower()
 
     assert updated["financial_actions_executed"] == 0
