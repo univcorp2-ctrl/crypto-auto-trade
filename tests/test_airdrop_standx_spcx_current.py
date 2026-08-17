@@ -4,11 +4,11 @@ from crypto_auto_trade.airdrop_live_overrides import (
 )
 
 
-# Verified against the current operator page on 2026-08-18 before this snapshot test was tightened.
-def test_standx_spcx_current_live_maker_ceiling_is_one() -> None:
+# Verified against the current operator page on 2026-08-17; re-check before any economic action.
+def test_standx_spcx_current_live_maker_ceiling_is_two() -> None:
     """Current operator page is authoritative; re-check it before any economic action."""
     spcx = STANDX_MAKER_LIVE_PARAMETERS["pairs"]["SPCX-USD"]
 
-    assert spcx["max_maker_hours_per_hour"] == 1
+    assert spcx["max_maker_hours_per_hour"] == 2
     assert spcx["session"] == "US equity session"
     assert STANDX_MAKER_EVIDENCE_SOURCE.endswith("/community-maker-yield")
