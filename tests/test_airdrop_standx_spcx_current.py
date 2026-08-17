@@ -4,7 +4,7 @@ from crypto_auto_trade.airdrop_live_overrides import (
 )
 
 
-# Verified against the current operator page on 2026-08-17; re-check before any economic action.
+# Verified against the current operator page on 2026-08-17 at 18:44 UTC; re-check before any economic action.
 def test_standx_spcx_current_live_maker_ceiling_is_two() -> None:
     """Current operator page is authoritative; re-check it before any economic action."""
     spcx = STANDX_MAKER_LIVE_PARAMETERS["pairs"]["SPCX-USD"]
