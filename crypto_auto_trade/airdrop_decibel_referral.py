@@ -9,43 +9,49 @@ from typing import Any
 
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS
 
-DECIBEL_REFERRAL_VERIFIED_AT = "2026-08-17T06:38:35+00:00"
+DECIBEL_REFERRAL_VERIFIED_AT = "2026-08-17T07:02:37+00:00"
 DECIBEL_REFERRAL_SOURCE = "https://docs.decibel.trade/rewards/referral-program"
 DECIBEL_REWARDS_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
+DECIBEL_ANNOUNCEMENTS_SOURCE = "https://app.decibel.trade/announcements"
 DECIBEL_TERMS_SOURCE = "https://decibel.trade/terms-of-service"
 
 DECIBEL_REFERRAL_PATH: dict[str, Any] = {
     "parent_slug": "decibel-trading",
     "slug": "decibel-referral-amps",
-    "name": "Decibel Referral Amps Path",
+    "name": "Decibel Referral Rewards Path",
     "verified_at": DECIBEL_REFERRAL_VERIFIED_AT,
-    "evidence_source": DECIBEL_REFERRAL_SOURCE,
+    "evidence_source": DECIBEL_ANNOUNCEMENTS_SOURCE,
     "evidence_sources": [
+        DECIBEL_ANNOUNCEMENTS_SOURCE,
         DECIBEL_REFERRAL_SOURCE,
         DECIBEL_REWARDS_OVERVIEW_SOURCE,
         DECIBEL_TERMS_SOURCE,
     ],
-    "source_coverage": "PRIMARY_OFFICIAL_PROGRAM_PLUS_CURRENT_TERMS_NO_INDEPENDENT_EXPERT_SOURCE",
+    "source_coverage": "PRIMARY_OFFICIAL_SOURCES_WITH_INTERNAL_TEMPORAL_CONFLICT_NO_INDEPENDENT_EXPERT_SOURCE",
     "evidence_note": (
-        "Current official Decibel Referral Program documentation says a referrer earns 10% of referred users' Amps from a dedicated daily emission pool. "
-        "The current public qualification flow says a wallet receives five referral codes after connecting the wallet and completing $25,000 of trading volume; referred users bind a code at initial wallet connection, and referral Amps update daily based on the invitees' bona fide trading activity rather than signups alone. "
-        "Current Decibel Terms make the referral program personal and non-commercial: codes may only be shared with people the participant personally knows, the participant must disclose the incentive and obtain express consent before sharing, and self-referral, multi-account farming, spam, bots, mass outreach, paid advertising, deceptive promotion and manipulation are prohibited."
+        "Current official Decibel sources agree that referral rewards remain available at a 10% share, but the public onboarding/code model is temporally inconsistent across official pages. "
+        "The newer June 3, 2026 official product announcement says Decibel is no longer invite-only, new users do not need a referral code, every user has one reusable referral code with unlimited uses, and referrers earn 10% of referees' points. "
+        "The Referral Program documentation still describes the earlier Mainnet Beta flow of five one-time codes unlocked after $25,000 of trading volume and 10% of invitees' Amps. "
+        "Because the newer product announcement explicitly says the old invite-code model changed, this agent must not treat the $25,000 trading threshold or five-code limit as a current prerequisite without an authenticated current-account check. "
+        "Current Decibel Terms keep referrals personal and non-commercial: codes may only be shared with people the participant personally knows, the incentive must be disclosed, express consent is required before sharing, and self-referral, farming, spam, bots, mass outreach, paid advertising, deceptive promotion and manipulation are prohibited."
     ),
-    "reward_share_pct_of_invitee_amps": 10,
-    "published_volume_threshold_usd": 25000,
-    "initial_referral_code_count": 5,
+    "published_referral_share_pct": 10,
+    "legacy_beta_volume_threshold_usd": 25000,
+    "legacy_beta_referral_code_count": 5,
+    "newer_public_referral_code_model": "ONE_REUSABLE_CODE_UNLIMITED_USES_NO_INVITE_REQUIRED",
+    "current_trading_threshold_required": None,
+    "public_rule_status": "CONFLICT_NEWER_PRODUCT_ANNOUNCEMENT_SUPERSEDES_BETA_INVITE_FLOW_REVERIFY_AUTHENTICATED",
     "account_specific_code_status": "UNKNOWN_UNTIL_AUTHENTICATED",
-    "historical_volume_may_already_satisfy_threshold": True,
     "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
     "requires_user_approval": True,
-    "requires_funds": True,
+    "requires_funds": False,
     "requires_wallet_signature": True,
     "wallet_signature_requirement": "FAIL_CLOSED_UNTIL_AUTHENTICATED_WALLET_CONNECTION_FLOW_IS_VERIFIED",
-    "requires_real_order": True,
+    "requires_real_order": False,
     "requires_asset_move": False,
     "requires_external_communication": True,
     "authentication_recheck_required": True,
-    "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_REFERRAL_CODE_ELIGIBILITY_HISTORICAL_VOLUME_AND_WALLET_AUTHENTICATION",
+    "terms_status": "REVERIFY_CURRENT_TERMS_JURISDICTION_ACCOUNT_REFERRAL_SURFACE_CODE_ELIGIBILITY_AND_WALLET_AUTHENTICATION",
     "prohibited_methods": [
         "self_referral",
         "multi_account_farming",
@@ -58,19 +64,19 @@ DECIBEL_REFERRAL_PATH: dict[str, Any] = {
         "contact_scraping_or_direct_marketing_without_consent",
     ],
     "known_cost_or_risk": (
-        "If the account has not already met the published $25,000 trading-volume threshold, unlocking referral codes requires additional genuine trading and therefore fees, spread/slippage, funding, margin/liquidation and directional PnL risk. "
-        "Even if referral codes are already available from historical activity, sharing them is not a general automated-growth action: current Terms restrict referrals to personally known individuals, require disclosure of the referrer's incentive and express consent before sharing, and prohibit self-referral, farming, spam, bots, mass outreach, paid ads and manipulative activity. "
-        "The 10% reward is denominated in Amps rather than verified cash value and depends on referred users' bona fide activity; Decibel may modify, suspend or disqualify promotional rewards under its Terms."
+        "Do not incur trading volume merely to unlock referral codes based on the older Mainnet Beta documentation. The newer official product announcement says the invite-only model ended and every user has one reusable referral code, so any current trading-volume prerequisite is unverified until the authenticated account surface proves otherwise. "
+        "Referral sharing is not a general automated-growth action: current Terms restrict referrals to personally known individuals, require disclosure of the incentive and express consent before sharing, and prohibit self-referral, farming, spam, bots, mass outreach, paid ads and manipulative activity. "
+        "The public sources use both 'points' and 'Amps' wording for the 10% referral reward; no cash value or profitability is assumed, and Decibel may modify, suspend or disqualify promotional rewards under its Terms."
     ),
     "missing_approval": (
-        "A supported authenticated Decibel session to check whether referral codes already exist and whether historical volume has satisfied the $25,000 threshold; current Terms/jurisdiction and account eligibility; and the exact wallet authentication/signing behavior. "
-        "If the threshold is unmet, any additional trading requires explicit market, maximum notional, leverage, fee/funding budget and maximum acceptable loss approval. "
-        "If codes already exist, any referral communication requires a specifically identified personally known recipient, evidence of express consent before sharing, and explicit communication approval; no automated outreach is authorized."
+        "A supported authenticated Decibel session to inspect the current referral surface, confirm whether a reusable referral code already exists, determine the current reward denomination and account eligibility, and verify the exact wallet authentication/signing behavior. "
+        "Do not create trading volume to unlock codes unless the authenticated current product surface and current Terms explicitly show that a trading threshold still applies. "
+        "Any referral communication requires a specifically identified personally known recipient, evidence of express consent before sharing, and explicit communication approval; no automated outreach is authorized."
     ),
     "next_action": (
-        "In a supported authenticated Decibel session, perform a read-only check of referral-code availability, historical qualifying volume and the current wallet/authentication flow. "
-        "If codes are already available, record them privately and keep all sharing in a separate human-approved personal-referral step that complies with disclosure and express-consent requirements. "
-        "If the $25,000 threshold is not met, keep any genuine-trading plan in explicit financial approval; do not trade, sign a wallet message, move assets, self-refer, message contacts, scrape contact lists, run ads or manufacture volume automatically."
+        "In a supported authenticated Decibel session, perform a read-only check of the current referral-code/link surface and wallet/authentication flow. "
+        "If a reusable code already exists, record its availability privately and keep all sharing in a separate human-approved personal-referral step that complies with disclosure and express-consent requirements. "
+        "If the authenticated current product unexpectedly shows a trading prerequisite, record that as a new primary-source fact and prepare a capped plan for explicit financial approval; do not trade, sign a wallet message, move assets, self-refer, message contacts, scrape contact lists, run ads or manufacture volume automatically."
     ),
     "action_taken": "NONE",
     "auto_executed": False,
@@ -85,7 +91,7 @@ def _verified_at_is_fresh(verified_at: str, *, now: datetime) -> bool:
 
 
 def apply_decibel_referral_path(report: dict[str, Any], *, now: datetime | None = None) -> dict[str, Any]:
-    """Append the current Decibel referral path as approval-only metadata; never execute it."""
+    """Append current Decibel referral metadata as approval-only; never execute it."""
     current = now or datetime.now(UTC)
     result = copy.deepcopy(report)
     paths = result.setdefault("additional_approval_paths", [])
@@ -103,7 +109,7 @@ def apply_decibel_referral_path(report: dict[str, Any], *, now: datetime | None 
     path = copy.deepcopy(DECIBEL_REFERRAL_PATH)
     path.update(
         {
-            "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+            "evidence_status": "PRIMARY_VERIFIED_CURRENT_WITH_OFFICIAL_SOURCE_CONFLICT",
             "verification_expires_at": expires.isoformat(),
         }
     )
@@ -116,7 +122,7 @@ def apply_decibel_referral_path(report: dict[str, Any], *, now: datetime | None 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Apply current Decibel referral Amps approval-only reward path")
+    parser = argparse.ArgumentParser(description="Apply current Decibel referral approval-only reward path")
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
