@@ -19,10 +19,10 @@ def _base_report() -> dict[str, object]:
     }
 
 
-def test_decibel_referral_path_is_financially_gated_and_increments_queue() -> None:
+def test_decibel_referral_path_fails_closed_on_current_public_rule_conflict() -> None:
     result = apply_decibel_referral_path(
         _base_report(),
-        now=datetime(2026, 8, 17, 6, 40, tzinfo=UTC),
+        now=datetime(2026, 8, 17, 7, 3, tzinfo=UTC),
     )
 
     assert result["reward_path_count"] == 28
@@ -32,16 +32,23 @@ def test_decibel_referral_path_is_financially_gated_and_increments_queue() -> No
 
     path = next(path for path in result["additional_approval_paths"] if path["slug"] == "decibel-referral-amps")
     assert path["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
-    assert path["reward_share_pct_of_invitee_amps"] == 10
-    assert path["published_volume_threshold_usd"] == 25000
-    assert path["initial_referral_code_count"] == 5
-    assert path["requires_real_order"] is True
+    assert path["published_referral_share_pct"] == 10
+    assert path["legacy_beta_volume_threshold_usd"] == 25000
+    assert path["legacy_beta_referral_code_count"] == 5
+    assert path["newer_public_referral_code_model"] == "ONE_REUSABLE_CODE_UNLIMITED_USES_NO_INVITE_REQUIRED"
+    assert path["current_trading_threshold_required"] is None
+    assert path["public_rule_status"].startswith("CONFLICT_")
+    assert path["requires_funds"] is False
+    assert path["requires_real_order"] is False
+    assert path["requires_wallet_signature"] is True
     assert path["requires_external_communication"] is True
     assert path["auto_executed"] is False
     assert path["action_taken"] == "NONE"
     assert "self_referral" in path["prohibited_methods"]
     assert "spam_or_mass_outreach" in path["prohibited_methods"]
     assert "express consent" in path["missing_approval"]
+    assert "Do not create trading volume" in path["missing_approval"]
+    assert "OFFICIAL_SOURCE_CONFLICT" in path["evidence_status"]
 
     assert result["financial_actions_executed"] == 0
     assert result["asset_transfers_executed"] == 0
@@ -53,7 +60,7 @@ def test_decibel_referral_path_is_financially_gated_and_increments_queue() -> No
 def test_decibel_referral_path_fails_closed_after_ttl() -> None:
     result = apply_decibel_referral_path(
         _base_report(),
-        now=datetime(2026, 8, 25, 6, 40, tzinfo=UTC),
+        now=datetime(2026, 8, 25, 7, 3, tzinfo=UTC),
     )
 
     assert result["reward_path_count"] == 27
@@ -66,7 +73,7 @@ def test_decibel_referral_path_requires_parent_target() -> None:
     report["actions"] = [{"slug": "other"}]
     result = apply_decibel_referral_path(
         report,
-        now=datetime(2026, 8, 17, 6, 40, tzinfo=UTC),
+        now=datetime(2026, 8, 17, 7, 3, tzinfo=UTC),
     )
 
     assert result["reward_path_count"] == 27
