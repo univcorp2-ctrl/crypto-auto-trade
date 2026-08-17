@@ -15,6 +15,7 @@ on:
       - "crypto_auto_trade/airdrop_acquisition.py"
       - "crypto_auto_trade/airdrop_live_overrides.py"
       - "crypto_auto_trade/airdrop_additional_current_paths.py"
+      - "crypto_auto_trade/airdrop_standx_maker_points.py"
       - "crypto_auto_trade/airdrop_decibel_claim_surface.py"
       - "crypto_auto_trade/airdrop_decibel_live_campaigns.py"
       - "crypto_auto_trade/airdrop_decibel_referral.py"
@@ -110,6 +111,13 @@ jobs:
         if: steps.cadence.outputs.run_cycle == 'true'
         run: |
           python -m crypto_auto_trade.airdrop_additional_current_paths \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply current StandX Maker Points path
+        if: steps.cadence.outputs.run_cycle == 'true'
+        run: |
+          python -m crypto_auto_trade.airdrop_standx_maker_points \
             --input data/airdrop/acquisition-latest.json \
             --output data/airdrop/acquisition-latest.json
 
