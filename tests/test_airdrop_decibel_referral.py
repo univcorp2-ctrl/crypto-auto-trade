@@ -32,6 +32,7 @@ def test_decibel_referral_path_fails_closed_on_current_public_rule_conflict() ->
 
     path = next(path for path in result["additional_approval_paths"] if path["slug"] == "decibel-referral-amps")
     assert path["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert path["evidence_source"] == "https://app.decibel.trade/announcements"
     assert path["published_referral_share_pct"] == 10
     assert path["legacy_beta_volume_threshold_usd"] == 25000
     assert path["legacy_beta_referral_code_count"] == 5
