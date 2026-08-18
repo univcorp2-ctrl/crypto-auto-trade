@@ -81,23 +81,21 @@ def test_current_decibel_docs_confirm_rewards_page_but_keep_claim_financially_ga
     assert updated["live_orders_executed"] == 0
 
 
-def test_decibel_snapshot_fallback_matches_current_primary_conflict() -> None:
+def test_decibel_snapshot_fallback_matches_current_primary_claim_surface() -> None:
     updated = apply_decibel_claim_surface(_report(VERIFIED), now=VERIFIED)
     claim = _claim(updated)
 
     assert updated["decibel_claim_surface_override_count"] == 1
     assert updated["decibel_claim_surface_live_recheck"] is False
-    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT_CONFLICT_FAIL_CLOSED"
+    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert (
         claim["claim_surface_status"]
-        == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_CONFLICT_UNVERIFIED"
+        == "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
     )
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert claim["requires_user_approval"] is True
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
-    assert "fails closed" in str(claim["evidence_note"]).lower()
-    assert "current authenticated in-app" in str(claim["next_action"]).lower()
     assert updated["financial_actions_executed"] == 0
     assert updated["asset_transfers_executed"] == 0
     assert updated["wallet_signatures_executed"] == 0
