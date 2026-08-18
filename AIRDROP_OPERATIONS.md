@@ -58,7 +58,7 @@ GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動
 
 ## 現在のWave 1
 
-2026-08-15時点のリポジトリ判定です。`READY_DRY_RUN`や`CONFIRMED`はLIVE実行許可を意味しません。全件 `LEGAL_REVIEW_REQUIRED` / `live_approved=false` を維持します。
+2026-08-18時点のリポジトリ判定です。`READY_DRY_RUN`や`CONFIRMED`はLIVE実行許可を意味しません。全件 `LEGAL_REVIEW_REQUIRED` / `live_approved=false` を維持します。
 
 | Target | 現状 | 獲得までの次工程 |
 |---|---|---|
@@ -67,13 +67,21 @@ GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動
 | Kyan | Repo上Reward mechanics `CONFIRMED`だが、API取引→Krystalsは公式一次資料を組み合わせた `PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE`。Program lifecycleは `REVERIFY` | 現行Krystals lifecycle、Terms/管轄、口座/API key、EIP-712署名条件を再確認し、上限付きAPI取引案を明示承認キューへ。署名・実注文は自動実行しない |
 | Lighter | Reward mechanics `CONFIRMED` / Retail・general pathは `ACTIVE`。一般/RetailはSeason 2週次配布とUI/API取引を記載。Market Makersページの2025-12-26終了記載はMM trackとして分離 | 現行Terms・口座適格性・live Retail points条件を実行直前に再確認後、上限付きorganic API取引案を明示承認キューへ |
 
+## 金融承認待ちのclaim経路
+
+### GRVT TGE Released-Tranche Claim
+
+2026-08-18時点のGRVT公式TGE資料では、released trancheのうち手動claim対象はReward Portalからclaimし、各released batchには30日のclaim windowがあります。公開手順上、claimそのものの前提として新規deposit・Bridge・実注文・token approvalは記載されていませんが、`$GRVT`を受領する金融資産receiptなので `grvt-tge-tranche-claim` は `APPROVAL_REQUIRED_FINANCIAL` とします。
+
+公式TGE overviewはregistration deadlineを2026-08-06 00:00 UTC、公式receive/manage guideは2026-07-27 00:00 UTCと記載しており、公式資料内に期限の競合があります。そのため公開情報だけでaccount eligibilityを確定せず、認証済みReward Portalでclaimable trancheの金額・release date・expiry・credit先・実際のconfirmation/signing要件をread-only確認するまでclaimしません。実際の `Claim` click、wallet接続/署名、入出金、Bridge、transfer、real orderは自動実行しません。
+
 ## 非金融だが未実行の報酬経路
 
 ### Reya RCP Signal
 
-Reyaの現行公式RCP FAQは、**Signal** をRCP獲得カテゴリとして挙げ、trading/stakingを行わなくても、Reyaの成長に寄与する高シグナルなcode・content・connectionsでRCPを得られると説明しています。ただしSignalは裁量的で、今回確認できた公式資料では現行の提出/認識チャネル、account linkage、確定credit条件を特定できていません。
+Reyaの現行公式RCP FAQは、**Signal** をRCP獲得カテゴリとして挙げ、trading/stakingを行わなくても、Reyaの成長に寄与する高シグナルなcode・content・connectionsでRCPを得られると説明しています。ただし確認できた正式なAmbassador ProgramのGenesis Cohort申込期間は2026-04-01で終了しており、その後の一般向けcurrent submission/account-linkage routeは確認できていません。
 
-そのため `reya-signal` は `NONFINANCIAL_REWARD_PATH_REVIEW_REQUIRED` として `additional_review_paths` に保存します。資金移動・注文・wallet署名は不要な候補ですが、**自動投稿・spam・manufactured engagement・referral self-dealingは行わず**、公式提出経路とaccount linkageが確認できるまで実行しません。
+そのため `reya-signal` は現在 `NONFINANCIAL_REWARD_PATH_BLOCKED_NO_OPEN_CHANNEL` として `additional_review_paths` に保存します。資金移動・注文・wallet署名は不要な候補ですが、**期限切れフォーム・非公式提出先・自動投稿・spam・manufactured engagement・referral self-dealingは使わず**、current公式のopen submission経路とaccount linkageが確認できるまで実行しません。
 
 ## 自動実行の安全条件
 
@@ -112,13 +120,31 @@ Reyaの現行公式RCP FAQは、**Signal** をRCP獲得カテゴリとして挙�
 python -m crypto_auto_trade.airdrop_agents --output data/airdrop/latest.json
 ```
 
-獲得サイクル:
+獲得サイクル（GitHub Actionsと同じcurrent metadata適用順）:
 
 ```bash
 python -m crypto_auto_trade.airdrop_acquisition \
   --status-output data/airdrop/latest.json \
   --output data/airdrop/acquisition-latest.json
 python -m crypto_auto_trade.airdrop_live_overrides \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_additional_current_paths \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_grvt_tge_claim \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_standx_maker_points \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_decibel_claim_surface \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_decibel_live_campaigns \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_decibel_referral \
   --input data/airdrop/acquisition-latest.json \
   --output data/airdrop/acquisition-latest.json
 ```
