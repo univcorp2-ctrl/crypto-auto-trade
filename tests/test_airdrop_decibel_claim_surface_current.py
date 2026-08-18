@@ -31,6 +31,7 @@ def test_current_decibel_claim_route_fails_closed_to_in_app_and_stays_financiall
     claim = _claim(updated)
 
     assert updated["decibel_claim_surface_override_count"] == 1
+    assert claim["evidence_source"] == "https://docs.decibel.trade/rewards/campaigns/live"
     assert claim["claim_surface_status"] == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_UNCONFIRMED"
     assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOW_NOTIFICATION"
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
@@ -46,6 +47,7 @@ def test_current_decibel_claim_route_fails_closed_to_in_app_and_stays_financiall
     assert "/rewards page is coming soon" in str(claim["evidence_note"]).lower()
     assert "claim now" in str(claim["evidence_note"]).lower()
     assert "fails closed" in str(claim["evidence_note"]).lower()
+    assert "public /rewards route" in str(claim["evidence_note"]).lower()
     assert "authenticated decibel session" in str(claim["missing_approval"]).lower()
     assert "in-app" in str(claim["next_action"]).lower()
     assert "do not use /rewards as the current claim route" in str(claim["next_action"]).lower()
