@@ -12,7 +12,7 @@ from urllib.request import Request, urlopen
 
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS
 
-DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-18T14:22:32+00:00"
+DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-18T15:21:42+00:00"
 DECIBEL_LIVE_CAMPAIGNS_SOURCE = "https://docs.decibel.trade/rewards/campaigns/live"
 DECIBEL_REWARDS_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_REWARDS_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
@@ -31,12 +31,12 @@ _REQUIRED_CURRENT_SOURCES = (
 _SNAPSHOT_SOURCE_TEXTS = {
     DECIBEL_LIVE_CAMPAIGNS_SOURCE: (
         "Active now — distributing rewards today. The campaigns below are live. "
-        "The /rewards page is coming soon; in the meantime, active rewards are delivered "
-        "via Claim now pop-ups inside the Decibel app."
+        "Review and claim all eligible rewards from the /rewards page in the Decibel app; "
+        "you may also see Claim now pop-ups surfacing rewards as you trade."
     ),
     DECIBEL_REWARDS_OVERVIEW_SOURCE: (
-        "Campaign rewards are claimed through the /rewards page (coming soon) and credited "
-        "directly to your trading account balance in a single onchain transaction."
+        "Campaign rewards are claimed through the /rewards page and credited directly to "
+        "your trading account balance in a single onchain transaction."
     ),
     DECIBEL_REWARDS_FAQ_SOURCE: (
         "You'll see the expiry date on each tile in /rewards. New campaigns appear on the "
