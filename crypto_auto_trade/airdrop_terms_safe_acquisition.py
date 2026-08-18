@@ -24,24 +24,27 @@ from crypto_auto_trade.airdrop_agents import (
 # 2026-08-18 UTC, prohibit accessing the Services by automated means and also
 # prohibit automated activity that circumvents Points Program limitations.
 # The Terms define the covered Website broadly enough to include related sites,
-# subdomains, applications and services. The scheduled agent therefore does not
-# automatically probe Decibel's program/API/rewards surfaces. It fails closed
-# and leaves any financial/signing route for manual review + explicit approval.
+# subdomains, applications and services. Any automated agent path therefore does
+# not probe Decibel's program/API/rewards surfaces. It fails closed and leaves
+# any financial/signing route for human/manual review + explicit approval.
 DECIBEL_TERMS_SOURCE = "https://decibel.trade/terms-of-service"
 DECIBEL_TERMS_VERIFIED_AT = "2026-08-18T23:19:02+00:00"
 TERMS_AUTOMATION_BLOCKED_SLUGS = frozenset({"decibel-trading", "decibel-liquidity"})
 TERMS_AUTOMATION_BLOCK_REASON = (
     "Current Decibel Terms prohibit access to the Services by automated means. "
-    "Scheduled HTTP probing and automated reward acquisition are therefore disabled for this target. "
+    "Automated HTTP probing and automated reward acquisition are therefore disabled for this target. "
     "Use a human/manual current-terms and account-eligibility review before any separately approved financial action."
 )
 
 
-def _evaluate_target(target: AirdropTarget) -> dict[str, object]:
+def _evaluate_target(
+    target: AirdropTarget, *, probe_network: bool = True
+) -> dict[str, object]:
     if target.slug not in TERMS_AUTOMATION_BLOCKED_SLUGS:
-        return dry_run_target(target, probe_network=True)
+        return dry_run_target(target, probe_network=probe_network)
 
-    # Intentionally do not make an HTTP request to Decibel here.
+    # Intentionally do not make an HTTP request to Decibel here, regardless of
+    # whether the caller requested network probes for other targets.
     result = dry_run_target(target, probe_network=False)
     result.update(
         {
@@ -67,11 +70,16 @@ def _evaluate_target(target: AirdropTarget) -> dict[str, object]:
     return result
 
 
-def run_terms_safe_status() -> dict[str, object]:
+def run_terms_safe_status(*, probe_network: bool = True) -> dict[str, object]:
     targets = list(TARGETS)
     worker_count = min(12, len(targets))
     with ThreadPoolExecutor(max_workers=worker_count) as executor:
-        results = list(executor.map(_evaluate_target, targets))
+        results = list(
+            executor.map(
+                lambda target: _evaluate_target(target, probe_network=probe_network),
+                targets,
+            )
+        )
 
     return {
         "generated_at": utc_now(),
