@@ -68,7 +68,7 @@ def create_app() -> Any:
     @app.get("/api/exchanges")
     def exchanges(api_ready_only: bool = False) -> dict[str, object]:
         venues = api_ready_venues() if api_ready_only else list_exchange_venues()
-        return {"exchanges": [venue.__dict__ for venue in venues], "count": len(list_exchange_venues()) if not api_ready_only else len(api_ready_venues())}
+        return {"exchanges": [venue.__dict__ for venue in venues], "count": len(venues)}
 
     @app.get("/api/market/prices")
     def market_prices(vs_currency: str = "usd", pages: int = 1, per_page: int = 100) -> dict[str, object]:
