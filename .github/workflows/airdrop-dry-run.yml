@@ -31,9 +31,12 @@ on:
 permissions:
   contents: write
 
+# Keep feature-branch validation independent from main, and never cancel a valid
+# in-progress acquisition cycle just because a newer schedule/push arrives.
+# GitHub will still coalesce pending runs in each ref-specific group by default.
 concurrency:
-  group: airdrop-agent-hourly
-  cancel-in-progress: true
+  group: airdrop-agent-hourly-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   acquisition-cycle:
