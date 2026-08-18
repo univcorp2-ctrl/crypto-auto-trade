@@ -89,6 +89,10 @@ def run_terms_safe_status() -> dict[str, object]:
     }
 
 
+def _is_approval_state(state: object) -> bool:
+    return state in {"APPROVAL_REQUIRED_FINANCIAL", "APPROVAL_REQUIRED_ASSET_MOVE"}
+
+
 def _apply_terms_guard_to_acquisition(report: dict[str, Any]) -> dict[str, Any]:
     for action in report.get("actions", []):
         if not isinstance(action, dict) or action.get("slug") not in TERMS_AUTOMATION_BLOCKED_SLUGS:
@@ -110,13 +114,27 @@ def _apply_terms_guard_to_acquisition(report: dict[str, Any]) -> dict[str, Any]:
             }
         )
 
+    actions = [action for action in report.get("actions", []) if isinstance(action, dict)]
+    additional_paths = [
+        path for path in report.get("additional_approval_paths", []) if isinstance(path, dict)
+    ]
+    primary_approval_required_count = sum(
+        _is_approval_state(action.get("acquisition_state")) for action in actions
+    )
+    additional_approval_required_count = sum(
+        _is_approval_state(path.get("acquisition_state")) for path in additional_paths
+    )
+
     report["blocked_unverified_count"] = sum(
-        isinstance(action, dict) and action.get("acquisition_state") == "BLOCKED_UNVERIFIED"
-        for action in report.get("actions", [])
+        action.get("acquisition_state") == "BLOCKED_UNVERIFIED" for action in actions
     )
     report["reverify_required_count"] = sum(
-        isinstance(action, dict) and action.get("acquisition_state") == "REVERIFY_REQUIRED"
-        for action in report.get("actions", [])
+        action.get("acquisition_state") == "REVERIFY_REQUIRED" for action in actions
+    )
+    report["primary_approval_required_count"] = primary_approval_required_count
+    report["additional_approval_required_count"] = additional_approval_required_count
+    report["approval_required_count"] = (
+        primary_approval_required_count + additional_approval_required_count
     )
     report["terms_automation_blocked_count"] = len(TERMS_AUTOMATION_BLOCKED_SLUGS)
     report["terms_automation_guard_source"] = DECIBEL_TERMS_SOURCE
