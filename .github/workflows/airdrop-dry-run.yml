@@ -13,6 +13,7 @@ on:
     paths:
       - "crypto_auto_trade/airdrop_agents.py"
       - "crypto_auto_trade/airdrop_acquisition.py"
+      - "crypto_auto_trade/airdrop_kyan_current.py"
       - "crypto_auto_trade/airdrop_live_overrides.py"
       - "crypto_auto_trade/airdrop_additional_current_paths.py"
       - "crypto_auto_trade/airdrop_grvt_tge_claim.py"
@@ -100,6 +101,15 @@ jobs:
           python -m crypto_auto_trade.airdrop_acquisition \
             --status-output data/airdrop/latest.json \
             --output data/airdrop/acquisition-latest.json
+
+      - name: Refresh current Kyan Krystals lifecycle
+        if: steps.cadence.outputs.run_cycle == 'true'
+        run: |
+          python -m crypto_auto_trade.airdrop_kyan_current \
+            --status-input data/airdrop/latest.json \
+            --status-output data/airdrop/latest.json \
+            --acquisition-input data/airdrop/acquisition-latest.json \
+            --acquisition-output data/airdrop/acquisition-latest.json
 
       - name: Apply current approval metadata
         if: steps.cadence.outputs.run_cycle == 'true'
