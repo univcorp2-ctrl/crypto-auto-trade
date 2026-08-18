@@ -81,6 +81,27 @@ def test_current_decibel_docs_confirm_rewards_page_but_keep_claim_financially_ga
     assert updated["live_orders_executed"] == 0
 
 
+def test_decibel_snapshot_fallback_matches_current_primary_claim_surface() -> None:
+    updated = apply_decibel_claim_surface(_report(VERIFIED), now=VERIFIED)
+    claim = _claim(updated)
+
+    assert updated["decibel_claim_surface_override_count"] == 1
+    assert updated["decibel_claim_surface_live_recheck"] is False
+    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert (
+        claim["claim_surface_status"]
+        == "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
+    )
+    assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert claim["requires_user_approval"] is True
+    assert claim["action_taken"] == "NONE"
+    assert claim["auto_executed"] is False
+    assert updated["financial_actions_executed"] == 0
+    assert updated["asset_transfers_executed"] == 0
+    assert updated["wallet_signatures_executed"] == 0
+    assert updated["live_orders_executed"] == 0
+
+
 def test_decibel_live_recheck_fails_closed_when_live_page_says_rewards_page_coming_soon() -> None:
     conflict = dict(CURRENT_TEXTS)
     conflict[DECIBEL_LIVE_CAMPAIGNS_SOURCE] = (
