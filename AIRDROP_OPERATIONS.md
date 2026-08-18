@@ -64,7 +64,7 @@ GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動
 |---|---|---|
 | Pacifica | Reward mechanics `CONFIRMED` / Program `ACTIVE`。公式Program/API到達確認済み | ポイント獲得は実取引が必要。現行Terms・日本居住者適格性・口座条件を再確認後、上限付き実取引案を明示承認キューへ |
 | Hibachi | Reward mechanics `CONFIRMED` / Program `ACTIVE`。UI/APIのpoints算定同一を公式FAQで確認済み | exchange activityが必要。現行Terms・日本居住者適格性・口座条件を再確認後、上限付き実取引案を明示承認キューへ |
-| Kyan | Repo上Reward mechanics `CONFIRMED`だが、API取引→Krystalsは公式一次資料を組み合わせた `PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE`。Program lifecycleは `REVERIFY` | 現行Krystals lifecycle、Terms/管轄、口座/API key、EIP-712署名条件を再確認し、上限付きAPI取引案を明示承認キューへ。署名・実注文は自動実行しない |
+| Kyan | Repo上Reward mechanics `CONFIRMED`だが、API取引→Krystalsは公式一次資料を組み合わせた `PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE`。Public Krystals Program lifecycleは current primary source確認により `ACTIVE`。このACTIVEはAPI取引ごとのKrystals付与保証やLIVE許可を意味しない | 現行Terms/管轄、口座/API key、Rewards Hubのaccount固有状態、EIP-712署名条件をread-only再確認し、上限付きAPI取引案を明示承認キューへ。署名・実注文は自動実行しない。current evidence TTL失効時はfail-closedで `REVERIFY` へ戻す |
 | Lighter | Reward mechanics `CONFIRMED` / Retail・general pathは `ACTIVE`。一般/RetailはSeason 2週次配布とUI/API取引を記載。Market Makersページの2025-12-26終了記載はMM trackとして分離 | 現行Terms・口座適格性・live Retail points条件を実行直前に再確認後、上限付きorganic API取引案を明示承認キューへ |
 
 ## 金融承認待ちのclaim経路
@@ -126,6 +126,11 @@ python -m crypto_auto_trade.airdrop_agents --output data/airdrop/latest.json
 python -m crypto_auto_trade.airdrop_acquisition \
   --status-output data/airdrop/latest.json \
   --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_kyan_current \
+  --status-input data/airdrop/latest.json \
+  --status-output data/airdrop/latest.json \
+  --acquisition-input data/airdrop/acquisition-latest.json \
+  --acquisition-output data/airdrop/acquisition-latest.json
 python -m crypto_auto_trade.airdrop_live_overrides \
   --input data/airdrop/acquisition-latest.json \
   --output data/airdrop/acquisition-latest.json
