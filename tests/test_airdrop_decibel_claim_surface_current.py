@@ -8,8 +8,9 @@ from crypto_auto_trade.airdrop_decibel_claim_surface import (
     apply_decibel_claim_surface,
 )
 
-# Current official Live Campaigns, Rewards Overview and FAQ all confirm /rewards is live,
-# with in-app Claim now notifications as an additional claim surface.
+# Current official Live Campaigns explicitly says /rewards is coming soon and
+# active rewards are delivered via in-app Claim now notifications. Overview/FAQ
+# still describe the future /rewards flow, so the agent must fail closed.
 VERIFIED = datetime.fromisoformat(DECIBEL_CLAIM_SURFACE_VERIFIED_AT).astimezone(UTC)
 
 
@@ -24,14 +25,14 @@ def _claim(report: dict[str, object]) -> dict[str, object]:
     return next(path for path in paths if path["slug"] == "decibel-campaign-claims")
 
 
-def test_current_decibel_claim_routes_are_metadata_only_and_financially_gated() -> None:
+def test_current_decibel_claim_route_fails_closed_to_in_app_and_stays_financially_gated() -> None:
     current = VERIFIED + timedelta(seconds=1)
     updated = apply_decibel_claim_surface(_report(current), now=current)
     claim = _claim(updated)
 
     assert updated["decibel_claim_surface_override_count"] == 1
-    assert claim["claim_surface_status"] == "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
-    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION"
+    assert claim["claim_surface_status"] == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_UNCONFIRMED"
+    assert claim["claim_status"] == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOW_NOTIFICATION"
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert claim["requires_user_approval"] is True
     assert claim["requires_funds"] is False
@@ -40,13 +41,14 @@ def test_current_decibel_claim_routes_are_metadata_only_and_financially_gated() 
     assert claim["requires_asset_move"] is True
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
-    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT_CONFLICT_FAIL_CLOSED"
     assert "distributing rewards today" in str(claim["evidence_note"]).lower()
-    assert "/rewards" in str(claim["evidence_note"]).lower()
+    assert "/rewards page is coming soon" in str(claim["evidence_note"]).lower()
     assert "claim now" in str(claim["evidence_note"]).lower()
-    assert "wallet connection" in str(claim["evidence_note"]).lower()
-    assert "ready to claim" in str(claim["missing_approval"]).lower()
-    assert "inspect /rewards" in str(claim["next_action"]).lower()
+    assert "fails closed" in str(claim["evidence_note"]).lower()
+    assert "authenticated decibel session" in str(claim["missing_approval"]).lower()
+    assert "in-app" in str(claim["next_action"]).lower()
+    assert "do not use /rewards as the current claim route" in str(claim["next_action"]).lower()
     assert "do not connect/sign a wallet" in str(claim["next_action"]).lower()
 
     assert updated["financial_actions_executed"] == 0
