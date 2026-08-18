@@ -9,7 +9,7 @@ from typing import Any
 
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS
 
-DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-17T22:30:05+00:00"
+DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-18T09:25:45+00:00"
 DECIBEL_LIVE_CAMPAIGNS_SOURCE = "https://docs.decibel.trade/rewards/campaigns/live"
 DECIBEL_REWARDS_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_REWARDS_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
@@ -54,30 +54,29 @@ def apply_decibel_claim_surface(report: dict[str, Any], *, now: datetime | None 
                     DECIBEL_REWARDS_APP_SOURCE,
                     "https://decibel.trade/terms-of-service",
                 ],
-                "evidence_status": "PRIMARY_VERIFIED_CURRENT",
+                "evidence_status": "PRIMARY_VERIFIED_CURRENT_CONFLICT_FAIL_CLOSED",
                 "verification_expires_at": expires.isoformat(),
                 "evidence_note": (
-                    "Current official Decibel Live Campaigns says active campaigns are distributing rewards today and directs eligible users to review and claim them from the /rewards page, with in-app 'Claim now' pop-ups as an additional notification surface. "
-                    "The current Rewards Overview independently describes /rewards as the place to review campaign status and claim Ready to Claim rewards, and the current FAQ says expiry dates and new campaigns appear on /rewards. "
-                    "The public /rewards application route is deployed and currently requires a wallet connection before account-specific reward data is shown. "
-                    "These current public primary sources establish the live claim route, but they do not prove that this specific account has an eligible or claimable reward before authenticated account inspection."
+                    "Current official Decibel Live Campaigns says the listed campaigns are active and distributing rewards today, but explicitly says the /rewards page is coming soon and that active rewards are currently delivered via in-app 'Claim now' pop-ups. "
+                    "The current Rewards Overview independently labels /rewards as coming soon while also describing the future /rewards review/claim flow, and the FAQ still refers to /rewards tiles. "
+                    "Because the official pages mix current and future claim-surface language, the agent fails closed: the current public claim surface is treated as the authenticated in-app 'Claim now' notification only, and /rewards is not treated as a current acquisition route until Decibel's current-state documentation or an authenticated account surface confirms that it has shipped. "
+                    "The existence of a public /rewards route does not override the current Live Campaigns statement or prove account-specific eligibility."
                 ),
-                "claim_surface_status": "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED",
+                "claim_surface_status": "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_COMING_SOON_UNCONFIRMED",
                 "terms_status": "CURRENT_PUBLIC_TERMS_REVIEWED_REVERIFY_ACCOUNT_JURISDICTION_ELIGIBILITY_REWARD_AMOUNT_EXPIRY_AND_CLAIM_SIGNING",
                 "known_cost_or_risk": (
-                    "No new trade or deposit is required merely to inspect an already-earned campaign reward, but an actual campaign claim is a financial receipt. Current Decibel documentation says a Ready to Claim reward is credited to the trading account in a single onchain transaction, and the public /rewards route requires wallet connection. "
+                    "No new trade or deposit is required merely to inspect an already-earned campaign notification, but an actual campaign claim is a financial receipt. Current Decibel documentation says campaign rewards are credited to the trading account and describes an onchain claim flow, while the exact current account-specific signing/transaction path remains unknown until authenticated inspection. "
                     "Account-specific eligibility, reward amount, asset, expiry, exact transaction/signing requirements and any network cost remain unknown before authenticated inspection; reward parameters and claim windows can change, and unclaimed rewards can expire. "
-                    "Decibel's current Terms state that campaign-specific eligibility, reward amounts and claim procedures can be set through Campaign Rules or the /rewards page, and rewards remain discretionary and subject to applicable restrictions. "
-                    "Receiving a USD-denominated stablecoin reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
+                    "Decibel's current Terms state that supplemental terms may apply and that users are responsible for jurisdictional compliance. Receiving a USD-denominated stablecoin reward can also create recordkeeping or tax obligations depending on the user's circumstances; no tax conclusion is assumed here."
                 ),
                 "missing_approval": (
-                    "A supported already-authenticated Decibel account/wallet session for read-only inspection; confirmation that the account is eligible under current Terms/jurisdiction; an account-specific Ready to Claim reward showing amount, asset and expiry; confirmation of the exact onchain transaction/signing requirements and any network cost; and explicit approval to receive the financial reward."
+                    "A supported already-authenticated Decibel session for read-only inspection of the current in-app unclaimed-reward banner/'Claim now' notification; confirmation that the account is eligible under current Terms/jurisdiction; an account-specific claimable reward showing amount, asset and expiry; confirmation of the exact transaction/signing requirements and any network cost; and explicit approval to receive the financial reward."
                 ),
                 "next_action": (
-                    "In a supported already-authenticated Decibel session, inspect /rewards and the in-app unclaimed-rewards banner for account-specific eligibility, Ready to Claim status, reward amount, asset, expiry and exact signing/onchain requirements. "
-                    "If a reward is Ready to Claim, record those details and keep the actual claim in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically."
+                    "In a supported already-authenticated Decibel session, inspect the current in-app unclaimed-rewards banner/'Claim now' notification for account-specific eligibility, claimable status, reward amount, asset, expiry and exact signing/onchain requirements. "
+                    "Do not use /rewards as the current claim route unless Decibel's current-state documentation or the authenticated account surface confirms it is live. If a reward is claimable, record those details and keep the actual claim in explicit financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, deposit, withdraw or move assets automatically."
                 ),
-                "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION",
+                "claim_status": "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOW_NOTIFICATION",
                 "action_taken": "NONE",
                 "auto_executed": False,
                 "points_delta": None,
