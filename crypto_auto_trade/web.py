@@ -3,7 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from crypto_auto_trade.airdrop_agents import load_latest, run_all as run_airdrop_all, save_report
+from crypto_auto_trade.airdrop_agents import load_latest, save_report
+from crypto_auto_trade.airdrop_terms_safe_acquisition import run_terms_safe_status
 from crypto_auto_trade.backtest import BacktestConfig, Backtester, forward_test
 from crypto_auto_trade.data import choose_candles
 from crypto_auto_trade.exchange_registry import api_ready_venues, list_exchange_venues
@@ -56,7 +57,7 @@ def create_app() -> Any:
 
     @app.post("/api/airdrop/dry-run")
     def airdrop_dry_run(probe_network: bool = True) -> dict[str, object]:
-        report = run_airdrop_all(probe_network=probe_network)
+        report = run_terms_safe_status(probe_network=probe_network)
         save_report(report)
         return report
 
@@ -67,7 +68,7 @@ def create_app() -> Any:
     @app.get("/api/exchanges")
     def exchanges(api_ready_only: bool = False) -> dict[str, object]:
         venues = api_ready_venues() if api_ready_only else list_exchange_venues()
-        return {"exchanges": [venue.__dict__ for venue in venues], "count": len(venues)}
+        return {"exchanges": [venue.__dict__ for venue in venues], "count": len(list_exchange_venues()) if not api_ready_only else len(api_ready_venues())}
 
     @app.get("/api/market/prices")
     def market_prices(vs_currency: str = "usd", pages: int = 1, per_page: int = 100) -> dict[str, object]:
