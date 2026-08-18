@@ -91,6 +91,8 @@ def _expire_owned_overlay(
             continue
         if action.get("verified_at") != KYAN_VERIFIED_AT:
             continue
+        if action.get("evidence_status") == "EXPIRED_REVERIFY_REQUIRED":
+            continue
         action.update(
             {
                 "acquisition_state": "REVERIFY_REQUIRED",
