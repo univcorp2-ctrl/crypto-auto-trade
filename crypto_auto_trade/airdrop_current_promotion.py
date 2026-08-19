@@ -29,6 +29,10 @@ REYA_STAKING_VERIFIED_AT = "2026-08-19T07:56:34+00:00"
 REYA_STAKING_EVIDENCE_SOURCE = "https://blog.reya.network/ethena-and-reya-a-new-foundation-for-rlp/"
 REYA_STAKING_RCP_SOURCE = "https://docs.reya.xyz/reya-token/reya-chain-points-faqs"
 REYA_STAKING_PARTNERSHIP_SOURCE = "https://blog.reya.network/reyas-strategic-partnerships/"
+LIGHTER_VERIFIED_AT = "2026-08-19T12:18:26+00:00"
+LIGHTER_EVIDENCE_SOURCE = "https://docs.lighter.xyz/points-program"
+LIGHTER_RETAIL_SOURCE = "https://docs.lighter.xyz/points-program/retail"
+LIGHTER_API_SOURCE = "https://docs.lighter.xyz/perpetual-futures/api"
 
 
 def _verified_at_is_fresh(verified_at: str, *, now: datetime) -> bool:
@@ -245,6 +249,76 @@ def promote_current_verified_paths(
                 "parameters, confirm the eligible market and qualification window, calculate capped worst-case "
                 "fee/funding/liquidation exposure, and prepare the position plan for explicit approval only. Do not "
                 "open, hold, modify or close a real position automatically for reward acquisition."
+            ),
+        },
+    ):
+        result["current_evidence_promotion_count"] += 1
+
+    if _promote_reverify_action(
+        result,
+        slug="lighter",
+        verified_at=LIGHTER_VERIFIED_AT,
+        evidence_source=LIGHTER_EVIDENCE_SOURCE,
+        now=current,
+        fields={
+            "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
+            "requires_user_approval": True,
+            "requires_funds": True,
+            "requires_wallet_signature": True,
+            "requires_real_order": True,
+            "requires_asset_move": False,
+            "authentication_recheck_required": True,
+            "evidence_sources": [
+                LIGHTER_EVIDENCE_SOURCE,
+                LIGHTER_RETAIL_SOURCE,
+                LIGHTER_API_SOURCE,
+            ],
+            "source_coverage": "CURRENT_PRIMARY_OFFICIAL_ONLY_NO_INDEPENDENT_EXPERT_SOURCE",
+            "reward_scope": "CURRENT_RETAIL_SEASON2_ORGANIC_UI_API_TRADING",
+            "retail_weekly_points": 200000,
+            "retail_activity_window": "WEDNESDAY_TO_TUESDAY",
+            "retail_activity_factors": [
+                "volume",
+                "open_interest",
+                "fundings",
+                "liquidations_and_deleverages",
+                "pnl",
+            ],
+            "retail_formula_characteristics": (
+                "NONLINEAR_MARKET_AND_TIME_BUCKET_SPECIFIC_WITH_QUALITY_AND_PREMIUM_SCALING"
+            ),
+            "evidence_note": (
+                "Current official Lighter Points Program says Season 2 points are distributed every Friday "
+                "and organic trading strategies via both UI and API earn points. The current Retail page says "
+                "200,000 points are distributed to retail traders each week for Wednesday-through-Tuesday "
+                "activity and considers Volume, Open Interest, Fundings, Liquidations/Deleverages and PnL. "
+                "It also says points are nonlinear, can vary by market and time bucket, and intentionally "
+                "losing money or getting liquidated is not beneficial. The separate Market Makers page's "
+                "December 26, 2025 end date is scoped to the market-maker track, not the current Retail path."
+            ),
+            "terms_status": (
+                "REVERIFY_CURRENT_LIGHTER_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_"
+                "API_KEY_WALLET_AUTHENTICATION_AND_LIVE_RETAIL_WEIGHTS_BEFORE_EXECUTION"
+            ),
+            "known_cost_or_risk": (
+                "Qualification requires genuine trading and therefore real economic exposure. Even where a "
+                "current account tier displays zero trading fees, spread/slippage, funding, margin, liquidation "
+                "and directional PnL risk remain, and point value plus scoring weights are not fixed. Creating "
+                "or linking a Lighter account can require an Ethereum-wallet signature, and API requests use "
+                "account-owned signing keys. No wallet signature, API-key setup or real order is authorized here."
+            ),
+            "missing_approval": (
+                "Current Lighter Terms/jurisdiction and account eligibility; whether an already-authenticated "
+                "account and compliant API key already exist or a wallet-linking signature would be required; "
+                "the live Retail scoring/account-tier parameters; and explicit market, maximum notional, leverage, "
+                "fee/spread/funding budget and maximum acceptable loss before any genuine order."
+            ),
+            "next_action": (
+                "Immediately before any economic action, re-open the current Lighter Points and Retail pages plus "
+                "Terms/account eligibility, confirm the authenticated account/API-key state and live scoring inputs, "
+                "then prepare a capped genuine-trading plan for explicit approval. Do not create/link a wallet "
+                "session, sign a message, deposit funds or submit real orders automatically, and never use Sybil, "
+                "self-trading or manipulative activity."
             ),
         },
     ):
