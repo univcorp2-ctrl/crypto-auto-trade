@@ -1,0 +1,170 @@
+name: Airdrop Current Full-Cycle Diagnostic
+
+on:
+  push:
+    branches:
+      - feat/airdrop-diagnose-full-cycle-20260819
+    paths:
+      - ".github/workflows/airdrop-full-cycle-diagnostic.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  full-cycle-diagnostic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install test dependencies
+        run: pip install -e '.[dev,web]'
+
+      - name: Run current Airdrop tests
+        run: pytest -q tests/test_airdrop*.py
+
+      - name: Run terms-safe gated acquisition cycle
+        run: |
+          python -m crypto_auto_trade.airdrop_terms_safe_acquisition \
+            --status-output data/airdrop/latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Refresh current Kyan Krystals lifecycle
+        run: |
+          python -m crypto_auto_trade.airdrop_kyan_current \
+            --status-input data/airdrop/latest.json \
+            --status-output data/airdrop/latest.json \
+            --acquisition-input data/airdrop/acquisition-latest.json \
+            --acquisition-output data/airdrop/acquisition-latest.json
+
+      - name: Apply current approval metadata
+        run: |
+          python -m crypto_auto_trade.airdrop_live_overrides \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Promote fresh current evidence after base TTL
+        run: |
+          python -m crypto_auto_trade.airdrop_current_promotion \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Refresh current Reya trading reward evidence
+        run: |
+          python -m crypto_auto_trade.airdrop_reya_trading_current \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Refresh current Nado approval evidence
+        run: |
+          python -m crypto_auto_trade.airdrop_nado_current \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Refresh current Extended approval evidence
+        run: |
+          python -m crypto_auto_trade.airdrop_extended_current \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Fail closed on current Ethereal migration lifecycle
+        run: |
+          python -m crypto_auto_trade.airdrop_ethereal_current \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply current additional reward paths
+        run: |
+          python -m crypto_auto_trade.airdrop_additional_current_paths \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply current GRVT TGE released-tranche claim path
+        run: |
+          python -m crypto_auto_trade.airdrop_grvt_tge_claim \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply current StandX Maker Points path
+        run: |
+          python -m crypto_auto_trade.airdrop_standx_maker_points \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply cached Decibel live-campaign approval metadata
+        run: |
+          python -m crypto_auto_trade.airdrop_decibel_live_campaigns \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Apply cached Decibel referral approval metadata
+        run: |
+          python -m crypto_auto_trade.airdrop_decibel_referral \
+            --input data/airdrop/acquisition-latest.json \
+            --output data/airdrop/acquisition-latest.json
+
+      - name: Enforce safety boundary and write diagnostic marker
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          status = json.loads(Path('data/airdrop/latest.json').read_text())
+          acquisition = json.loads(Path('data/airdrop/acquisition-latest.json').read_text())
+
+          assert status['target_count'] == 20
+          assert acquisition['target_count'] == 20
+          assert status['live_approved'] is False
+          assert acquisition['live_approved'] is False
+          assert status['terms_automation_blocked_count'] == 2
+          assert acquisition['terms_automation_blocked_count'] == 2
+          assert acquisition['blocked_unverified_count'] >= 2
+          assert acquisition['financial_actions_executed'] == 0
+          assert acquisition['asset_transfers_executed'] == 0
+          assert acquisition['wallet_signatures_executed'] == 0
+          assert acquisition['live_orders_executed'] == 0
+
+          marker = {
+              'generated_at': datetime.now(UTC).isoformat(),
+              'purpose': 'diagnose_current_airdrop_full_cycle_without_main_side_effects',
+              'ref': os.environ.get('GITHUB_REF'),
+              'sha': os.environ.get('GITHUB_SHA'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'status_generated_at': status.get('generated_at'),
+              'target_count': status.get('target_count'),
+              'ready_dry_run': status.get('ready_dry_run'),
+              'read_only': status.get('read_only'),
+              'unverified': status.get('unverified'),
+              'terms_automation_blocked_count': status.get('terms_automation_blocked_count'),
+              'reward_path_count': acquisition.get('reward_path_count'),
+              'approval_required_count': acquisition.get('approval_required_count'),
+              'blocked_unverified_count': acquisition.get('blocked_unverified_count'),
+              'financial_actions_executed': acquisition.get('financial_actions_executed'),
+              'asset_transfers_executed': acquisition.get('asset_transfers_executed'),
+              'wallet_signatures_executed': acquisition.get('wallet_signatures_executed'),
+              'live_orders_executed': acquisition.get('live_orders_executed'),
+              'live_approved': acquisition.get('live_approved'),
+          }
+          path = Path('data/airdrop/current-full-cycle-diagnostic.json')
+          path.write_text(json.dumps(marker, indent=2) + '\n', encoding='utf-8')
+          print(marker)
+          PY
+
+      - name: Commit diagnostic marker on feature branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/airdrop/current-full-cycle-diagnostic.json
+          git commit -m "chore: record current Airdrop full-cycle diagnostic"
+          git push
