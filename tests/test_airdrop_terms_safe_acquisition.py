@@ -4,6 +4,7 @@ from crypto_auto_trade.airdrop_terms_safe_acquisition import (
     TERMS_AUTOMATION_BLOCKED_SLUGS,
     _apply_terms_guard_to_acquisition,
     _evaluate_target,
+    run_terms_safe_status,
 )
 
 
@@ -55,3 +56,19 @@ def test_terms_guard_marks_decibel_actions_blocked_and_recounts_approvals() -> N
     assert all(action["automation_permitted"] is False for action in decibel)
     assert all("human/manual" in action["next_action"] for action in decibel)
     assert updated["actions"][2]["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+
+
+def test_terms_safe_status_propagates_ethereal_fail_closed_state() -> None:
+    result = run_terms_safe_status(probe_network=False)
+    ethereal = {
+        item["slug"]: item
+        for item in result["targets"]
+        if item["slug"] in {"ethereal-trading", "ethereal-margin"}
+    }
+
+    assert result["ethereal_current_block_count"] == 2
+    assert set(ethereal) == {"ethereal-trading", "ethereal-margin"}
+    assert all(item["status"] == "UNVERIFIED" for item in ethereal.values())
+    assert all(item["reward_acquisition_state"] == "BLOCKED_UNVERIFIED" for item in ethereal.values())
+    assert all("FAIL_CLOSED" in item["current_evidence_status"] for item in ethereal.values())
+    assert result["unverified"] >= 4
