@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +20,14 @@ from crypto_auto_trade.airdrop_agents import (
     save_report,
     utc_now,
 )
+from crypto_auto_trade.airdrop_ethereal_current import (
+    ETHEREAL_APP_SOURCE,
+    ETHEREAL_BALANCE_REWARDS_SOURCE,
+    ETHEREAL_POINTS_SOURCE,
+    ETHEREAL_SLUGS,
+    ETHEREAL_VERIFIED_AT,
+    TTL_DAYS as ETHEREAL_TTL_DAYS,
+)
 
 # Decibel's current Terms of Use (last updated 2026-07-14), reviewed again on
 # 2026-08-18 UTC, prohibit accessing the Services by automated means and also
@@ -34,6 +43,17 @@ TERMS_AUTOMATION_BLOCK_REASON = (
     "Current Decibel Terms prohibit access to the Services by automated means. "
     "Automated HTTP probing and automated reward acquisition are therefore disabled for this target. "
     "Use a human/manual current-terms and account-eligibility review before any separately approved financial action."
+)
+
+ETHEREAL_CURRENT_BLOCK_REASON = (
+    "Current official Ethereal app lifecycle is close-only and migrating to Meridian while "
+    "older official Ethereal reward pages still describe trading and USDe margin as reward-earning. "
+    "Do not treat the older reward pages as a current acquisition authorization."
+)
+ETHEREAL_EXPIRED_BLOCK_REASON = (
+    "The last verified Ethereal close-only/migration evidence has expired. Re-verify the current "
+    "Ethereal/Meridian lifecycle and reward rules before treating trading or margin as an available "
+    "reward-acquisition path."
 )
 
 
@@ -70,6 +90,61 @@ def _evaluate_target(
     return result
 
 
+def _apply_ethereal_guard_to_status(
+    report: dict[str, Any], *, now: datetime | None = None
+) -> dict[str, Any]:
+    """Propagate Ethereal's current lifecycle conflict to the public status report.
+
+    This is status-only and never deposits, bridges, signs, trades, claims, or moves
+    assets. If the evidence TTL expires, the status still fails closed as UNVERIFIED
+    until a fresh primary-source lifecycle check replaces it.
+    """
+
+    current = (now or datetime.now(UTC)).astimezone(UTC)
+    verified = datetime.fromisoformat(ETHEREAL_VERIFIED_AT).astimezone(UTC)
+    fresh = verified <= current <= verified + timedelta(days=ETHEREAL_TTL_DAYS)
+    blocked_count = 0
+
+    for target in report.get("targets", []):
+        if not isinstance(target, dict) or target.get("slug") not in ETHEREAL_SLUGS:
+            continue
+
+        target.update(
+            {
+                "status": "UNVERIFIED",
+                "blocked_reason": (
+                    ETHEREAL_CURRENT_BLOCK_REASON if fresh else ETHEREAL_EXPIRED_BLOCK_REASON
+                ),
+                "program_lifecycle_status": (
+                    "CLOSE_ONLY_MIGRATING_TO_MERIDIAN"
+                    if fresh
+                    else "REVERIFY_REQUIRED_CURRENT_ETHEREAL_MERIDIAN_LIFECYCLE"
+                ),
+                "program_lifecycle_sources": [
+                    ETHEREAL_APP_SOURCE,
+                    ETHEREAL_POINTS_SOURCE,
+                    ETHEREAL_BALANCE_REWARDS_SOURCE,
+                ],
+                "current_evidence_status": (
+                    "PRIMARY_CURRENT_LIFECYCLE_CONFLICT_FAIL_CLOSED"
+                    if fresh
+                    else "PRIMARY_EVIDENCE_EXPIRED_REVERIFY_FAIL_CLOSED"
+                ),
+                "current_evidence_source": ETHEREAL_APP_SOURCE,
+                "current_evidence_checked_at": ETHEREAL_VERIFIED_AT,
+                "reward_acquisition_state": "BLOCKED_UNVERIFIED",
+            }
+        )
+        blocked_count += 1
+
+    targets = [item for item in report.get("targets", []) if isinstance(item, dict)]
+    report["ready_dry_run"] = sum(item.get("status") == "READY_DRY_RUN" for item in targets)
+    report["read_only"] = sum(item.get("status") == "READ_ONLY" for item in targets)
+    report["unverified"] = sum(item.get("status") == "UNVERIFIED" for item in targets)
+    report["ethereal_current_block_count"] = blocked_count
+    return report
+
+
 def run_terms_safe_status(*, probe_network: bool = True) -> dict[str, object]:
     targets = list(TARGETS)
     worker_count = min(12, len(targets))
@@ -81,7 +156,7 @@ def run_terms_safe_status(*, probe_network: bool = True) -> dict[str, object]:
             )
         )
 
-    return {
+    report: dict[str, Any] = {
         "generated_at": utc_now(),
         "mode": "DRY_RUN",
         "live_approved": False,
@@ -95,6 +170,7 @@ def run_terms_safe_status(*, probe_network: bool = True) -> dict[str, object]:
         ),
         "targets": results,
     }
+    return _apply_ethereal_guard_to_status(report)
 
 
 def _is_approval_state(state: object) -> bool:
