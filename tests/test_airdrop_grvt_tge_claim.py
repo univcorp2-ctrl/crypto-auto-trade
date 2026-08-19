@@ -37,7 +37,7 @@ def test_grvt_tge_claim_is_added_only_as_financial_approval_path() -> None:
     assert path["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert "2026_07_27_VS_2026_08_06" in path["source_conflict"]
     assert "30-day" in path["known_cost_or_risk"]
-    assert "explicit approval" in path["next_action"]
+    assert "do not click claim" in path["next_action"].lower()
 
     assert result["reward_path_count"] == 30
     assert result["verified_additional_path_count"] == 9
