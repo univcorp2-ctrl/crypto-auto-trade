@@ -28,6 +28,7 @@ from crypto_auto_trade.airdrop_ethereal_current import (
     ETHEREAL_VERIFIED_AT,
     TTL_DAYS as ETHEREAL_TTL_DAYS,
 )
+from crypto_auto_trade.airdrop_extended_current import apply_extended_current_status
 
 # Decibel's current Terms of Use (last updated 2026-07-14), reviewed again on
 # 2026-08-18 UTC, prohibit accessing the Services by automated means and also
@@ -170,7 +171,8 @@ def run_terms_safe_status(*, probe_network: bool = True) -> dict[str, object]:
         ),
         "targets": results,
     }
-    return _apply_ethereal_guard_to_status(report)
+    report = _apply_ethereal_guard_to_status(report)
+    return apply_extended_current_status(report)
 
 
 def _is_approval_state(state: object) -> bool:
