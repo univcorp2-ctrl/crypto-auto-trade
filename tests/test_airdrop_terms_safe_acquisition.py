@@ -29,7 +29,7 @@ def test_decibel_targets_do_not_probe_network(monkeypatch) -> None:
         assert result["terms_automation_status"] == "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
         assert result["terms_evidence_source"] == DECIBEL_TERMS_SOURCE
         assert result["program_probe"]["ok"] is None
-        assert "prohibit automated access" in result["blocked_reason"]
+        assert "automated means" in result["blocked_reason"].lower()
 
 
 def test_terms_guard_marks_decibel_actions_blocked_and_recounts_approvals() -> None:
