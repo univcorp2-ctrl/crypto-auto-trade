@@ -19,6 +19,34 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Record diagnostic run id before tests
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+          path = Path('data/airdrop/current-full-cycle-diagnostic-start.json')
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps({
+              'generated_at': datetime.now(UTC).isoformat(),
+              'stage': 'STARTED_BEFORE_SETUP_AND_TESTS',
+              'ref': os.environ.get('GITHUB_REF'),
+              'sha': os.environ.get('GITHUB_SHA'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'financial_actions_executed': 0,
+              'asset_transfers_executed': 0,
+              'wallet_signatures_executed': 0,
+              'live_orders_executed': 0,
+          }, indent=2) + '\n', encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/airdrop/current-full-cycle-diagnostic-start.json
+          git commit -m "chore: record Airdrop full-cycle diagnostic start"
+          git push
+
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -163,8 +191,6 @@ jobs:
       - name: Commit diagnostic marker on feature branch
         shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/airdrop/current-full-cycle-diagnostic.json
           git commit -m "chore: record current Airdrop full-cycle diagnostic"
           git push
