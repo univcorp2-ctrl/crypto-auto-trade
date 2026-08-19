@@ -56,12 +56,14 @@ def test_fresh_extended_status_propagates_current_primary_evidence() -> None:
         _status_report(
             {
                 "slug": "extended-trading",
+                "mode": "DRY_RUN",
                 "status": "READY_DRY_RUN",
                 "api_reward_eligibility": "REVERIFY",
                 "program_lifecycle_status": "REVERIFY",
             },
             {
                 "slug": "extended-liquidity",
+                "mode": "READ_ONLY",
                 "status": "READ_ONLY",
                 "api_reward_eligibility": "REVERIFY",
                 "program_lifecycle_status": "REVERIFY",
@@ -91,6 +93,7 @@ def test_extended_status_never_relaxes_harder_block() -> None:
     report = _status_report(
         {
             "slug": "extended-trading",
+            "mode": "DRY_RUN",
             "status": "UNVERIFIED",
             "api_reward_eligibility": "UNVERIFIED",
             "program_lifecycle_status": "CONFLICT",
@@ -106,12 +109,36 @@ def test_extended_status_never_relaxes_harder_block() -> None:
     assert result["targets"][0]["blocked_reason"] == "hard block"
 
 
+def test_fresh_extended_status_can_replace_transient_probe_unverified() -> None:
+    verified = datetime.fromisoformat(EXTENDED_VERIFIED_AT).astimezone(UTC)
+    result = apply_extended_current_status(
+        _status_report(
+            {
+                "slug": "extended-trading",
+                "mode": "DRY_RUN",
+                "status": "UNVERIFIED",
+                "api_reward_eligibility": "REVERIFY",
+                "program_lifecycle_status": "REVERIFY",
+                "blocked_reason": "Official program page was not reachable during this pass.",
+            }
+        ),
+        now=verified + timedelta(minutes=5),
+    )
+
+    assert result["extended_current_status_count"] == 1
+    assert result["targets"][0]["status"] == "READY_DRY_RUN"
+    assert result["targets"][0]["api_reward_eligibility"] == "CONFIRMED"
+    assert result["targets"][0]["program_lifecycle_status"] == "ACTIVE"
+    assert result["unverified"] == 0
+
+
 def test_stale_extended_status_does_not_promote() -> None:
     verified = datetime.fromisoformat(EXTENDED_VERIFIED_AT).astimezone(UTC)
     result = apply_extended_current_status(
         _status_report(
             {
                 "slug": "extended-trading",
+                "mode": "DRY_RUN",
                 "status": "READY_DRY_RUN",
                 "api_reward_eligibility": "REVERIFY",
                 "program_lifecycle_status": "REVERIFY",
