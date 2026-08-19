@@ -6,9 +6,11 @@ from crypto_auto_trade.airdrop_agents import run_all
 from crypto_auto_trade.airdrop_decibel_claim_surface import (
     DECIBEL_CLAIM_SURFACE_VERIFIED_AT,
     DECIBEL_LIVE_CAMPAIGNS_SOURCE,
+    DECIBEL_REWARDS_APP_SOURCE,
     DECIBEL_REWARDS_FAQ_SOURCE,
     DECIBEL_REWARDS_OVERVIEW_SOURCE,
     apply_decibel_claim_surface,
+    fetch_decibel_claim_sources,
 )
 
 VERIFIED = datetime.fromisoformat(DECIBEL_CLAIM_SURFACE_VERIFIED_AT).astimezone(UTC)
@@ -40,7 +42,7 @@ def _claim(report: dict[str, object]) -> dict[str, object]:
     return next(path for path in paths if path["slug"] == "decibel-campaign-claims")
 
 
-def test_current_decibel_docs_confirm_rewards_page_but_keep_claim_financially_gated() -> None:
+def test_externally_supplied_current_docs_can_classify_rewards_page_but_keep_claim_gated() -> None:
     updated = apply_decibel_claim_surface(
         _report(VERIFIED),
         now=VERIFIED,
@@ -51,16 +53,14 @@ def test_current_decibel_docs_confirm_rewards_page_but_keep_claim_financially_ga
 
     assert updated["decibel_claim_surface_override_count"] == 1
     assert updated["decibel_claim_surface_live_recheck"] is True
+    assert updated["decibel_automated_access_blocked"] is True
     assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
     assert (
         claim["claim_surface_status"]
         == "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
     )
-    assert (
-        claim["claim_status"]
-        == "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION"
-    )
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert claim["automation_permitted"] is False
     assert claim["requires_user_approval"] is True
     assert claim["requires_funds"] is False
     assert claim["requires_wallet_signature"] is True
@@ -68,12 +68,7 @@ def test_current_decibel_docs_confirm_rewards_page_but_keep_claim_financially_ga
     assert claim["requires_asset_move"] is True
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
-    assert "review and claim rewards from the /rewards page" in str(
-        claim["evidence_note"]
-    ).lower()
-    assert "single onchain transaction" in str(claim["evidence_note"]).lower()
-    assert "already-authenticated decibel" in str(claim["next_action"]).lower()
-    assert "do not connect/sign a wallet" in str(claim["next_action"]).lower()
+    assert "do not automate decibel access" in str(claim["next_action"]).lower()
 
     assert updated["financial_actions_executed"] == 0
     assert updated["asset_transfers_executed"] == 0
@@ -81,28 +76,46 @@ def test_current_decibel_docs_confirm_rewards_page_but_keep_claim_financially_ga
     assert updated["live_orders_executed"] == 0
 
 
-def test_decibel_snapshot_fallback_matches_current_primary_claim_surface() -> None:
+def test_decibel_snapshot_fallback_matches_current_coming_soon_conflict() -> None:
     updated = apply_decibel_claim_surface(_report(VERIFIED), now=VERIFIED)
     claim = _claim(updated)
 
     assert updated["decibel_claim_surface_override_count"] == 1
     assert updated["decibel_claim_surface_live_recheck"] is False
-    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert updated["decibel_automated_access_blocked"] is True
+    assert claim["evidence_status"] == "PRIMARY_VERIFIED_CURRENT_CONFLICT_FAIL_CLOSED"
     assert (
         claim["claim_surface_status"]
-        == "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
+        == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_CONFLICT_UNVERIFIED"
     )
+    assert claim["automation_permitted"] is False
     assert claim["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
     assert claim["requires_user_approval"] is True
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
+    assert "coming soon" in str(claim["evidence_note"]).lower()
+    assert "do not automate decibel access" in str(claim["next_action"]).lower()
+
     assert updated["financial_actions_executed"] == 0
     assert updated["asset_transfers_executed"] == 0
     assert updated["wallet_signatures_executed"] == 0
     assert updated["live_orders_executed"] == 0
 
 
-def test_decibel_live_recheck_fails_closed_when_live_page_says_rewards_page_coming_soon() -> None:
+def test_decibel_fetch_helper_fails_closed_without_network_access() -> None:
+    sources, errors = fetch_decibel_claim_sources()
+
+    assert sources == {}
+    for source in (
+        DECIBEL_LIVE_CAMPAIGNS_SOURCE,
+        DECIBEL_REWARDS_OVERVIEW_SOURCE,
+        DECIBEL_REWARDS_FAQ_SOURCE,
+        DECIBEL_REWARDS_APP_SOURCE,
+    ):
+        assert errors[source] == "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
+
+
+def test_decibel_supplied_live_conflict_fails_closed() -> None:
     conflict = dict(CURRENT_TEXTS)
     conflict[DECIBEL_LIVE_CAMPAIGNS_SOURCE] = (
         "Active now — distributing rewards today. The /rewards page is coming soon. "
@@ -122,13 +135,12 @@ def test_decibel_live_recheck_fails_closed_when_live_page_says_rewards_page_comi
         claim["claim_surface_status"]
         == "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_CONFLICT_UNVERIFIED"
     )
-    assert "fails closed" in str(claim["evidence_note"]).lower()
-    assert "current authenticated in-app" in str(claim["next_action"]).lower()
+    assert claim["automation_permitted"] is False
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
 
 
-def test_decibel_live_recheck_fails_closed_when_required_primary_source_is_missing() -> None:
+def test_decibel_supplied_incomplete_evidence_fails_closed() -> None:
     incomplete = dict(CURRENT_TEXTS)
     incomplete.pop(DECIBEL_REWARDS_FAQ_SOURCE)
 
@@ -144,7 +156,7 @@ def test_decibel_live_recheck_fails_closed_when_required_primary_source_is_missi
     assert claim["evidence_status"] == "CURRENT_PRIMARY_RECHECK_INCOMPLETE_FAIL_CLOSED"
     assert claim["claim_surface_status"] == "REVERIFY_REQUIRED_CURRENT_CLAIM_SURFACE"
     assert updated["decibel_claim_surface_fetch_error_count"] == 1
-    assert "re-fetch current decibel" in str(claim["next_action"]).lower()
+    assert "human/manual primary-source review" in str(claim["next_action"]).lower()
     assert claim["action_taken"] == "NONE"
     assert claim["auto_executed"] is False
 

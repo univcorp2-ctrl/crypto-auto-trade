@@ -8,11 +8,10 @@ import re
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
-from urllib.request import Request, urlopen
 
 from crypto_auto_trade.airdrop_acquisition import VERIFICATION_TTL_DAYS
 
-DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-18T20:18:14+00:00"
+DECIBEL_CLAIM_SURFACE_VERIFIED_AT = "2026-08-19T10:16:46+00:00"
 DECIBEL_LIVE_CAMPAIGNS_SOURCE = "https://docs.decibel.trade/rewards/campaigns/live"
 DECIBEL_REWARDS_OVERVIEW_SOURCE = "https://docs.decibel.trade/rewards/overview"
 DECIBEL_REWARDS_FAQ_SOURCE = "https://docs.decibel.trade/rewards/faq"
@@ -25,25 +24,29 @@ _REQUIRED_CURRENT_SOURCES = (
     DECIBEL_REWARDS_FAQ_SOURCE,
 )
 
-# Deterministic fallback used by unit tests and library callers that do not opt into
-# network re-verification. The CLI used by GitHub Actions fetches the current primary
-# sources on every run and passes them to apply_decibel_claim_surface().
+# Manually reviewed primary-source snapshot. Decibel's current Terms prohibit
+# automated access to the Services, so neither the scheduled workflow nor this
+# module performs a Decibel HTTP fetch. The snapshot may only inform approval
+# metadata and is TTL-gated; it can never authorize a financial/signing action.
 _SNAPSHOT_SOURCE_TEXTS = {
     DECIBEL_LIVE_CAMPAIGNS_SOURCE: (
         "Active now — distributing rewards today. The campaigns below are live. "
-        "Review and claim all eligible rewards from the /rewards page in the Decibel app; "
-        "you may also see Claim now pop-ups surfacing rewards as you trade."
+        "The /rewards page is coming soon; in the meantime, active rewards are delivered "
+        "via Claim now pop-ups inside the Decibel app. Once /rewards ships, users will be "
+        "able to review and claim all eligible rewards from one page."
     ),
     DECIBEL_REWARDS_OVERVIEW_SOURCE: (
-        "Campaign rewards are claimed through the /rewards page and credited directly to "
-        "your trading account balance in a single onchain transaction."
+        "Campaign rewards are claimed through the /rewards page (coming soon) and credited "
+        "directly to the trading account in a single onchain transaction."
     ),
     DECIBEL_REWARDS_FAQ_SOURCE: (
         "You'll see the expiry date on each tile in /rewards. New campaigns appear on the "
         "/rewards page."
     ),
-    DECIBEL_REWARDS_APP_SOURCE: "Rewards. Must connect a wallet first.",
+    DECIBEL_REWARDS_APP_SOURCE: "Account-specific reward state requires authentication.",
 }
+
+_AUTOMATED_ACCESS_BLOCK_REASON = "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
 
 
 def _is_fresh(*, now: datetime) -> bool:
@@ -89,31 +92,23 @@ def _classify_claim_surface(source_texts: dict[str, str]) -> str:
 
 
 def _fetch_url(url: str, *, timeout_seconds: float = 12.0) -> str:
-    request = Request(
-        url,
-        headers={
-            "User-Agent": "crypto-auto-trade-airdrop-agent/1.0 (+https://github.com/univcorp2-ctrl/crypto-auto-trade)"
-        },
-    )
-    with urlopen(request, timeout=timeout_seconds) as response:
-        return response.read().decode("utf-8", errors="replace")
+    """Compatibility shim that intentionally never performs network access."""
+    del url, timeout_seconds
+    raise RuntimeError(_AUTOMATED_ACCESS_BLOCK_REASON)
 
 
 def fetch_decibel_claim_sources() -> tuple[dict[str, str], dict[str, str]]:
-    """Fetch current public Decibel claim documentation; never authenticate or sign."""
-    source_texts: dict[str, str] = {}
-    errors: dict[str, str] = {}
-    for url in (
-        DECIBEL_LIVE_CAMPAIGNS_SOURCE,
-        DECIBEL_REWARDS_OVERVIEW_SOURCE,
-        DECIBEL_REWARDS_FAQ_SOURCE,
-        DECIBEL_REWARDS_APP_SOURCE,
-    ):
-        try:
-            source_texts[url] = _fetch_url(url)
-        except Exception as exc:  # Network failures fail closed instead of aborting safety metadata.
-            errors[url] = f"{type(exc).__name__}: {exc}"
-    return source_texts, errors
+    """Fail closed instead of automating Decibel access under the current Terms."""
+    errors = {
+        url: _AUTOMATED_ACCESS_BLOCK_REASON
+        for url in (
+            DECIBEL_LIVE_CAMPAIGNS_SOURCE,
+            DECIBEL_REWARDS_OVERVIEW_SOURCE,
+            DECIBEL_REWARDS_FAQ_SOURCE,
+            DECIBEL_REWARDS_APP_SOURCE,
+        )
+    }
+    return {}, errors
 
 
 def apply_decibel_claim_surface(
@@ -124,25 +119,27 @@ def apply_decibel_claim_surface(
     evidence_checked_at: datetime | None = None,
     fetch_errors: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    """Refresh Decibel claim metadata without executing any claim or wallet action."""
+    """Refresh claim metadata without executing a claim, wallet action, or HTTP fetch."""
     current = now or datetime.now(UTC)
     result = copy.deepcopy(report)
     result["decibel_claim_surface_override_count"] = 0
 
-    live_recheck = source_texts is not None
-    if not live_recheck and not _is_fresh(now=current):
+    externally_supplied_evidence = source_texts is not None
+    if not externally_supplied_evidence and not _is_fresh(now=current):
         return result
 
-    evidence = source_texts if live_recheck else _SNAPSHOT_SOURCE_TEXTS
+    evidence = source_texts if externally_supplied_evidence else _SNAPSHOT_SOURCE_TEXTS
     checked = (
         (evidence_checked_at or current)
-        if live_recheck
+        if externally_supplied_evidence
         else datetime.fromisoformat(DECIBEL_CLAIM_SURFACE_VERIFIED_AT)
     ).astimezone(UTC)
     classification = _classify_claim_surface(evidence)
     errors = fetch_errors or {}
     missing_required = [url for url in _REQUIRED_CURRENT_SOURCES if not evidence.get(url)]
-    expires = checked + timedelta(hours=2 if live_recheck else 24 * VERIFICATION_TTL_DAYS)
+    expires = checked + timedelta(
+        hours=2 if externally_supplied_evidence else 24 * VERIFICATION_TTL_DAYS
+    )
 
     paths = result.get("additional_approval_paths", [])
     if not isinstance(paths, list):
@@ -170,6 +167,8 @@ def apply_decibel_claim_surface(
                 "CURRENT_PUBLIC_TERMS_REVIEWED_REVERIFY_ACCOUNT_JURISDICTION_"
                 "ELIGIBILITY_REWARD_AMOUNT_EXPIRY_AND_CLAIM_SIGNING"
             ),
+            "automation_permitted": False,
+            "automation_block_reason": _AUTOMATED_ACCESS_BLOCK_REASON,
             "action_taken": "NONE",
             "auto_executed": False,
             "points_delta": None,
@@ -181,47 +180,32 @@ def apply_decibel_claim_surface(
                     **common,
                     "evidence_status": "PRIMARY_VERIFIED_CURRENT",
                     "evidence_note": (
-                        "Current official Decibel Live Campaigns says the listed campaigns are active "
-                        "and distributing rewards today and explicitly directs eligible users to review "
-                        "and claim rewards from the /rewards page, with in-app 'Claim now' pop-ups as an "
-                        "additional notification surface. The current Rewards Overview independently "
-                        "states that campaign rewards are claimed through /rewards and credited to the "
-                        "trading account in a single onchain transaction, while the current FAQ refers "
-                        "to expiry tiles and new campaigns on /rewards. The public /rewards application "
-                        "route is deployed and requires wallet connection before account-specific reward "
-                        "data is shown. These current primary sources establish the live claim route but "
-                        "do not prove this account has an eligible or claimable reward."
+                        "Externally supplied current primary Decibel evidence states that active campaigns "
+                        "can be reviewed and claimed through /rewards, with in-app 'Claim now' notifications "
+                        "as an additional surface. Rewards Overview describes a single onchain claim transaction "
+                        "and the FAQ refers to campaign tiles on /rewards. This establishes only the public claim "
+                        "route, not account-specific eligibility or a claimable amount."
                     ),
                     "claim_surface_status": (
                         "CURRENT_REWARDS_PAGE_AND_IN_APP_CLAIM_NOW_CONFIRMED"
                     ),
                     "known_cost_or_risk": (
-                        "No new trade or deposit is required merely to inspect an already-earned campaign "
-                        "reward, but an actual campaign claim is a financial receipt. Current Decibel "
-                        "documentation says a Ready to Claim reward is credited to the trading account in "
-                        "a single onchain transaction, and the public /rewards route requires wallet "
-                        "connection. Account-specific eligibility, reward amount, asset, expiry, exact "
-                        "transaction/signing requirements and any network cost remain unknown before "
-                        "authenticated inspection; reward parameters and claim windows can change, and "
-                        "unclaimed rewards can expire. Decibel's current Terms make Campaign Rules and "
-                        "jurisdictional compliance controlling. Receiving a USD-denominated stablecoin "
-                        "reward can also create recordkeeping or tax obligations depending on the user's "
-                        "circumstances; no tax conclusion is assumed here."
+                        "An actual campaign claim is a financial receipt and may require wallet/onchain "
+                        "authorization. Account eligibility, reward amount, asset, expiry, signing requirements "
+                        "and network cost remain unknown until an authenticated human-reviewed account surface "
+                        "is available. Decibel campaign parameters can change and unclaimed rewards can expire."
                     ),
                     "missing_approval": (
-                        "A supported already-authenticated Decibel account/wallet session for read-only "
-                        "inspection; confirmation that the account is eligible under current Terms and "
-                        "jurisdiction; an account-specific Ready to Claim reward showing amount, asset and "
-                        "expiry; confirmation of the exact onchain transaction/signing requirements and any "
-                        "network cost; and explicit approval to receive the financial reward."
+                        "Human-reviewed current Terms/jurisdiction and account eligibility; a supported already-"
+                        "authenticated Decibel session showing a Ready to Claim reward, amount, asset and expiry; "
+                        "the exact signing/onchain requirements and network cost; and explicit approval to receive "
+                        "the financial reward."
                     ),
                     "next_action": (
-                        "In a supported already-authenticated Decibel session, inspect /rewards and the "
-                        "in-app unclaimed-rewards banner for account-specific eligibility, Ready to Claim "
-                        "status, reward amount, asset, expiry and exact signing/onchain requirements. If a "
-                        "reward is Ready to Claim, record those details and keep the actual claim in explicit "
-                        "financial approval. Do not connect/sign a wallet, submit a claim transaction, trade, "
-                        "deposit, withdraw or move assets automatically."
+                        "Use a supported already-authenticated session only for human/read-only account inspection. "
+                        "If a reward is Ready to Claim, record amount, asset, expiry and signing/onchain requirements "
+                        "and keep the actual claim in explicit financial approval. Do not automate Decibel access, "
+                        "connect/sign a wallet, submit a claim, trade, deposit, withdraw or move assets."
                     ),
                     "claim_status": (
                         "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_REWARDS_PAGE_OR_IN_APP_NOTIFICATION"
@@ -234,33 +218,32 @@ def apply_decibel_claim_surface(
                     **common,
                     "evidence_status": "PRIMARY_VERIFIED_CURRENT_CONFLICT_FAIL_CLOSED",
                     "evidence_note": (
-                        "Current primary Decibel claim documentation contains a current/future claim-surface "
-                        "conflict. The agent fails closed to the authenticated in-app 'Claim now' notification "
-                        "and does not treat /rewards as a current acquisition route until current-state "
-                        "documentation or the authenticated account surface resolves the conflict."
+                        "Current manually reviewed primary Decibel claim documentation contains a current/future "
+                        "claim-surface conflict. Live Campaigns says /rewards is coming soon and active rewards are "
+                        "delivered through in-app 'Claim now' pop-ups, while Overview/FAQ and campaign details still "
+                        "refer to /rewards. The agent therefore fails closed to the authenticated in-app notification "
+                        "and does not treat /rewards as a current acquisition route."
                     ),
                     "claim_surface_status": (
                         "CURRENT_IN_APP_CLAIM_NOW_CONFIRMED_REWARDS_PAGE_CONFLICT_UNVERIFIED"
                     ),
                     "known_cost_or_risk": (
-                        "No new trade or deposit is required merely to inspect an already-earned campaign "
-                        "notification, but an actual campaign claim is a financial receipt and may require an "
-                        "onchain transaction or wallet authorization. Account-specific eligibility, amount, "
-                        "asset, expiry, signing requirements and network cost remain unknown."
+                        "No new trade or deposit is required merely to inspect an already-earned notification, but "
+                        "an actual campaign claim is a financial receipt and may require an onchain transaction or "
+                        "wallet authorization. Account-specific eligibility, amount, asset, expiry, signing "
+                        "requirements and network cost remain unknown."
                     ),
                     "missing_approval": (
-                        "A supported already-authenticated Decibel session for read-only inspection of the "
-                        "current in-app unclaimed-reward banner/'Claim now' notification; current Terms and "
-                        "jurisdiction eligibility; account-specific reward amount, asset and expiry; exact "
-                        "transaction/signing requirements and network cost; and explicit approval to receive "
-                        "the financial reward."
+                        "A human-reviewed supported already-authenticated Decibel session showing an account-specific "
+                        "in-app 'Claim now' notification; current Terms/jurisdiction eligibility; reward amount, asset "
+                        "and expiry; exact transaction/signing requirements and network cost; and explicit approval "
+                        "to receive the financial reward."
                     ),
                     "next_action": (
-                        "Inspect only the current authenticated in-app 'Claim now' notification until current "
-                        "primary documentation or the authenticated account surface resolves the /rewards "
-                        "conflict. If a reward is claimable, record the details and keep the actual claim in "
-                        "explicit financial approval. Do not connect/sign a wallet or submit a claim "
-                        "transaction automatically."
+                        "Do not automate Decibel access. When a supported already-authenticated session is available, "
+                        "inspect only the current in-app 'Claim now' notification. If a reward is claimable, record "
+                        "amount, asset, expiry and signing requirements and keep the actual claim in explicit financial "
+                        "approval. Do not connect/sign a wallet or submit a claim transaction automatically."
                     ),
                     "claim_status": (
                         "ACCOUNT_SPECIFIC_UNKNOWN_UNTIL_AUTHENTICATED_IN_APP_CLAIM_NOW_NOTIFICATION"
@@ -276,36 +259,36 @@ def apply_decibel_claim_surface(
                     **common,
                     "evidence_status": "CURRENT_PRIMARY_RECHECK_INCOMPLETE_FAIL_CLOSED",
                     "evidence_note": (
-                        "The live read-only recheck did not obtain enough current primary Decibel evidence "
-                        "to establish the current campaign claim surface. The agent therefore fails closed "
-                        "and does not execute or infer any claim route."
+                        "The supplied review evidence is incomplete, so the claim surface remains unverified and "
+                        "the agent fails closed without inferring or executing a claim route."
                         + (f" Missing/error sources: {error_summary}" if error_summary else "")
                     ),
                     "claim_surface_status": "REVERIFY_REQUIRED_CURRENT_CLAIM_SURFACE",
                     "known_cost_or_risk": (
-                        "Claim-route state is currently unverified. Any actual reward claim is a financial "
-                        "receipt and may require wallet authorization/onchain execution; account eligibility, "
-                        "amount, asset, expiry and network cost are not established."
+                        "Claim-route state is unverified. Any actual reward claim is a financial receipt and may "
+                        "require wallet authorization/onchain execution; account eligibility, amount, asset, expiry "
+                        "and network cost are not established."
                     ),
                     "missing_approval": (
-                        "Successful current primary-source re-verification, followed by a supported "
-                        "already-authenticated Decibel session, current Terms/jurisdiction eligibility, "
-                        "account-specific claimable reward details, exact transaction/signing requirements "
-                        "and explicit approval to receive the financial reward."
+                        "A fresh human/manual review of current Decibel primary documentation, followed by a supported "
+                        "already-authenticated session, current Terms/jurisdiction eligibility, account-specific "
+                        "claimable reward details, exact transaction/signing requirements and explicit approval to "
+                        "receive the financial reward."
                     ),
                     "next_action": (
-                        "Re-fetch current Decibel Live Campaigns, Rewards Overview and FAQ. Only after those "
-                        "primary sources establish the current claim surface should an already-authenticated "
-                        "session be inspected read-only. Do not connect/sign a wallet or submit a claim "
-                        "transaction automatically."
+                        "Perform a human/manual primary-source review outside the automated Decibel service path. "
+                        "Only after the current claim surface is resolved should an already-authenticated session be "
+                        "inspected read-only. Do not automate Decibel HTTP access, connect/sign a wallet or submit a "
+                        "claim transaction automatically."
                     ),
                     "claim_status": "REVERIFY_REQUIRED_BEFORE_ACCOUNT_INSPECTION",
                 }
             )
 
         result["decibel_claim_surface_override_count"] = 1
-        result["decibel_claim_surface_live_recheck"] = live_recheck
+        result["decibel_claim_surface_live_recheck"] = externally_supplied_evidence
         result["decibel_claim_surface_fetch_error_count"] = len(errors)
+        result["decibel_automated_access_blocked"] = True
         break
 
     return result
@@ -313,22 +296,16 @@ def apply_decibel_claim_surface(
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Refresh current Decibel campaign claim-surface metadata without executing claims"
+        description=(
+            "Apply manually reviewed cached Decibel campaign claim metadata without automated Decibel access"
+        )
     )
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
     report = json.loads(args.input.read_text(encoding="utf-8"))
-    checked_at = datetime.now(UTC)
-    source_texts, fetch_errors = fetch_decibel_claim_sources()
-    updated = apply_decibel_claim_surface(
-        report,
-        now=checked_at,
-        source_texts=source_texts,
-        evidence_checked_at=checked_at,
-        fetch_errors=fetch_errors,
-    )
+    updated = apply_decibel_claim_surface(report, now=datetime.now(UTC))
     args.output.write_text(
         json.dumps(updated, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -340,8 +317,8 @@ def main() -> None:
                 "decibel_claim_surface_override_count": updated.get(
                     "decibel_claim_surface_override_count", 0
                 ),
-                "live_recheck": updated.get("decibel_claim_surface_live_recheck", False),
-                "fetch_error_count": updated.get("decibel_claim_surface_fetch_error_count", 0),
+                "live_recheck": False,
+                "automated_access_blocked": True,
             },
             ensure_ascii=False,
         )
