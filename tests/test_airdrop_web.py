@@ -27,6 +27,7 @@ def test_airdrop_manual_dry_run_can_skip_network_and_honors_terms_guard() -> Non
     assert payload["mode"] == "DRY_RUN"
     assert payload["live_approved"] is False
     assert payload["terms_automation_blocked_count"] == 2
+    assert payload["ethereal_current_block_count"] == 2
     assert all(item["live_approved"] is False for item in payload["targets"])
     assert all(item["program_probe"]["ok"] is None for item in payload["targets"])
 
@@ -41,6 +42,16 @@ def test_airdrop_manual_dry_run_can_skip_network_and_honors_terms_guard() -> Non
         item["terms_automation_status"] == "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
         for item in decibel.values()
     )
+
+    ethereal = {
+        item["slug"]: item
+        for item in payload["targets"]
+        if item["slug"] in {"ethereal-trading", "ethereal-margin"}
+    }
+    assert set(ethereal) == {"ethereal-trading", "ethereal-margin"}
+    assert all(item["status"] == "UNVERIFIED" for item in ethereal.values())
+    assert all(item["reward_acquisition_state"] == "BLOCKED_UNVERIFIED" for item in ethereal.values())
+    assert all("FAIL_CLOSED" in item["current_evidence_status"] for item in ethereal.values())
 
 
 def test_airdrop_ui_labels_reachability_and_lifecycle_separately() -> None:
