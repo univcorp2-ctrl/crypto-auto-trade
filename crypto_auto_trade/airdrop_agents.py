@@ -1,18 +1,48 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import socket
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Iterable
 
+from crypto_auto_trade.airdrop_ethereal_current import (
+    ETHEREAL_APP_SOURCE,
+    ETHEREAL_BALANCE_REWARDS_SOURCE,
+    ETHEREAL_POINTS_SOURCE,
+    ETHEREAL_SLUGS,
+    ETHEREAL_VERIFIED_AT,
+    TTL_DAYS as ETHEREAL_TTL_DAYS,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "data" / "airdrop" / "latest.json"
+
+DECIBEL_TERMS_SOURCE = "https://decibel.trade/terms-of-service"
+DECIBEL_TERMS_VERIFIED_AT = "2026-08-18T23:19:02+00:00"
+TERMS_AUTOMATION_BLOCKED_SLUGS = frozenset({"decibel-trading", "decibel-liquidity"})
+TERMS_AUTOMATION_BLOCK_REASON = (
+    "Current Decibel Terms prohibit access to the Services by automated means. "
+    "Automated HTTP probing and automated reward acquisition are therefore disabled for this target. "
+    "Use a human/manual current-terms and account-eligibility review before any separately approved financial action."
+)
+
+ETHEREAL_CURRENT_BLOCK_REASON = (
+    "Current official Ethereal app lifecycle is close-only and migrating to Meridian while "
+    "older official Ethereal reward pages still describe trading and USDe margin as reward-earning. "
+    "Do not treat the older reward pages as a current acquisition authorization."
+)
+ETHEREAL_EXPIRED_BLOCK_REASON = (
+    "The last verified Ethereal close-only/migration evidence has expired. Re-verify the current "
+    "Ethereal/Meridian lifecycle and reward rules before treating trading or margin as an available "
+    "reward-acquisition path."
+)
 
 
 @dataclass(frozen=True)
@@ -162,14 +192,33 @@ def _probe_url(url: str | None, timeout: float = 6.0) -> dict[str, object]:
 
 
 def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict[str, object]:
-    program_probe = _probe_url(target.program_url) if probe_network else {"url": target.program_url, "ok": None, "status_code": None, "error": "network probe skipped"}
-    api_probe = _probe_url(target.api_url) if probe_network else {"url": target.api_url, "ok": None, "status_code": None, "error": "network probe skipped"}
+    terms_blocked = target.slug in TERMS_AUTOMATION_BLOCKED_SLUGS
+    if terms_blocked:
+        program_probe = {
+            "url": target.program_url,
+            "ok": None,
+            "status_code": None,
+            "error": "skipped: current Terms prohibit automated access",
+        }
+        api_probe = {
+            "url": target.api_url,
+            "ok": None,
+            "status_code": None,
+            "error": "skipped: current Terms prohibit automated access",
+        }
+    else:
+        program_probe = _probe_url(target.program_url) if probe_network else {"url": target.program_url, "ok": None, "status_code": None, "error": "network probe skipped"}
+        api_probe = _probe_url(target.api_url) if probe_network else {"url": target.api_url, "ok": None, "status_code": None, "error": "network probe skipped"}
+
     reward_verification = WAVE1_REWARD_VERIFICATION.get(target.slug)
     lifecycle_verification = WAVE1_PROGRAM_LIFECYCLE_VERIFICATION.get(target.slug)
     reward_status = str(reward_verification["status"]) if reward_verification else "REVERIFY"
     lifecycle_status = str(lifecycle_verification["status"]) if lifecycle_verification else "REVERIFY"
 
-    if lifecycle_status == "CONFLICT":
+    if terms_blocked:
+        status = "UNVERIFIED"
+        blocked_reason = TERMS_AUTOMATION_BLOCK_REASON
+    elif lifecycle_status == "CONFLICT":
         status = "UNVERIFIED"
         blocked_reason = str(lifecycle_verification["note"])
     elif reward_status == "UNVERIFIED":
@@ -209,7 +258,101 @@ def dry_run_target(target: AirdropTarget, *, probe_network: bool = True) -> dict
         "open_risk_usd": 0.0,
         "blocked_reason": blocked_reason,
         "checked_at": utc_now(),
+        **(
+            {
+                "terms_automation_status": "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED",
+                "terms_evidence_source": DECIBEL_TERMS_SOURCE,
+                "terms_verified_at": DECIBEL_TERMS_VERIFIED_AT,
+            }
+            if terms_blocked
+            else {}
+        ),
     }
+
+
+def apply_current_status_guards(
+    report: dict[str, object], *, now: datetime | None = None
+) -> dict[str, object]:
+    """Apply current fail-closed Terms/lifecycle evidence to any status payload.
+
+    This also guards persisted JSON loaded before a fresh workflow cycle. It performs
+    no network requests and never executes a reward, financial, signing or asset action.
+    """
+
+    current = (now or datetime.now(UTC)).astimezone(UTC)
+    result = copy.deepcopy(report)
+    targets = [item for item in result.get("targets", []) if isinstance(item, dict)]
+
+    terms_count = 0
+    ethereal_count = 0
+    ethereal_verified = datetime.fromisoformat(ETHEREAL_VERIFIED_AT).astimezone(UTC)
+    ethereal_fresh = (
+        ethereal_verified <= current <= ethereal_verified + timedelta(days=ETHEREAL_TTL_DAYS)
+    )
+
+    for item in targets:
+        slug = item.get("slug")
+        if slug in TERMS_AUTOMATION_BLOCKED_SLUGS:
+            item.update(
+                {
+                    "status": "UNVERIFIED",
+                    "program_probe": {
+                        "url": item.get("program_url"),
+                        "ok": None,
+                        "status_code": None,
+                        "error": "skipped: current Terms prohibit automated access",
+                    },
+                    "api_probe": {
+                        "url": item.get("api_url"),
+                        "ok": None,
+                        "status_code": None,
+                        "error": "skipped: current Terms prohibit automated access",
+                    },
+                    "blocked_reason": TERMS_AUTOMATION_BLOCK_REASON,
+                    "terms_automation_status": "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED",
+                    "terms_evidence_source": DECIBEL_TERMS_SOURCE,
+                    "terms_verified_at": DECIBEL_TERMS_VERIFIED_AT,
+                }
+            )
+            terms_count += 1
+
+        if slug in ETHEREAL_SLUGS:
+            item.update(
+                {
+                    "status": "UNVERIFIED",
+                    "blocked_reason": (
+                        ETHEREAL_CURRENT_BLOCK_REASON
+                        if ethereal_fresh
+                        else ETHEREAL_EXPIRED_BLOCK_REASON
+                    ),
+                    "program_lifecycle_status": (
+                        "CLOSE_ONLY_MIGRATING_TO_MERIDIAN"
+                        if ethereal_fresh
+                        else "REVERIFY_REQUIRED_CURRENT_ETHEREAL_MERIDIAN_LIFECYCLE"
+                    ),
+                    "program_lifecycle_sources": [
+                        ETHEREAL_APP_SOURCE,
+                        ETHEREAL_POINTS_SOURCE,
+                        ETHEREAL_BALANCE_REWARDS_SOURCE,
+                    ],
+                    "current_evidence_status": (
+                        "PRIMARY_CURRENT_LIFECYCLE_CONFLICT_FAIL_CLOSED"
+                        if ethereal_fresh
+                        else "PRIMARY_EVIDENCE_EXPIRED_REVERIFY_FAIL_CLOSED"
+                    ),
+                    "current_evidence_source": ETHEREAL_APP_SOURCE,
+                    "current_evidence_checked_at": ETHEREAL_VERIFIED_AT,
+                    "reward_acquisition_state": "BLOCKED_UNVERIFIED",
+                }
+            )
+            ethereal_count += 1
+
+    result["ready_dry_run"] = sum(item.get("status") == "READY_DRY_RUN" for item in targets)
+    result["read_only"] = sum(item.get("status") == "READ_ONLY" for item in targets)
+    result["unverified"] = sum(item.get("status") == "UNVERIFIED" for item in targets)
+    result["terms_automation_blocked_count"] = terms_count
+    result["ethereal_current_block_count"] = ethereal_count
+    return result
 
 
 def run_all(*, probe_network: bool = True, targets: Iterable[AirdropTarget] = TARGETS) -> dict[str, object]:
@@ -220,7 +363,7 @@ def run_all(*, probe_network: bool = True, targets: Iterable[AirdropTarget] = TA
             results = list(executor.map(lambda target: dry_run_target(target, probe_network=True), target_list))
     else:
         results = [dry_run_target(target, probe_network=False) for target in target_list]
-    return {
+    report: dict[str, object] = {
         "generated_at": utc_now(),
         "mode": "DRY_RUN",
         "live_approved": False,
@@ -230,6 +373,7 @@ def run_all(*, probe_network: bool = True, targets: Iterable[AirdropTarget] = TA
         "unverified": sum(item["status"] == "UNVERIFIED" for item in results),
         "targets": results,
     }
+    return apply_current_status_guards(report)
 
 
 def save_report(report: dict[str, object], output: Path = DEFAULT_OUTPUT) -> Path:
@@ -241,7 +385,8 @@ def save_report(report: dict[str, object], output: Path = DEFAULT_OUTPUT) -> Pat
 def load_latest(output: Path = DEFAULT_OUTPUT) -> dict[str, object]:
     if not output.exists():
         return run_all(probe_network=False)
-    return json.loads(output.read_text(encoding="utf-8"))
+    persisted = json.loads(output.read_text(encoding="utf-8"))
+    return apply_current_status_guards(persisted)
 
 
 def main() -> None:
