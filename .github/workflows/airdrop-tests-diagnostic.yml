@@ -19,6 +19,32 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Record test run id before setup
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+          path = Path('data/airdrop/tests-diagnostic-start.json')
+          path.write_text(json.dumps({
+              'generated_at': datetime.now(UTC).isoformat(),
+              'stage': 'STARTED',
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'sha': os.environ.get('GITHUB_SHA'),
+              'financial_actions_executed': 0,
+              'asset_transfers_executed': 0,
+              'wallet_signatures_executed': 0,
+              'live_orders_executed': 0,
+          }, indent=2) + '\n', encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/airdrop/tests-diagnostic-start.json
+          git commit -m "chore: record Airdrop test diagnostic start"
+          git push
+
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -49,8 +75,6 @@ jobs:
               'live_orders_executed': 0,
           }, indent=2) + '\n', encoding='utf-8')
           PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/airdrop/tests-diagnostic.json
           git commit -m "chore: record passing Airdrop test diagnostic"
           git push
