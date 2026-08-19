@@ -1,6 +1,7 @@
 let report = null;
 
 const el = (id) => document.getElementById(id);
+const STALE_STATUS_WARNING_MINUTES = 120;
 
 function statusClass(status) {
   if (status === "READY_DRY_RUN") return "good";
@@ -20,12 +21,46 @@ function formatDate(value) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString("ja-JP");
 }
 
+function renderFreshness(data) {
+  const metrics = document.querySelector(".metrics");
+  if (!metrics) return;
+
+  let notice = el("staleStatusNotice");
+  if (!notice) {
+    notice = document.createElement("section");
+    notice.id = "staleStatusNotice";
+    notice.className = "notice";
+    metrics.parentNode.insertBefore(notice, metrics);
+  }
+
+  const generated = new Date(data.generated_at);
+  const ageMinutes = Number.isNaN(generated.getTime())
+    ? Number.POSITIVE_INFINITY
+    : (Date.now() - generated.getTime()) / 60000;
+
+  if (ageMinutes < STALE_STATUS_WARNING_MINUTES) {
+    notice.hidden = true;
+    notice.textContent = "";
+    return;
+  }
+
+  notice.hidden = false;
+  const ageLabel = Number.isFinite(ageMinutes)
+    ? `${(ageMinutes / 60).toFixed(1)}時間`
+    : "不明";
+  notice.innerHTML = `
+    <strong>⚠ Status data is STALE（${ageLabel}）</strong>
+    <span>保存済みDRY RUNが2時間以上更新されていません。表示中のAdapter件数・Program/API probe・Lifecycleを現在値として扱わず、current Workflowのfull cycle完走とstatus JSON更新を確認してください。LIVEは引き続き無効です。</span>
+  `;
+}
+
 function renderSummary(data) {
   el("targetCount").textContent = data.target_count ?? 0;
   el("readyCount").textContent = data.ready_dry_run ?? 0;
   el("readOnlyCount").textContent = data.read_only ?? 0;
   el("unverifiedCount").textContent = data.unverified ?? 0;
   el("lastRun").textContent = formatDate(data.generated_at);
+  renderFreshness(data);
 }
 
 function cardHtml(target) {
