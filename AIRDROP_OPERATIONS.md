@@ -58,7 +58,7 @@ GitHub ActionsはUTC基準のcron `23,53 * * * *`で毎時23分と53分に起動
 
 ## 現在のWave 1
 
-2026-08-18時点のリポジトリ判定です。`READY_DRY_RUN`や`CONFIRMED`はLIVE実行許可を意味しません。全件 `LEGAL_REVIEW_REQUIRED` / `live_approved=false` を維持します。
+2026-08-19時点のリポジトリ判定です。`READY_DRY_RUN`や`CONFIRMED`はLIVE実行許可を意味しません。全件 `LEGAL_REVIEW_REQUIRED` / `live_approved=false` を維持します。
 
 | Target | 現状 | 獲得までの次工程 |
 |---|---|---|
@@ -114,16 +114,10 @@ Reyaの現行公式RCP FAQは、**Signal** をRCP獲得カテゴリとして挙�
 
 ## 手動実行
 
-状態確認だけ:
+状態＋基本獲得キューの生成は、scheduled Workflowと同じTerms-safe runnerを使います。Decibelは現行Terms上automated accessを禁止しているため、このrunnerはDecibel 2 Adapterへの自動HTTP probeを行わずfail-closedにします。
 
 ```bash
-python -m crypto_auto_trade.airdrop_agents --output data/airdrop/latest.json
-```
-
-獲得サイクル（GitHub Actionsと同じcurrent metadata適用順）:
-
-```bash
-python -m crypto_auto_trade.airdrop_acquisition \
+python -m crypto_auto_trade.airdrop_terms_safe_acquisition \
   --status-output data/airdrop/latest.json \
   --output data/airdrop/acquisition-latest.json
 python -m crypto_auto_trade.airdrop_kyan_current \
@@ -132,6 +126,15 @@ python -m crypto_auto_trade.airdrop_kyan_current \
   --acquisition-input data/airdrop/acquisition-latest.json \
   --acquisition-output data/airdrop/acquisition-latest.json
 python -m crypto_auto_trade.airdrop_live_overrides \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_current_promotion \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_nado_current \
+  --input data/airdrop/acquisition-latest.json \
+  --output data/airdrop/acquisition-latest.json
+python -m crypto_auto_trade.airdrop_ethereal_current \
   --input data/airdrop/acquisition-latest.json \
   --output data/airdrop/acquisition-latest.json
 python -m crypto_auto_trade.airdrop_additional_current_paths \
@@ -143,9 +146,6 @@ python -m crypto_auto_trade.airdrop_grvt_tge_claim \
 python -m crypto_auto_trade.airdrop_standx_maker_points \
   --input data/airdrop/acquisition-latest.json \
   --output data/airdrop/acquisition-latest.json
-python -m crypto_auto_trade.airdrop_decibel_claim_surface \
-  --input data/airdrop/acquisition-latest.json \
-  --output data/airdrop/acquisition-latest.json
 python -m crypto_auto_trade.airdrop_decibel_live_campaigns \
   --input data/airdrop/acquisition-latest.json \
   --output data/airdrop/acquisition-latest.json
@@ -154,7 +154,9 @@ python -m crypto_auto_trade.airdrop_decibel_referral \
   --output data/airdrop/acquisition-latest.json
 ```
 
-ネットワークアクセスなしの安全テスト:
+`airdrop_decibel_claim_surface`のlive-fetch CLIはscheduled/manual automated cycleでは実行しません。Decibelのclaim surface、campaign rules、account eligibility、署名要件は人間がcurrent Termsと認証済み画面で確認し、金融操作は別途明示承認が必要です。
+
+ネットワークアクセスなしの低レベル検証が必要な場合は、legacy runnerの`--no-network`を使えますが、これはproduction Terms-safe statusを生成する手順ではありません。
 
 ```bash
 python -m crypto_auto_trade.airdrop_acquisition --no-network
