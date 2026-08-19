@@ -19,12 +19,106 @@ EXTENDED_VAULT_SOURCE = "https://docs.extended.exchange/extended-resources/vault
 EXTENDED_MIGRATION_SOURCE = "https://docs.extended.exchange/starknet-migration/migration-guide"
 EXTENDED_REFERRAL_SOURCE = "https://docs.extended.exchange/extended-resources/referrals-and-affiliates"
 APPROVAL_STATES = {"APPROVAL_REQUIRED_FINANCIAL", "APPROVAL_REQUIRED_ASSET_MOVE"}
+EXTENDED_APPROVAL_STATES = {
+    "extended-trading": "APPROVAL_REQUIRED_FINANCIAL",
+    "extended-liquidity": "APPROVAL_REQUIRED_ASSET_MOVE",
+}
 
 
 def _is_fresh(*, now: datetime) -> bool:
     verified = datetime.fromisoformat(EXTENDED_VERIFIED_AT).astimezone(UTC)
     current = now.astimezone(UTC)
     return verified <= current <= verified + timedelta(days=OVERRIDE_TTL_DAYS)
+
+
+def _verification_expires_at() -> str:
+    return (
+        datetime.fromisoformat(EXTENDED_VERIFIED_AT).astimezone(UTC)
+        + timedelta(days=OVERRIDE_TTL_DAYS)
+    ).isoformat()
+
+
+def _refresh_status_counts(report: dict[str, Any]) -> None:
+    targets = [item for item in report.get("targets", []) if isinstance(item, dict)]
+    report["ready_dry_run"] = sum(item.get("status") == "READY_DRY_RUN" for item in targets)
+    report["read_only"] = sum(item.get("status") == "READ_ONLY" for item in targets)
+    report["unverified"] = sum(item.get("status") == "UNVERIFIED" for item in targets)
+
+
+def apply_extended_current_status(
+    report: dict[str, Any], *, now: datetime | None = None
+) -> dict[str, Any]:
+    """Propagate current Extended evidence to public/manual status without executing.
+
+    A harder fail-closed state always wins. Fresh evidence can mark reward mechanics and
+    lifecycle current, but the target remains DRY_RUN/READ_ONLY and its actual earning
+    action stays explicit-approval only.
+    """
+
+    current = now or datetime.now(UTC)
+    result = copy.deepcopy(report)
+    result["extended_current_status_count"] = 0
+    if not _is_fresh(now=current):
+        _refresh_status_counts(result)
+        return result
+
+    for target in result.get("targets", []):
+        if not isinstance(target, dict):
+            continue
+        slug = str(target.get("slug") or "")
+        approval_state = EXTENDED_APPROVAL_STATES.get(slug)
+        if approval_state is None:
+            continue
+
+        # Never relax a Terms/lifecycle/reward hard block established elsewhere.
+        if (
+            target.get("status") == "UNVERIFIED"
+            or target.get("reward_acquisition_state") == "BLOCKED_UNVERIFIED"
+            or target.get("program_lifecycle_status") in {"CONFLICT", "UNVERIFIED"}
+            or target.get("api_reward_eligibility") == "UNVERIFIED"
+        ):
+            continue
+
+        target.update(
+            {
+                "api_reward_eligibility": "CONFIRMED",
+                "reward_evidence_source": EXTENDED_POINTS_SOURCE,
+                "reward_rule_verified_at": EXTENDED_VERIFIED_AT,
+                "reward_evidence_note": (
+                    "Current official Extended documentation identifies organic trading and vault/liquidity "
+                    "provision as points-earning categories, with points accruing on the Starknet version."
+                ),
+                "program_lifecycle_status": "ACTIVE",
+                "program_lifecycle_sources": [
+                    EXTENDED_POINTS_SOURCE,
+                    EXTENDED_MIGRATION_SOURCE,
+                    EXTENDED_REFERRAL_SOURCE,
+                ],
+                "program_lifecycle_verified_at": EXTENDED_VERIFIED_AT,
+                "program_lifecycle_note": (
+                    "Current official Points, Starknet migration and recently updated referral materials "
+                    "continue to describe the Extended points system as in use on Starknet."
+                ),
+                "japan_legal_status": (
+                    "JAPAN_NOT_IN_CURRENT_RESTRICTED_LIST_REVERIFY_ACCOUNT_TERMS_BEFORE_EXECUTION"
+                ),
+                "current_terms_sources": [EXTENDED_RESTRICTED_SOURCE, EXTENDED_TERMS_SOURCE],
+                "current_evidence_status": "PRIMARY_VERIFIED_CURRENT",
+                "current_evidence_source": EXTENDED_POINTS_SOURCE,
+                "current_evidence_checked_at": EXTENDED_VERIFIED_AT,
+                "current_evidence_expires_at": _verification_expires_at(),
+                "reward_acquisition_state": approval_state,
+                "automation_permitted": False,
+                "blocked_reason": (
+                    "Current reward mechanics are verified, but LIVE earning requires financial/signing or "
+                    "asset-movement approval. No economic action is authorized by this status refresh."
+                ),
+            }
+        )
+        result["extended_current_status_count"] += 1
+
+    _refresh_status_counts(result)
+    return result
 
 
 def _refresh_counts(report: dict[str, Any]) -> None:
@@ -58,21 +152,21 @@ def _promote(
     report: dict[str, Any],
     *,
     slug: str,
+    expected_approval_state: str,
     fields: dict[str, Any],
     now: datetime,
 ) -> bool:
     if not _is_fresh(now=now):
         return False
 
-    expires = (
-        datetime.fromisoformat(EXTENDED_VERIFIED_AT).astimezone(UTC)
-        + timedelta(days=OVERRIDE_TTL_DAYS)
-    )
+    expires = _verification_expires_at()
     for action in report.get("actions", []):
         if not isinstance(action, dict) or action.get("slug") != slug:
             continue
-        # Never override a harder fail-closed state such as BLOCKED_UNVERIFIED.
-        if action.get("acquisition_state") != "REVERIFY_REQUIRED":
+        # A generic approval state may already be produced from the now-current public
+        # status (notably READ_ONLY liquidity). Enrich that state, but never override
+        # a harder block or a different approval category.
+        if action.get("acquisition_state") not in {"REVERIFY_REQUIRED", expected_approval_state}:
             return False
         action.update(
             {
@@ -80,7 +174,7 @@ def _promote(
                 "verified_at": EXTENDED_VERIFIED_AT,
                 "evidence_checked_at": EXTENDED_VERIFIED_AT,
                 "evidence_status": "PRIMARY_VERIFIED_CURRENT",
-                "verification_expires_at": expires.isoformat(),
+                "verification_expires_at": expires,
                 "action_taken": "NONE",
                 "auto_executed": False,
                 "points_delta": None,
@@ -113,6 +207,7 @@ def apply_extended_current_evidence(
     if _promote(
         result,
         slug="extended-trading",
+        expected_approval_state="APPROVAL_REQUIRED_FINANCIAL",
         now=current,
         fields={
             "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
@@ -124,7 +219,7 @@ def apply_extended_current_evidence(
             "authentication_recheck_required": True,
             "evidence_source": EXTENDED_POINTS_SOURCE,
             "evidence_sources": [*common_sources, EXTENDED_API_SOURCE, EXTENDED_REFERRAL_SOURCE],
-            "source_coverage": "CURRENT_PRIMARY_OFFICIAL_PLUS_RECENT_INDEPENDENT_CORROBORATION",
+            "source_coverage": "CURRENT_PRIMARY_OFFICIAL_EVIDENCE_WITH_EXTERNAL_CORROBORATION_CHECKED_SEPARATELY",
             "evidence_note": (
                 "Current official Extended Points documentation keeps Season 1 in the active documentation tree, "
                 "states that up to 1.2M points are distributed weekly on Tuesdays, and identifies organic trading "
@@ -166,6 +261,7 @@ def apply_extended_current_evidence(
     if _promote(
         result,
         slug="extended-liquidity",
+        expected_approval_state="APPROVAL_REQUIRED_ASSET_MOVE",
         now=current,
         fields={
             "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
@@ -177,7 +273,7 @@ def apply_extended_current_evidence(
             "authentication_recheck_required": True,
             "evidence_source": EXTENDED_POINTS_SOURCE,
             "evidence_sources": [*common_sources, EXTENDED_VAULT_SOURCE, EXTENDED_REFERRAL_SOURCE],
-            "source_coverage": "CURRENT_PRIMARY_OFFICIAL_PLUS_RECENT_INDEPENDENT_CORROBORATION",
+            "source_coverage": "CURRENT_PRIMARY_OFFICIAL_EVIDENCE_WITH_EXTERNAL_CORROBORATION_CHECKED_SEPARATELY",
             "evidence_note": (
                 "Current official Extended Points documentation identifies providing liquidity, including depositing "
                 "funds into the vault, as a points-earning category. The current Vault documentation describes USDC "
