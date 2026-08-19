@@ -1,10 +1,14 @@
 from datetime import UTC, datetime, timedelta
 
-from crypto_auto_trade.airdrop_current_promotion import promote_current_verified_paths
+from crypto_auto_trade.airdrop_current_promotion import (
+    HYPREARN_VERIFIED_AT,
+    STANDX_POSITION_VERIFIED_AT,
+    promote_current_verified_paths,
+)
 from crypto_auto_trade.airdrop_live_overrides import OVERRIDE_TTL_DAYS, STANDX_MAKER_VERIFIED_AT
 
 
-def _report(state: str = "REVERIFY_REQUIRED") -> dict[str, object]:
+def _report(slug: str = "standx-maker", state: str = "REVERIFY_REQUIRED") -> dict[str, object]:
     return {
         "financial_actions_executed": 0,
         "asset_transfers_executed": 0,
@@ -20,9 +24,9 @@ def _report(state: str = "REVERIFY_REQUIRED") -> dict[str, object]:
         "additional_approval_paths": [],
         "actions": [
             {
-                "slug": "standx-maker",
+                "slug": slug,
                 "acquisition_state": state,
-                "requires_user_approval": False,
+                "requires_user_approval": state.startswith("APPROVAL_REQUIRED"),
                 "requires_funds": False,
                 "requires_wallet_signature": False,
                 "requires_real_order": False,
@@ -62,6 +66,57 @@ def test_fresh_standx_overlay_promotes_reverify_to_financial_approval_only() -> 
     assert result["live_approved"] is False
 
 
+def test_fresh_hyprearn_overlay_promotes_to_asset_move_approval_only() -> None:
+    verified = datetime.fromisoformat(HYPREARN_VERIFIED_AT).astimezone(UTC)
+    result = promote_current_verified_paths(
+        _report("hyprearn"), now=verified + timedelta(hours=1)
+    )
+    action = result["actions"][0]
+
+    assert result["current_evidence_promotion_count"] == 1
+    assert result["reverify_required_count"] == 0
+    assert result["approval_required_count"] == 1
+    assert action["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert action["requires_user_approval"] is True
+    assert action["requires_funds"] is True
+    assert action["requires_wallet_signature"] is True
+    assert action["requires_real_order"] is True
+    assert action["requires_asset_move"] is True
+    assert action["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "allocation amount" in action["missing_approval"].lower()
+    assert "do not connect/sign" in action["next_action"].lower()
+    assert action["action_taken"] == "NONE"
+    assert action["auto_executed"] is False
+    assert result["asset_transfers_executed"] == 0
+    assert result["wallet_signatures_executed"] == 0
+    assert result["live_orders_executed"] == 0
+
+
+def test_fresh_standx_position_overlay_promotes_to_financial_approval_only() -> None:
+    verified = datetime.fromisoformat(STANDX_POSITION_VERIFIED_AT).astimezone(UTC)
+    result = promote_current_verified_paths(
+        _report("standx-position"), now=verified + timedelta(hours=1)
+    )
+    action = result["actions"][0]
+
+    assert result["current_evidence_promotion_count"] == 1
+    assert result["reverify_required_count"] == 0
+    assert result["approval_required_count"] == 1
+    assert action["acquisition_state"] == "APPROVAL_REQUIRED_FINANCIAL"
+    assert action["requires_user_approval"] is True
+    assert action["requires_funds"] is True
+    assert action["requires_real_order"] is True
+    assert action["requires_asset_move"] is False
+    assert action["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "maximum notional" in action["missing_approval"].lower()
+    assert "do not open" in action["next_action"].lower()
+    assert action["action_taken"] == "NONE"
+    assert action["auto_executed"] is False
+    assert result["financial_actions_executed"] == 0
+    assert result["wallet_signatures_executed"] == 0
+    assert result["live_orders_executed"] == 0
+
+
 def test_stale_overlay_does_not_promote_reverify_target() -> None:
     verified = datetime.fromisoformat(STANDX_MAKER_VERIFIED_AT).astimezone(UTC)
     stale = verified + timedelta(days=OVERRIDE_TTL_DAYS, seconds=1)
@@ -80,7 +135,8 @@ def test_stale_overlay_does_not_promote_reverify_target() -> None:
 def test_current_approval_state_is_not_double_promoted() -> None:
     verified = datetime.fromisoformat(STANDX_MAKER_VERIFIED_AT).astimezone(UTC)
     result = promote_current_verified_paths(
-        _report("APPROVAL_REQUIRED_FINANCIAL"), now=verified + timedelta(days=1)
+        _report("standx-maker", "APPROVAL_REQUIRED_FINANCIAL"),
+        now=verified + timedelta(days=1),
     )
 
     assert result["current_evidence_promotion_count"] == 0
