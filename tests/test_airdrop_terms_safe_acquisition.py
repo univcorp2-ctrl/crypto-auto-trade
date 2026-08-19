@@ -1,7 +1,11 @@
+from datetime import UTC, datetime, timedelta
+
 from crypto_auto_trade import airdrop_agents
+from crypto_auto_trade.airdrop_ethereal_current import ETHEREAL_VERIFIED_AT, TTL_DAYS
 from crypto_auto_trade.airdrop_terms_safe_acquisition import (
     DECIBEL_TERMS_SOURCE,
     TERMS_AUTOMATION_BLOCKED_SLUGS,
+    _apply_ethereal_guard_to_status,
     _apply_terms_guard_to_acquisition,
     _evaluate_target,
     run_terms_safe_status,
@@ -72,3 +76,31 @@ def test_terms_safe_status_propagates_ethereal_fail_closed_state() -> None:
     assert all(item["reward_acquisition_state"] == "BLOCKED_UNVERIFIED" for item in ethereal.values())
     assert all("FAIL_CLOSED" in item["current_evidence_status"] for item in ethereal.values())
     assert result["unverified"] >= 4
+
+
+def test_ethereal_status_stays_fail_closed_after_evidence_ttl() -> None:
+    verified = datetime.fromisoformat(ETHEREAL_VERIFIED_AT).astimezone(UTC)
+    report = {
+        "ready_dry_run": 1,
+        "read_only": 1,
+        "unverified": 0,
+        "targets": [
+            {"slug": "ethereal-trading", "status": "READY_DRY_RUN"},
+            {"slug": "ethereal-margin", "status": "READ_ONLY"},
+        ],
+    }
+
+    result = _apply_ethereal_guard_to_status(
+        report,
+        now=verified + timedelta(days=TTL_DAYS, seconds=1),
+    )
+
+    assert result["ethereal_current_block_count"] == 2
+    assert result["ready_dry_run"] == 0
+    assert result["read_only"] == 0
+    assert result["unverified"] == 2
+    assert all(item["status"] == "UNVERIFIED" for item in result["targets"])
+    assert all(
+        item["current_evidence_status"] == "PRIMARY_EVIDENCE_EXPIRED_REVERIFY_FAIL_CLOSED"
+        for item in result["targets"]
+    )
