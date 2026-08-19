@@ -50,9 +50,10 @@ def apply_extended_current_status(
 ) -> dict[str, Any]:
     """Propagate current Extended evidence to public/manual status without executing.
 
-    A harder fail-closed state always wins. Fresh evidence can mark reward mechanics and
-    lifecycle current, but the target remains DRY_RUN/READ_ONLY and its actual earning
-    action stays explicit-approval only.
+    Explicit Terms/lifecycle/reward hard blocks always win. Fresh independently checked
+    primary evidence may, however, outlive a transient scheduled HTTP reachability failure,
+    just as other separately verified reward paths do. The target remains DRY_RUN/READ_ONLY
+    and its actual earning action stays explicit-approval only.
     """
 
     current = now or datetime.now(UTC)
@@ -70,17 +71,21 @@ def apply_extended_current_status(
         if approval_state is None:
             continue
 
-        # Never relax a Terms/lifecycle/reward hard block established elsewhere.
+        # Never relax an explicit Terms/lifecycle/reward hard block. Status=UNVERIFIED
+        # alone can be a transient reachability result and is not treated as a harder
+        # block when fresh primary evidence has already been independently verified.
         if (
-            target.get("status") == "UNVERIFIED"
-            or target.get("reward_acquisition_state") == "BLOCKED_UNVERIFIED"
+            target.get("reward_acquisition_state") == "BLOCKED_UNVERIFIED"
+            or target.get("terms_automation_status") == "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
             or target.get("program_lifecycle_status") in {"CONFLICT", "UNVERIFIED"}
             or target.get("api_reward_eligibility") == "UNVERIFIED"
         ):
             continue
 
+        safe_status = "READ_ONLY" if target.get("mode") == "READ_ONLY" else "READY_DRY_RUN"
         target.update(
             {
+                "status": safe_status,
                 "api_reward_eligibility": "CONFIRMED",
                 "reward_evidence_source": EXTENDED_POINTS_SOURCE,
                 "reward_rule_verified_at": EXTENDED_VERIFIED_AT,
