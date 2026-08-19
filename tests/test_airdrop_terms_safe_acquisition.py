@@ -1,6 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
 from crypto_auto_trade import airdrop_agents
+from crypto_auto_trade import airdrop_terms_safe_acquisition as terms_safe
 from crypto_auto_trade.airdrop_ethereal_current import ETHEREAL_VERIFIED_AT, TTL_DAYS
 from crypto_auto_trade.airdrop_terms_safe_acquisition import (
     DECIBEL_TERMS_SOURCE,
@@ -76,6 +77,24 @@ def test_terms_safe_status_propagates_ethereal_fail_closed_state() -> None:
     assert all(item["reward_acquisition_state"] == "BLOCKED_UNVERIFIED" for item in ethereal.values())
     assert all("FAIL_CLOSED" in item["current_evidence_status"] for item in ethereal.values())
     assert result["unverified"] >= 4
+
+
+def test_terms_safe_status_calls_extended_current_overlay(monkeypatch) -> None:
+    calls = {"count": 0}
+
+    def mark_extended_status(report):
+        calls["count"] += 1
+        updated = dict(report)
+        updated["extended_overlay_called"] = True
+        return updated
+
+    monkeypatch.setattr(terms_safe, "apply_extended_current_status", mark_extended_status)
+    result = terms_safe.run_terms_safe_status(probe_network=False)
+
+    assert calls["count"] == 1
+    assert result["extended_overlay_called"] is True
+    assert result["ethereal_current_block_count"] == 2
+    assert result["terms_automation_blocked_count"] == 2
 
 
 def test_ethereal_status_stays_fail_closed_after_evidence_ttl() -> None:
