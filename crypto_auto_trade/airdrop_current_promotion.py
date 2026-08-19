@@ -17,13 +17,18 @@ from crypto_auto_trade.airdrop_live_overrides import (
 
 APPROVAL_STATES = {"APPROVAL_REQUIRED_FINANCIAL", "APPROVAL_REQUIRED_ASSET_MOVE"}
 
-# These two primary-source checks were refreshed immediately before their older
-# base-registry TTLs expired. They remain approval-only: both reward paths require
-# real economic activity, and neither enables a safe automatic acquisition action.
+# These primary-source checks were refreshed immediately before or after their
+# older base-registry TTLs expired. They remain approval-only: every reward path
+# below requires real economic activity or asset movement, and none enables a
+# safe automatic acquisition action.
 HYPREARN_VERIFIED_AT = "2026-08-19T04:24:00+00:00"
 HYPREARN_EVIDENCE_SOURCE = "https://hyprearn.com/"
 STANDX_POSITION_VERIFIED_AT = "2026-08-19T04:24:00+00:00"
 STANDX_POSITION_EVIDENCE_SOURCE = "https://docs.standx.com/sip/sip-2-position-yield"
+REYA_STAKING_VERIFIED_AT = "2026-08-19T07:56:34+00:00"
+REYA_STAKING_EVIDENCE_SOURCE = "https://blog.reya.network/ethena-and-reya-a-new-foundation-for-rlp/"
+REYA_STAKING_RCP_SOURCE = "https://docs.reya.xyz/reya-token/reya-chain-points-faqs"
+REYA_STAKING_PARTNERSHIP_SOURCE = "https://blog.reya.network/reyas-strategic-partnerships/"
 
 
 def _verified_at_is_fresh(verified_at: str, *, now: datetime) -> bool:
@@ -240,6 +245,64 @@ def promote_current_verified_paths(
                 "parameters, confirm the eligible market and qualification window, calculate capped worst-case "
                 "fee/funding/liquidation exposure, and prepare the position plan for explicit approval only. Do not "
                 "open, hold, modify or close a real position automatically for reward acquisition."
+            ),
+        },
+    ):
+        result["current_evidence_promotion_count"] += 1
+
+    if _promote_reverify_action(
+        result,
+        slug="reya-staking",
+        verified_at=REYA_STAKING_VERIFIED_AT,
+        evidence_source=REYA_STAKING_EVIDENCE_SOURCE,
+        now=current,
+        fields={
+            "acquisition_state": "APPROVAL_REQUIRED_ASSET_MOVE",
+            "requires_user_approval": True,
+            "requires_funds": True,
+            "requires_wallet_signature": True,
+            "requires_real_order": False,
+            "requires_asset_move": True,
+            "authentication_recheck_required": True,
+            "evidence_sources": [
+                REYA_STAKING_EVIDENCE_SOURCE,
+                REYA_STAKING_RCP_SOURCE,
+                REYA_STAKING_PARTNERSHIP_SOURCE,
+            ],
+            "source_coverage": "CURRENT_PRIMARY_OFFICIAL_ONLY_NO_INDEPENDENT_EXPERT_SOURCE",
+            "evidence_note": (
+                "Current official Reya RLP documentation says users can become LPs by depositing USDC into the "
+                "Reya Liquidity Pool, which converts pool assets into USDe/sUSDe for liquidity and market-making "
+                "use; the pool accrues Ethena yield, Reya market-making returns, trade/liquidation fees and Reya "
+                "Chain Points, with returns shared among LPs based on deposited amount. The current RCP FAQ still "
+                "describes the same staking reward track using legacy rUSD/srUSD names, while newer official Reya "
+                "materials state rUSD was renamed to USDC and srUSD to RLP. This refresh therefore treats the "
+                "current RLP liquidity-pool deposit as the asset-movement reward path rather than the stale "
+                "rUSD-to-srUSD wording."
+            ),
+            "terms_status": (
+                "REVERIFY_CURRENT_REYA_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_AUTHENTICATION_"
+                "RLP_DEPOSIT_REDEMPTION_FEES_AND_SIGNING_BEFORE_EXECUTION"
+            ),
+            "known_cost_or_risk": (
+                "Earning through the current RLP path requires moving capital into the Reya Liquidity Pool. Pool "
+                "assets are deployed through USDe/sUSDe and Reya market-making/liquidity strategies, so risks can "
+                "include stablecoin/depeg and counterparty exposure, strategy/market-making PnL, smart-contract/"
+                "platform risk, withdrawal/liquidity constraints, fees, wallet/signing risk and opportunity cost. "
+                "RCP and other pool returns have no guaranteed fixed value and must not be assumed to offset losses."
+            ),
+            "missing_approval": (
+                "Current Reya Terms/jurisdiction and account eligibility; the authenticated wallet/account flow and "
+                "exact transaction/signing requirements; current RLP deposit, mint, redemption/withdrawal and fee "
+                "mechanics; confirmation that the account-specific RLP position remains eligible for current RCP; "
+                "plus explicit USDC allocation amount, maximum acceptable loss and liquidity/withdrawal tolerance."
+            ),
+            "next_action": (
+                "Immediately before any economic action, re-open the current official RLP/RCP materials and the "
+                "authenticated Reya LP interface, confirm current Terms/account eligibility plus the exact USDC "
+                "deposit, RLP mint, redemption/withdrawal, fee and signing flow, and verify current RCP treatment. "
+                "Then prepare a capped USDC allocation for explicit approval only. Do not deposit, bridge, approve "
+                "tokens, sign a wallet message or transaction, redeem, withdraw or move assets automatically."
             ),
         },
     ):
