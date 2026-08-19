@@ -1,0 +1,54 @@
+name: Airdrop Actions Diagnostic Heartbeat
+
+on:
+  push:
+    branches:
+      - diagnose/airdrop-actions-heartbeat-20260819
+    paths:
+      - ".github/workflows/airdrop-actions-heartbeat.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Write non-financial Actions heartbeat
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          path = Path("data/airdrop/actions-heartbeat.json")
+          path.parent.mkdir(parents=True, exist_ok=True)
+          payload = {
+              "generated_at": datetime.now(UTC).isoformat(),
+              "purpose": "diagnose_github_actions_execution_and_contents_write_only",
+              "ref": os.environ.get("GITHUB_REF"),
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "financial_actions_executed": 0,
+              "asset_transfers_executed": 0,
+              "wallet_signatures_executed": 0,
+              "live_orders_executed": 0,
+          }
+          path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Commit heartbeat on diagnostic branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/airdrop/actions-heartbeat.json
+          git commit -m "chore: record Airdrop Actions diagnostic heartbeat"
+          git push
