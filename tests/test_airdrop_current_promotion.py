@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 from crypto_auto_trade.airdrop_current_promotion import (
     HYPREARN_VERIFIED_AT,
+    REYA_STAKING_VERIFIED_AT,
     STANDX_POSITION_VERIFIED_AT,
     promote_current_verified_paths,
 )
@@ -113,6 +114,34 @@ def test_fresh_standx_position_overlay_promotes_to_financial_approval_only() -> 
     assert action["action_taken"] == "NONE"
     assert action["auto_executed"] is False
     assert result["financial_actions_executed"] == 0
+    assert result["wallet_signatures_executed"] == 0
+    assert result["live_orders_executed"] == 0
+
+
+def test_fresh_reya_staking_overlay_promotes_to_asset_move_approval_only() -> None:
+    verified = datetime.fromisoformat(REYA_STAKING_VERIFIED_AT).astimezone(UTC)
+    result = promote_current_verified_paths(
+        _report("reya-staking"), now=verified + timedelta(minutes=5)
+    )
+    action = result["actions"][0]
+
+    assert result["current_evidence_promotion_count"] == 1
+    assert result["reverify_required_count"] == 0
+    assert result["approval_required_count"] == 1
+    assert action["acquisition_state"] == "APPROVAL_REQUIRED_ASSET_MOVE"
+    assert action["requires_user_approval"] is True
+    assert action["requires_funds"] is True
+    assert action["requires_wallet_signature"] is True
+    assert action["requires_real_order"] is False
+    assert action["requires_asset_move"] is True
+    assert action["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
+    assert "rlp" in action["evidence_note"].lower()
+    assert "usdc allocation amount" in action["missing_approval"].lower()
+    assert "do not deposit" in action["next_action"].lower()
+    assert action["action_taken"] == "NONE"
+    assert action["auto_executed"] is False
+    assert result["financial_actions_executed"] == 0
+    assert result["asset_transfers_executed"] == 0
     assert result["wallet_signatures_executed"] == 0
     assert result["live_orders_executed"] == 0
 
