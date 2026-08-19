@@ -54,7 +54,7 @@ def test_fresh_reya_trading_evidence_promotes_only_to_financial_approval() -> No
     assert action["requires_real_order"] is True
     assert action["requires_asset_move"] is False
     assert action["evidence_status"] == "PRIMARY_VERIFIED_CURRENT"
-    assert "trade any supported market" in action["evidence_note"].lower()
+    assert action["evidence_basis"] == "PRIMARY_DOCS_CHANNEL_NEUTRAL_INFERENCE_FOR_API_TRADES"
     assert "maximum notional" in action["missing_approval"].lower()
     assert "do not deposit" in action["next_action"].lower()
     assert action["action_taken"] == "NONE"
