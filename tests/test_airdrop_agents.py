@@ -1,4 +1,7 @@
-from crypto_auto_trade.airdrop_agents import TARGETS, dry_run_target, run_all
+import json
+
+from crypto_auto_trade import airdrop_agents
+from crypto_auto_trade.airdrop_agents import TARGETS, dry_run_target, load_latest, run_all
 
 
 def _target(slug: str):
@@ -62,9 +65,71 @@ def test_exchange01_tracks_current_n1_og_badge_instead_of_legacy_points() -> Non
     assert result["live_approved"] is False
 
 
-def test_run_all_is_dry_run_only() -> None:
+def test_direct_decibel_dry_run_never_probes_network(monkeypatch) -> None:
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("Decibel automated network probe must not run")
+
+    monkeypatch.setattr(airdrop_agents, "_probe_url", fail_if_called)
+
+    for slug in ("decibel-trading", "decibel-liquidity"):
+        result = dry_run_target(_target(slug), probe_network=True)
+        assert result["status"] == "UNVERIFIED"
+        assert result["terms_automation_status"] == "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
+        assert result["program_probe"]["ok"] is None
+        assert "prohibit automated access" in result["blocked_reason"]
+
+
+def test_run_all_is_dry_run_only_and_applies_current_guards() -> None:
     report = run_all(probe_network=False)
     assert report["mode"] == "DRY_RUN"
     assert report["live_approved"] is False
     assert report["target_count"] == 20
+    assert report["terms_automation_blocked_count"] == 2
+    assert report["ethereal_current_block_count"] == 2
     assert all(target["live_approved"] is False for target in report["targets"])
+
+    ethereal = {
+        item["slug"]: item
+        for item in report["targets"]
+        if item["slug"] in {"ethereal-trading", "ethereal-margin"}
+    }
+    assert all(item["status"] == "UNVERIFIED" for item in ethereal.values())
+    assert all(item["reward_acquisition_state"] == "BLOCKED_UNVERIFIED" for item in ethereal.values())
+
+
+def test_load_latest_reapplies_current_guards_to_stale_persisted_status(tmp_path) -> None:
+    stale = run_all(probe_network=False)
+    for item in stale["targets"]:
+        if item["slug"] == "ethereal-trading":
+            item["status"] = "READY_DRY_RUN"
+            item.pop("current_evidence_status", None)
+            item.pop("reward_acquisition_state", None)
+        elif item["slug"] == "ethereal-margin":
+            item["status"] = "READ_ONLY"
+            item.pop("current_evidence_status", None)
+            item.pop("reward_acquisition_state", None)
+        elif item["slug"] in {"decibel-trading", "decibel-liquidity"}:
+            item["status"] = "READY_DRY_RUN"
+            item.pop("terms_automation_status", None)
+
+    path = tmp_path / "latest.json"
+    path.write_text(json.dumps(stale), encoding="utf-8")
+    guarded = load_latest(path)
+
+    ethereal = {
+        item["slug"]: item
+        for item in guarded["targets"]
+        if item["slug"] in {"ethereal-trading", "ethereal-margin"}
+    }
+    decibel = {
+        item["slug"]: item
+        for item in guarded["targets"]
+        if item["slug"] in {"decibel-trading", "decibel-liquidity"}
+    }
+    assert all(item["status"] == "UNVERIFIED" for item in ethereal.values())
+    assert all(item["reward_acquisition_state"] == "BLOCKED_UNVERIFIED" for item in ethereal.values())
+    assert all(item["status"] == "UNVERIFIED" for item in decibel.values())
+    assert all(
+        item["terms_automation_status"] == "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED"
+        for item in decibel.values()
+    )
