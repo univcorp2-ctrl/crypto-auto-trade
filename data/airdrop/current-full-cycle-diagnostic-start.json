@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-08-19T15:48:57.927930+00:00",
+  "stage": "STARTED_BEFORE_SETUP_AND_TESTS",
+  "ref": "refs/heads/feat/airdrop-diagnose-full-cycle-20260819",
+  "sha": "5cddc272f80d1a0b5c4113958ee9374fd2655c5d",
+  "run_id": "32272284947",
+  "financial_actions_executed": 0,
+  "asset_transfers_executed": 0,
+  "wallet_signatures_executed": 0,
+  "live_orders_executed": 0
+}
