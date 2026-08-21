@@ -62,3 +62,11 @@ def test_airdrop_ui_labels_reachability_and_lifecycle_separately() -> None:
     assert "API probe" in response.text
     assert "Reward mechanics" in response.text
     assert "Program lifecycle" in response.text
+
+
+def test_airdrop_ui_stale_warning_matches_workflow_freshness_gate() -> None:
+    client = TestClient(create_app())
+    response = client.get("/static/airdrop.js")
+    assert response.status_code == 200
+    assert "const STALE_STATUS_WARNING_MINUTES = 35;" in response.text
+    assert "保存済みDRY RUNが35分以上更新されていません" in response.text
