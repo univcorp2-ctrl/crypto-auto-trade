@@ -1,7 +1,7 @@
 let report = null;
 
 const el = (id) => document.getElementById(id);
-const STALE_STATUS_WARNING_MINUTES = 120;
+const STALE_STATUS_WARNING_MINUTES = 35;
 
 function statusClass(status) {
   if (status === "READY_DRY_RUN") return "good";
@@ -46,11 +46,11 @@ function renderFreshness(data) {
 
   notice.hidden = false;
   const ageLabel = Number.isFinite(ageMinutes)
-    ? `${(ageMinutes / 60).toFixed(1)}時間`
+    ? `${ageMinutes.toFixed(0)}分`
     : "不明";
   notice.innerHTML = `
     <strong>⚠ Status data is STALE（${ageLabel}）</strong>
-    <span>保存済みDRY RUNが2時間以上更新されていません。表示中のAdapter件数・Program/API probe・Lifecycleを現在値として扱わず、current Workflowのfull cycle完走とstatus JSON更新を確認してください。LIVEは引き続き無効です。</span>
+    <span>保存済みDRY RUNが35分以上更新されていません。表示中のAdapter件数・Program/API probe・Lifecycleを現在値として扱わず、current Workflowのfull cycle完走とstatus JSON更新を確認してください。LIVEは引き続き無効です。</span>
   `;
 }
 
