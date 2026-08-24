@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T12:24:45.739065+00:00",
+  "generated_at": "2026-08-24T14:28:45.904171+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
