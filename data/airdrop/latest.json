@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T02:09:58.191798+00:00",
+  "generated_at": "2026-08-25T03:23:18.829342+00:00",
   "mode": "DRY_RUN",
   "live_approved": false,
   "target_count": 20,
@@ -46,7 +46,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:56.569199+00:00"
+      "checked_at": "2026-08-25T03:23:17.972841+00:00"
     },
     {
       "slug": "hyprearn",
@@ -86,7 +86,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-25T02:09:55.706526+00:00"
+      "checked_at": "2026-08-25T03:23:17.185432+00:00"
     },
     {
       "slug": "pacifica",
@@ -128,7 +128,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:56.236091+00:00"
+      "checked_at": "2026-08-25T03:23:17.438673+00:00"
     },
     {
       "slug": "hibachi",
@@ -171,7 +171,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:55.892777+00:00"
+      "checked_at": "2026-08-25T03:23:17.586029+00:00"
     },
     {
       "slug": "standx-maker",
@@ -211,7 +211,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:55.808622+00:00"
+      "checked_at": "2026-08-25T03:23:17.180653+00:00"
     },
     {
       "slug": "standx-position",
@@ -251,7 +251,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-25T02:09:55.899418+00:00"
+      "checked_at": "2026-08-25T03:23:17.196863+00:00"
     },
     {
       "slug": "decibel-trading",
@@ -291,7 +291,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Current Decibel Terms prohibit access to the Services by automated means. Automated HTTP probing and automated reward acquisition are therefore disabled for this target. Use a human/manual current-terms and account-eligibility review before any separately approved financial action.",
-      "checked_at": "2026-08-25T02:09:55.408108+00:00",
+      "checked_at": "2026-08-25T03:23:16.698397+00:00",
       "terms_automation_status": "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED",
       "terms_evidence_source": "https://decibel.trade/terms-of-service",
       "terms_verified_at": "2026-08-18T23:19:02+00:00"
@@ -334,7 +334,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Current Decibel Terms prohibit access to the Services by automated means. Automated HTTP probing and automated reward acquisition are therefore disabled for this target. Use a human/manual current-terms and account-eligibility review before any separately approved financial action.",
-      "checked_at": "2026-08-25T02:09:55.408375+00:00",
+      "checked_at": "2026-08-25T03:23:16.698659+00:00",
       "terms_automation_status": "AUTOMATED_ACCESS_PROHIBITED_FAIL_CLOSED",
       "terms_evidence_source": "https://decibel.trade/terms-of-service",
       "terms_verified_at": "2026-08-18T23:19:02+00:00"
@@ -377,7 +377,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:56.219501+00:00"
+      "checked_at": "2026-08-25T03:23:17.577504+00:00"
     },
     {
       "slug": "reya-trading",
@@ -417,7 +417,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:55.869992+00:00"
+      "checked_at": "2026-08-25T03:23:17.279760+00:00"
     },
     {
       "slug": "reya-staking",
@@ -457,7 +457,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-25T02:09:55.980341+00:00"
+      "checked_at": "2026-08-25T03:23:17.307818+00:00"
     },
     {
       "slug": "extended-trading",
@@ -501,7 +501,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Current reward mechanics are verified, but LIVE earning requires financial/signing or asset-movement approval. No economic action is authorized by this status refresh.",
-      "checked_at": "2026-08-25T02:09:56.275535+00:00",
+      "checked_at": "2026-08-25T03:23:17.658348+00:00",
       "current_terms_sources": [
         "https://docs.extended.exchange/extended-resources/legal/restricted-countries",
         "https://docs.extended.exchange/extended-resources/legal/terms-of-use"
@@ -555,7 +555,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Current reward mechanics are verified, but LIVE earning requires financial/signing or asset-movement approval. No economic action is authorized by this status refresh.",
-      "checked_at": "2026-08-25T02:09:56.159337+00:00",
+      "checked_at": "2026-08-25T03:23:17.616322+00:00",
       "current_terms_sources": [
         "https://docs.extended.exchange/extended-resources/legal/restricted-countries",
         "https://docs.extended.exchange/extended-resources/legal/terms-of-use"
@@ -605,7 +605,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:56.408676+00:00"
+      "checked_at": "2026-08-25T03:23:17.781047+00:00"
     },
     {
       "slug": "nado-nlp",
@@ -645,7 +645,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Asset movement is human-gated.",
-      "checked_at": "2026-08-25T02:09:56.217549+00:00"
+      "checked_at": "2026-08-25T03:23:17.729574+00:00"
     },
     {
       "slug": "kyan",
@@ -674,15 +674,13 @@
       "reward_evidence_source": "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
       "reward_rule_verified_at": "2026-08-12T12:35:00+00:00",
       "reward_evidence_note": "Official Kyan rewards material says users continue earning Krystals from their own trading, and official API/MCP documentation provides authenticated programmatic trading on the same exchange. Treating genuine API trades as the same channel-neutral trading activity is an inference, not an explicit sentence that API trades earn Krystals.",
-      "program_lifecycle_status": "ACTIVE",
+      "program_lifecycle_status": "REVERIFY",
       "program_lifecycle_sources": [
         "https://blog.kyan.blue/p/development-update-referrals-rewards-hub-and-more",
-        "https://blog.kyan.blue/",
-        "https://www.kyan.blue/",
         "https://docs.kyan.blue/docs/mcp"
       ],
-      "program_lifecycle_verified_at": "2026-08-18T03:20:11+00:00",
-      "program_lifecycle_note": "Current official Kyan surfaces still show mainnet live, a dedicated Rewards hub, Krystals earned from users' own trading, and production-capable API/MCP access. This verifies the public Krystals program lifecycle as active, but does not verify account eligibility, jurisdiction/Terms, API-key permissions, signing setup, or make any live trading action permissible.",
+      "program_lifecycle_verified_at": "2026-08-12T12:35:00+00:00",
+      "program_lifecycle_note": "Current official rewards and API surfaces remain reachable and document Krystals from trading plus production-capable API/MCP, but current Terms/jurisdiction/account eligibility and any reward-program parameter changes must still be re-verified before execution.",
       "japan_legal_status": "LEGAL_REVIEW_REQUIRED",
       "live_approved": false,
       "points_before": null,
@@ -690,7 +688,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:58.190794+00:00"
+      "checked_at": "2026-08-25T03:23:18.828304+00:00"
     },
     {
       "slug": "lighter",
@@ -734,7 +732,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:56.590057+00:00"
+      "checked_at": "2026-08-25T03:23:18.290806+00:00"
     },
     {
       "slug": "ethereal-trading",
@@ -778,7 +776,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Current official Ethereal app lifecycle is close-only and migrating to Meridian while older official Ethereal reward pages still describe trading and USDe margin as reward-earning. Do not treat the older reward pages as a current acquisition authorization.",
-      "checked_at": "2026-08-25T02:09:56.422674+00:00",
+      "checked_at": "2026-08-25T03:23:17.994803+00:00",
       "current_evidence_status": "PRIMARY_CURRENT_LIFECYCLE_CONFLICT_FAIL_CLOSED",
       "current_evidence_source": "https://app.ethereal.trade/",
       "current_evidence_checked_at": "2026-08-19T06:15:38+00:00",
@@ -826,7 +824,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "Current official Ethereal app lifecycle is close-only and migrating to Meridian while older official Ethereal reward pages still describe trading and USDe margin as reward-earning. Do not treat the older reward pages as a current acquisition authorization.",
-      "checked_at": "2026-08-25T02:09:56.486039+00:00",
+      "checked_at": "2026-08-25T03:23:18.164279+00:00",
       "current_evidence_status": "PRIMARY_CURRENT_LIFECYCLE_CONFLICT_FAIL_CLOSED",
       "current_evidence_source": "https://app.ethereal.trade/",
       "current_evidence_checked_at": "2026-08-19T06:15:38+00:00",
@@ -873,7 +871,7 @@
       "estimated_total_cost_usd": null,
       "open_risk_usd": 0.0,
       "blocked_reason": "LIVE disabled; legal/terms/reward eligibility require explicit re-verification before any live use.",
-      "checked_at": "2026-08-25T02:09:56.301364+00:00"
+      "checked_at": "2026-08-25T03:23:17.671647+00:00"
     }
   ],
   "ethereal_current_block_count": 2,
