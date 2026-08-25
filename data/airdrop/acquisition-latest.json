@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-08-25T19:20:18.933929+00:00",
+  "generated_at": "2026-08-25T20:51:39.144842+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
   "reward_path_count": 20,
   "safe_auto_adapter_count": 0,
-  "verified_gated_action_count": 10,
+  "verified_gated_action_count": 9,
   "verified_additional_path_count": 0,
   "safe_auth_required_count": 0,
   "auto_executed_action_count": 0,
-  "primary_approval_required_count": 12,
+  "primary_approval_required_count": 11,
   "additional_approval_required_count": 0,
-  "approval_required_count": 12,
+  "approval_required_count": 11,
   "blocked_unverified_count": 4,
-  "reverify_required_count": 3,
+  "reverify_required_count": 4,
   "discovery_only_count": 1,
   "financial_actions_executed": 0,
   "asset_transfers_executed": 0,
@@ -115,140 +115,16 @@
       "reward_unit": "reward",
       "action_taken": "NONE",
       "auto_executed": false,
-      "requires_user_approval": true,
-      "requires_funds": true,
+      "requires_user_approval": false,
+      "requires_funds": false,
       "requires_wallet_signature": false,
-      "requires_real_order": true,
+      "requires_real_order": false,
       "requires_asset_move": false,
       "authentication_recheck_required": false,
       "points_delta": null,
-      "acquisition_state": "APPROVAL_REQUIRED_FINANCIAL",
-      "next_action": "Immediately before any economic action, re-open the current StandX Community Maker Yield page and Terms/account eligibility, select one pair, calculate capped worst-case fill/funding/adverse-selection exposure, and prepare the plan for explicit approval only. Do not place, cancel, maintain or replenish real maker orders automatically.",
-      "reason": "This target is queued for current primary-source re-verification; it is not treated as a confirmed failure or confirmed earning path.",
-      "evidence_note": "Current official StandX Community Maker Yield documentation requires real executable two-sided liquidity within 10 bps, at least 30 qualifying minutes per hour for the standard tier, and daily reward settlement. Current per-pair unit sizes, caps, sessions and hourly ceilings remain live parameters and must be rechecked before any economic action.",
-      "live_parameters": {
-        "qualifying_band_bps": 10,
-        "trading_session_timezone": "America/New_York",
-        "uptime_tiers": {
-          "standard": {
-            "minimum_minutes_per_hour": 30,
-            "multiplier": 0.5
-          },
-          "boosted": {
-            "minimum_minutes_per_hour": 42,
-            "multiplier": 1.0
-          }
-        },
-        "proximity_weights_pct": {
-          "0_bps": 200,
-          "5_bps": 80,
-          "10_bps": 40
-        },
-        "pairs": {
-          "BTC-USD": {
-            "unit_size": 2,
-            "per_side_cap": 20,
-            "max_maker_hours_per_hour": 10,
-            "session": "24/7",
-            "off_session_multiplier_pct": null
-          },
-          "ETH-USD": {
-            "unit_size": 60,
-            "per_side_cap": 600,
-            "max_maker_hours_per_hour": 10,
-            "session": "24/7",
-            "off_session_multiplier_pct": null
-          },
-          "XAG-USD": {
-            "unit_size": 1500,
-            "per_side_cap": 3000,
-            "max_maker_hours_per_hour": 2,
-            "session": "Sunday-Friday 18:00-17:00 next day ET",
-            "off_session_multiplier_pct": 10
-          },
-          "XAU-USD": {
-            "unit_size": 30,
-            "per_side_cap": 60,
-            "max_maker_hours_per_hour": 2,
-            "session": "Sunday-Friday 18:00-17:00 next day ET",
-            "off_session_multiplier_pct": 10
-          },
-          "CL-USD": {
-            "unit_size": 1400,
-            "per_side_cap": 2800,
-            "max_maker_hours_per_hour": 2,
-            "session": "Sunday-Friday 18:00-17:00 next day ET",
-            "off_session_multiplier_pct": 10
-          },
-          "HYPE-USD": {
-            "unit_size": 4000,
-            "per_side_cap": 40000,
-            "max_maker_hours_per_hour": 10,
-            "session": "24/7",
-            "off_session_multiplier_pct": null
-          },
-          "BNB-USD": {
-            "unit_size": 300,
-            "per_side_cap": 3000,
-            "max_maker_hours_per_hour": 10,
-            "session": "24/7",
-            "off_session_multiplier_pct": null
-          },
-          "SOL-USD": {
-            "unit_size": 1500,
-            "per_side_cap": 15000,
-            "max_maker_hours_per_hour": 10,
-            "session": "24/7",
-            "off_session_multiplier_pct": null
-          },
-          "TSLA-USD": {
-            "unit_size": 400,
-            "per_side_cap": 800,
-            "max_maker_hours_per_hour": 2,
-            "session": "US equity session",
-            "off_session_multiplier_pct": 10
-          },
-          "SPCX-USD": {
-            "unit_size": 800,
-            "per_side_cap": 800,
-            "max_maker_hours_per_hour": 2,
-            "session": "US equity session",
-            "off_session_multiplier_pct": 10
-          },
-          "MU-USD": {
-            "unit_size": 200,
-            "per_side_cap": 400,
-            "max_maker_hours_per_hour": 2,
-            "session": "US equity session",
-            "off_session_multiplier_pct": 10
-          }
-        },
-        "market_maker_fee_tiers": {
-          "MM0": {
-            "maker_hours_required": ">=250",
-            "taker_fee_bps": 3.0,
-            "maker_fee_rebate_bps": 0.0
-          },
-          "MM1": {
-            "maker_hours_required": ">=360",
-            "taker_fee_bps": 2.25,
-            "maker_fee_rebate_bps": -0.25
-          },
-          "MM2": {
-            "maker_hours_required": ">504",
-            "taker_fee_bps": 2.0,
-            "maker_fee_rebate_bps": -0.5
-          }
-        }
-      },
-      "terms_status": "REVERIFY_PERPS_USER_ELIGIBILITY_TERMS_AUTHENTICATION_AND_LIVE_PAIR_PARAMETERS_BEFORE_EXECUTION",
-      "known_cost_or_risk": "Qualifying quotes are real executable orders and can fill, creating directional exposure, adverse selection, spread/slippage, funding, margin and liquidation risk. The daily reward pool and per-pair parameters can change, so no fixed reward-per-dollar is assumed.",
-      "missing_approval": "Current StandX Terms/jurisdiction and account eligibility, authentication/signing method, selected pair and current live unit size/cap/session/fee tier, plus explicit maximum notional, quote distance, uptime window, fee/funding/adverse-selection budget and maximum acceptable loss.",
-      "verified_at": "2026-08-18T20:18:14+00:00",
-      "evidence_checked_at": "2026-08-18T20:18:14+00:00",
-      "evidence_source": "https://docs.standx.com/docs/standx-perps-solutions/community-maker-yield",
-      "evidence_status": "PRIMARY_VERIFIED_CURRENT",
-      "verification_expires_at": "2026-08-25T20:18:14+00:00"
+      "acquisition_state": "REVERIFY_REQUIRED",
+      "next_action": "Verify current earning action, program lifecycle, Japan/Terms eligibility, costs and required authentication before implementing acquisition.",
+      "reason": "This target is queued for current primary-source re-verification; it is not treated as a confirmed failure or confirmed earning path."
     },
     {
       "slug": "standx-position",
@@ -718,7 +594,7 @@
   "verified_additional_review_path_count": 0,
   "nonfinancial_review_required_count": 0,
   "nonfinancial_blocked_no_open_channel_count": 0,
-  "current_evidence_promotion_count": 5,
+  "current_evidence_promotion_count": 4,
   "reya_trading_current_promotion_count": 1,
   "nado_current_promotion_count": 2,
   "extended_current_promotion_count": 2,
