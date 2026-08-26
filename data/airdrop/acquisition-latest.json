@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-26T05:58:21.222480+00:00",
+  "generated_at": "2026-08-26T07:14:43.327470+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -462,27 +462,11 @@
       "requires_wallet_signature": false,
       "requires_real_order": false,
       "requires_asset_move": false,
-      "authentication_recheck_required": true,
+      "authentication_recheck_required": false,
       "points_delta": null,
       "acquisition_state": "BLOCKED_UNVERIFIED",
-      "next_action": "Re-verify the current Ethereal-to-Meridian migration and Meridian reward rules from current official sources. Only if a new/increased genuine trading path is explicitly available and reward-eligible should a capped plan be prepared for separate financial and signing approval. Do not place reduce-only/closing trades merely to farm rewards, do not open or increase exposure, and do not sign or move assets automatically.",
-      "reason": "Current live-product migration evidence conflicts with the older Ethereal reward lifecycle assumed by the base registry; fail closed until current primary sources resolve the acquisition path.",
-      "automation_permitted": false,
-      "verified_at": "2026-08-19T06:15:38+00:00",
-      "evidence_checked_at": "2026-08-19T06:15:38+00:00",
-      "evidence_source": "https://app.ethereal.trade/",
-      "evidence_sources": [
-        "https://app.ethereal.trade/",
-        "https://docs.ethereal.trade/points/ethereal-points",
-        "https://docs.ethereal.trade/trading/usde-balance-rewards"
-      ],
-      "evidence_status": "PRIMARY_CURRENT_LIFECYCLE_CONFLICT_FAIL_CLOSED",
-      "verification_expires_at": "2026-08-26T06:15:38+00:00",
-      "program_lifecycle_status": "CLOSE_ONLY_MIGRATING_TO_MERIDIAN",
-      "terms_status": "REVERIFY_CURRENT_MERIDIAN_MIGRATION_REWARD_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_AND_SIGNING_BEFORE_ANY_ECONOMIC_ACTION",
-      "evidence_note": "Current official Ethereal application states that Ethereal Perps are close-only, instructs users to close positions and bridge to Meridian on Robinhood Chain, and says Ethereal is becoming Meridian. Existing official Ethereal reward docs still describe authentic trading and USDe margin balances as reward-earning. Because the live application lifecycle and older reward docs do not establish a current new-acquisition path during migration, the agent fails closed instead of inferring that new trading or new margin deposits remain reward-eligible.",
-      "known_cost_or_risk": "The current official Ethereal application says Perps are close-only and directs users to close positions and bridge to Meridian. Older reward documentation still describes authentic trading as points-earning, so using that older documentation to initiate new reward-seeking exposure would rely on a stale lifecycle assumption. Any migration or future Meridian trading can involve wallet signatures, bridge/asset-transfer risk, fees, funding, slippage, liquidation and directional PnL risk.",
-      "missing_approval": "Fresh official Meridian migration/reward rules that resolve whether this specific earning path is currently open, plus current jurisdiction/account eligibility and the exact authenticated/signing/asset-flow requirements. If an economic path is later verified, explicit amount/notional, fee/funding/bridge budget, liquidity tolerance and maximum acceptable loss are also required before execution."
+      "next_action": "Re-verify current reward mechanics and program lifecycle from official sources before any acquisition action.",
+      "reason": "The last verified Ethereal close-only/migration evidence has expired. Re-verify the current Ethereal/Meridian lifecycle and reward rules before treating trading or margin as an available reward-acquisition path."
     },
     {
       "slug": "ethereal-margin",
@@ -497,27 +481,11 @@
       "requires_wallet_signature": false,
       "requires_real_order": false,
       "requires_asset_move": false,
-      "authentication_recheck_required": true,
+      "authentication_recheck_required": false,
       "points_delta": null,
       "acquisition_state": "BLOCKED_UNVERIFIED",
-      "next_action": "Re-verify whether Ethereal still accepts/credits new USDe margin for rewards during the close-only migration and obtain current official Meridian reward/migration rules. If a capital-allocation path is explicitly supported, record the exact deposit/bridge/signing flow, amount, fees, lock/withdrawal mechanics and maximum loss for separate approval. Do not deposit, approve tokens, bridge, migrate, sign, withdraw or move assets automatically.",
-      "reason": "Current live-product migration evidence conflicts with the older Ethereal reward lifecycle assumed by the base registry; fail closed until current primary sources resolve the acquisition path.",
-      "automation_permitted": false,
-      "verified_at": "2026-08-19T06:15:38+00:00",
-      "evidence_checked_at": "2026-08-19T06:15:38+00:00",
-      "evidence_source": "https://app.ethereal.trade/",
-      "evidence_sources": [
-        "https://app.ethereal.trade/",
-        "https://docs.ethereal.trade/points/ethereal-points",
-        "https://docs.ethereal.trade/trading/usde-balance-rewards"
-      ],
-      "evidence_status": "PRIMARY_CURRENT_LIFECYCLE_CONFLICT_FAIL_CLOSED",
-      "verification_expires_at": "2026-08-26T06:15:38+00:00",
-      "program_lifecycle_status": "CLOSE_ONLY_MIGRATING_TO_MERIDIAN",
-      "terms_status": "REVERIFY_CURRENT_MERIDIAN_MIGRATION_REWARD_TERMS_JURISDICTION_ACCOUNT_ELIGIBILITY_AND_SIGNING_BEFORE_ANY_ECONOMIC_ACTION",
-      "evidence_note": "Current official Ethereal application states that Ethereal Perps are close-only, instructs users to close positions and bridge to Meridian on Robinhood Chain, and says Ethereal is becoming Meridian. Existing official Ethereal reward docs still describe authentic trading and USDe margin balances as reward-earning. Because the live application lifecycle and older reward docs do not establish a current new-acquisition path during migration, the agent fails closed instead of inferring that new trading or new margin deposits remain reward-eligible.",
-      "known_cost_or_risk": "Current Ethereal reward documentation still says USDe balances earn rewards, while the current official application is close-only and tells users to move funds to Meridian. That lifecycle conflict means a new Ethereal margin allocation is not treated as a currently verified acquisition path. Depositing or migrating would involve capital, wallet approval/signing, bridge/smart-contract/platform, stablecoin, fee, liquidity and withdrawal/opportunity-cost risk.",
-      "missing_approval": "Fresh official Meridian migration/reward rules that resolve whether this specific earning path is currently open, plus current jurisdiction/account eligibility and the exact authenticated/signing/asset-flow requirements. If an economic path is later verified, explicit amount/notional, fee/funding/bridge budget, liquidity tolerance and maximum acceptable loss are also required before execution."
+      "next_action": "Re-verify current reward mechanics and program lifecycle from official sources before any acquisition action.",
+      "reason": "The last verified Ethereal close-only/migration evidence has expired. Re-verify the current Ethereal/Meridian lifecycle and reward rules before treating trading or margin as an available reward-acquisition path."
     },
     {
       "slug": "exchange01",
@@ -551,7 +519,7 @@
   "reya_trading_current_promotion_count": 1,
   "nado_current_promotion_count": 0,
   "extended_current_promotion_count": 2,
-  "ethereal_current_block_count": 2,
+  "ethereal_current_block_count": 0,
   "campaign_exclusions": [
     {
       "slug": "decibel-global-warming-home-cooling",
