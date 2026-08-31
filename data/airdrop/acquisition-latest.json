@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T07:06:02.944395+00:00",
+  "generated_at": "2026-08-31T15:12:32.678789+00:00",
   "mode": "ACQUISITION_GATED",
   "objective": "Execute only verified non-financial/no-signature reward actions automatically; queue financial or signing actions for approval.",
   "target_count": 20,
@@ -12,9 +12,9 @@
   "primary_approval_required_count": 2,
   "additional_approval_required_count": 0,
   "approval_required_count": 2,
-  "blocked_unverified_count": 4,
+  "blocked_unverified_count": 5,
   "reverify_required_count": 13,
-  "discovery_only_count": 1,
+  "discovery_only_count": 0,
   "financial_actions_executed": 0,
   "asset_transfers_executed": 0,
   "wallet_signatures_executed": 0,
@@ -37,9 +37,9 @@
       "requires_asset_move": false,
       "authentication_recheck_required": false,
       "points_delta": null,
-      "acquisition_state": "DISCOVERY_ONLY",
-      "next_action": "Continue discovery and promote a candidate only after an exact qualifying action is verified.",
-      "reason": "This adapter is a discovery source, not an earning executor."
+      "acquisition_state": "BLOCKED_UNVERIFIED",
+      "next_action": "Re-verify current reward mechanics and program lifecycle from official sources before any acquisition action.",
+      "reason": "Official program page was not reachable during this pass."
     },
     {
       "slug": "hyprearn",
